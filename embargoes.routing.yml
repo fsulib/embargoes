@@ -4,4 +4,4 @@ embargoes.settings:
     _form: '\Drupal\embargoes\Form\EmbargoesSettingsForm'
     _title: 'Embargoes Settings'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer embargoes settings'
