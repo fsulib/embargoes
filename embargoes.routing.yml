@@ -6,6 +6,14 @@ embargoes.settings:
   requirements:
     _permission: 'administer embargoes settings'
 
+embargoes.settings.ips:
+  path: '/admin/config/content/embargoes/settings/ip-ranges'
+  defaults:
+    _form: '\Drupal\embargoes\Form\EmbargoesManageIpRangesForm'
+    _title: 'IP Range Configuration'
+  requirements:
+    _permission: 'administer embargoes settings'
+
 embargoes.settings.embargoed:
   path: '/admin/config/content/embargoes/settings/embargoed'
   defaults:
@@ -14,11 +22,11 @@ embargoes.settings.embargoed:
   requirements:
     _permission: 'administer embargoes settings'
 
-embargoes.settings.ips:
-  path: '/admin/config/content/embargoes/settings/ip-ranges'
+embargoes.settings.log:
+  path: '/admin/config/content/embargoes/settings/log'
   defaults:
-    _form: '\Drupal\embargoes\Form\EmbargoesManageIpRangesForm'
-    _title: 'IP Ranges'
+    _form: '\Drupal\embargoes\Form\EmbargoesLogForm'
+    _title: 'Embargo Log'
   requirements:
     _permission: 'administer embargoes settings'
 

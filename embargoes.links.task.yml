@@ -1,19 +1,26 @@
 embargoes.settings: 
   route_name: embargoes.settings  
-  title: 'Embargoes Settings'
+  title: 'Settings'
   base_route: embargoes.settings 
+  weight: 0
 
 embargoes.settings.ips: 
   route_name: embargoes.settings.ips 
   title: 'IP Ranges'
   base_route: embargoes.settings 
-  weight: 50 
+  weight: 1 
 
 embargoes.settings.embargoed: 
   route_name: embargoes.settings.embargoed 
-  title: 'Embargoed Content'
+  title: 'Embargoed'
   base_route: embargoes.settings 
-  weight: 100
+  weight: 2 
+
+embargoes.settings.log: 
+  route_name: embargoes.settings.log 
+  title: 'Log'
+  base_route: embargoes.settings 
+  weight: 3 
 
 embargoes.node_embargoes:
   route_name: embargoes.node_embargoes
