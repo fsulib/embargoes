@@ -1,0 +1,7 @@
+embargoes.settings:
+  path: '/admin/config/content/embargoes/settings'
+  defaults:
+    _form: '\Drupal\embargoes\Form\EmbargoesSettingsForm'
+    _title: 'Embargoes Settings'
+  requirements:
+    _permission: 'administer site configuration'
