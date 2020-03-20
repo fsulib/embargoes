@@ -1,0 +1,22 @@
+embargoes.settings: 
+  route_name: embargoes.settings  
+  title: 'Embargoes Settings'
+  base_route: embargoes.settings 
+
+embargoes.settings.ips: 
+  route_name: embargoes.settings.ips 
+  title: 'IP Ranges'
+  base_route: embargoes.settings 
+  weight: 50 
+
+embargoes.settings.embargoed: 
+  route_name: embargoes.settings.embargoed 
+  title: 'Embargoed Content'
+  base_route: embargoes.settings 
+  weight: 100
+
+embargoes.node_embargoes:
+  route_name: embargoes.node_embargoes
+  title: 'Embargoes'
+  base_route: entity.node.canonical 
+  weight: 100

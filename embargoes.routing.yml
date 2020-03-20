@@ -5,3 +5,27 @@ embargoes.settings:
     _title: 'Embargoes Settings'
   requirements:
     _permission: 'administer embargoes settings'
+
+embargoes.settings.embargoed:
+  path: '/admin/config/content/embargoes/settings/embargoed'
+  defaults:
+    _form: '\Drupal\embargoes\Form\EmbargoesEmbargoedForm'
+    _title: 'Embargoed Content'
+  requirements:
+    _permission: 'administer embargoes settings'
+
+embargoes.settings.ips:
+  path: '/admin/config/content/embargoes/settings/ip-ranges'
+  defaults:
+    _form: '\Drupal\embargoes\Form\EmbargoesManageIpRangesForm'
+    _title: 'IP Ranges'
+  requirements:
+    _permission: 'administer embargoes settings'
+
+embargoes.node_embargoes:
+  path: '/node/{node}/embargoes'
+  defaults:
+    _controller: '\Drupal\embargoes\Form\EmbargoesEmbargoManagementForm'
+    _title: 'Embargoes'
+  requirements:
+    _permission: 'manage embargoes'
