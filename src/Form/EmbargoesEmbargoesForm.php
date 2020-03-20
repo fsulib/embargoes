@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Class EmbargoesSettingsForm.
  */
-class EmbargoesEmbargoedForm extends ConfigFormBase {
+class EmbargoesEmbargoesForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}

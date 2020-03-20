@@ -6,27 +6,27 @@ embargoes.settings:
   requirements:
     _permission: 'administer embargoes settings'
 
-embargoes.settings.emails:
-  path: '/admin/config/content/embargoes/settings/emails'
+embargoes.settings.notifications:
+  path: '/admin/config/content/embargoes/settings/notifications'
   defaults:
-    _form: '\Drupal\embargoes\Form\EmbargoesEmailsForm'
-    _title: 'Email Notification Settings'
+    _form: '\Drupal\embargoes\Form\EmbargoesNotificationsForm'
+    _title: 'Notification Settings'
   requirements:
     _permission: 'administer embargoes settings'
 
 embargoes.settings.ips:
-  path: '/admin/config/content/embargoes/settings/ip-ranges'
+  path: '/admin/config/content/embargoes/settings/ips'
   defaults:
     _form: '\Drupal\embargoes\Form\EmbargoesManageIpRangesForm'
-    _title: 'IP Range Configuration'
+    _title: 'Manage Allowable IP Ranges'
   requirements:
     _permission: 'administer embargoes settings'
 
-embargoes.settings.embargoed:
-  path: '/admin/config/content/embargoes/settings/embargoed'
+embargoes.settings.embargoes:
+  path: '/admin/config/content/embargoes/settings/embargoes'
   defaults:
-    _form: '\Drupal\embargoes\Form\EmbargoesEmbargoedForm'
-    _title: 'Embargoed Content'
+    _form: '\Drupal\embargoes\Form\EmbargoesEmbargoesForm'
+    _title: 'All Embargoed Content'
   requirements:
     _permission: 'administer embargoes settings'
 
@@ -34,7 +34,7 @@ embargoes.settings.log:
   path: '/admin/config/content/embargoes/settings/log'
   defaults:
     _form: '\Drupal\embargoes\Form\EmbargoesLogForm'
-    _title: 'Embargo Log'
+    _title: 'Embargo Activity Log'
   requirements:
     _permission: 'administer embargoes settings'
 

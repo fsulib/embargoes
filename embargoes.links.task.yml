@@ -4,9 +4,9 @@ embargoes.settings:
   base_route: embargoes.settings 
   weight: 0
 
-embargoes.settings.emails: 
-  route_name: embargoes.settings.emails  
-  title: 'Emails'
+embargoes.settings.notifications: 
+  route_name: embargoes.settings.notifications  
+  title: 'Notifications'
   base_route: embargoes.settings 
   weight: 1
 
@@ -16,9 +16,9 @@ embargoes.settings.ips:
   base_route: embargoes.settings 
   weight: 2 
 
-embargoes.settings.embargoed: 
-  route_name: embargoes.settings.embargoed 
-  title: 'Embargoed'
+embargoes.settings.embargoes: 
+  route_name: embargoes.settings.embargoes 
+  title: 'Embargoes'
   base_route: embargoes.settings 
   weight: 3 
 
