@@ -6,6 +6,14 @@ embargoes.settings:
   requirements:
     _permission: 'administer embargoes settings'
 
+embargoes.settings.emails:
+  path: '/admin/config/content/embargoes/settings/emails'
+  defaults:
+    _form: '\Drupal\embargoes\Form\EmbargoesEmailsForm'
+    _title: 'Email Notification Settings'
+  requirements:
+    _permission: 'administer embargoes settings'
+
 embargoes.settings.ips:
   path: '/admin/config/content/embargoes/settings/ip-ranges'
   defaults:
