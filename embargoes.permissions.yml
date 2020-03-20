@@ -1,0 +1,8 @@
+administer embargoes settings:
+  title: 'Administer Embargoes settings'
+  description: 'Access and manage configuration for the Embargoes module'
+  restrict access: TRUE
+override embargoes restrictions:
+  title: 'Bypass Embargoes restrictions'
+  description: 'Bypass access restrictions on content put in place by embargoes policies'
+  restrict access: TRUE
