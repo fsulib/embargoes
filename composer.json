@@ -1,0 +1,15 @@
+{
+  "name": "fsulib/embargoes",
+  "description": "A module for managing embargo policies with access restrictions on content",
+  "type": "drupal-module",
+  "keywords": ["Drupal"],
+  "homepage": "https://github.com/fsulib/embargoes",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Bryan J. Brown",
+      "email": "bjbrown@fsu.edu",
+      "role": "Maintainer"
+    }
+  ]
+}
