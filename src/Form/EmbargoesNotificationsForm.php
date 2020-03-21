@@ -227,7 +227,6 @@ class EmbargoesNotificationsForm extends ConfigFormBase {
     $config->set('expirations_template', $form_state->getValue('expirations_template'));
 
     $config->save();
-
     parent::submitForm($form, $form_state);
   }
 
