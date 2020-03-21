@@ -30,20 +30,6 @@ class EmbargoesSettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('embargoes.settings');
 
-    $content_types_formatted = [];
-    $content_types = \Drupal::entityTypeManager()->getStorage('node_type')->loadMultiple();
-    foreach ($content_types as $content_type) {
-      $content_types_formatted[$content_type->get('type')] = $content_type->get('name');
-    }
-
-    $form['embargoable_content_types'] = [
-      '#type' => 'checkboxes',
-      '#title' => $this->t('Enable embargoes by content type'),
-      '#description' => $this->t("Select content types that should be able to be embargoed"),
-      '#default_value' => $config->get('embargoable_content_types'),
-      '#options' => $content_types_formatted,
-    ];
-
     $form['redirect_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Redirect URL'),
@@ -60,35 +46,10 @@ class EmbargoesSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('embargoes.settings');
 
-    $config->set('embargoable_content_types', $form_state->getValue('embargoable_content_types'));
     $config->set('redirect_url', $form_state->getValue('redirect_url'));
     
     $config->save();
     parent::submitForm($form, $form_state);
-    $this::manageEmbargoFieldAttachments($config);
-  }
-
-  public function manageEmbargoFieldAttachments($config) {
-    foreach ($config->get('embargoable_content_types') as $key => $value) {
-      if ($value != '0' && $this::contentTypeHasEmbargoField($key) == FALSE) {
-        $this::addEmbargoFieldToContentType($key);
-      }
-      else if ($value == '0' && $this::contentTypeHasEmbargoField($key) == TRUE) {
-        $this::removeEmbargoFieldfromContentType($key);
-      }
-    }
-  }
-
-  public function addEmbargoFieldToContentType($content_type) {
-    dsm("Adding embargo field to {$content_type}");
-  }
-
-  public function removeEmbargoFieldFromContentType($content_type) {
-    dsm("Removing embargo field from {$content_type}");
-  }
-
-  public function contentTypeHasEmbargoField($content_type) {
-    return TRUE;
   }
 
 }
