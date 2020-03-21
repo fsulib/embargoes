@@ -1,0 +1,45 @@
+<?php
+
+/**
+* @file
+* Install, update and uninstall functions for the embargoes module.
+*/
+
+/**
+* Implements hook_schema().
+*/
+function embargoes_schema() {
+  $schema['embargoes_log'] = [ 
+    'description' => 'Embargo log table.',
+    'fields' => [
+      'id' => [ 
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'time' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'action' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'node' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'user' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'embargo' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  return $schema;
+}
