@@ -33,7 +33,7 @@ embargoes.settings.embargoes:
 embargoes.settings.log:
   path: '/admin/config/content/embargoes/settings/log'
   defaults:
-    _form: '\Drupal\embargoes\Form\EmbargoesLogForm'
+    _form: '\Drupal\embargoes\Controller\EmbargoesLogController::showRenderedLog'
     _title: 'Embargo Activity Log'
   requirements:
     _permission: 'administer embargoes settings'
