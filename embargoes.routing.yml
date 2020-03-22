@@ -38,10 +38,10 @@ embargoes.settings.log:
   requirements:
     _permission: 'administer embargoes settings'
 
-embargoes.node_embargoes:
+embargoes.node.embargoes:
   path: '/node/{node}/embargoes'
   defaults:
-    _controller: '\Drupal\embargoes\Form\EmbargoesEmbargoManagementForm'
-    _title: 'Embargoes'
+    _form: '\Drupal\embargoes\Form\EmbargoesNodeEmbargoesForm'
+    _title: 'Manage Embargoes'
   requirements:
     _permission: 'manage embargoes'

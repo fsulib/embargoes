@@ -28,8 +28,8 @@ embargoes.settings.log:
   base_route: embargoes.settings 
   weight: 4 
 
-embargoes.node_embargoes:
-  route_name: embargoes.node_embargoes
+embargoes.node.embargoes:
+  route_name: embargoes.node.embargoes
   title: 'Embargoes'
   base_route: entity.node.canonical 
   weight: 100
