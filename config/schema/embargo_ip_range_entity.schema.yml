@@ -1,0 +1,12 @@
+embargoes.embargo_ip_range_entity.*:
+  type: config_entity
+  label: 'Embargo IP Range Entity config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string

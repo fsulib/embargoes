@@ -1,0 +1,32 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.embargo.field_embargo_embargoed_content
+    - field.field.node.embargo.field_embargo_exempt_ip_range
+    - field.field.node.embargo.field_embargo_exempt_users
+    - field.field.node.embargo.field_embargo_expiration_date
+    - field.field.node.embargo.field_embargo_expiration_type
+    - field.field.node.embargo.field_embargo_type
+    - node.type.embargo
+  module:
+    - user
+id: node.embargo.teaser
+targetEntityType: node
+bundle: embargo
+mode: teaser
+content:
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_embargo_embargoed_content: true
+  field_embargo_exempt_ip_range: true
+  field_embargo_exempt_users: true
+  field_embargo_expiration_date: true
+  field_embargo_expiration_type: true
+  field_embargo_type: true
+  search_api_excerpt: true

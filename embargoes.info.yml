@@ -1,4 +1,6 @@
-name: 'Embargoes'
-description: "A module for managing embargo policies with access restrictions on content."
+name: Embargoes
+description: 'A module for managing embargo policies with access restrictions on content.'
 type: module
 core: 8.x
+dependencies:
+  - menu_ui
