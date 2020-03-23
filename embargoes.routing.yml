@@ -14,22 +14,6 @@ embargoes.settings.notifications:
   requirements:
     _permission: 'administer embargoes settings'
 
-embargoes.settings.ips:
-  path: '/admin/config/content/embargoes/settings/ips'
-  defaults:
-    _form: '\Drupal\embargoes\Form\EmbargoesManageIpRangesForm'
-    _title: 'Manage Allowable IP Ranges'
-  requirements:
-    _permission: 'administer embargoes settings'
-
-embargoes.settings.embargoes:
-  path: '/admin/config/content/embargoes/settings/embargoes'
-  defaults:
-    _form: '\Drupal\embargoes\Form\EmbargoesEmbargoesForm'
-    _title: 'All Embargoed Content'
-  requirements:
-    _permission: 'administer embargoes settings'
-
 embargoes.settings.log:
   path: '/admin/config/content/embargoes/settings/log'
   defaults:

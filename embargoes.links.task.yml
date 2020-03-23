@@ -10,14 +10,14 @@ embargoes.settings.notifications:
   base_route: embargoes.settings 
   weight: 1
 
-embargoes.settings.ips: 
+entity.embargoes_ip_range_entity.collection: 
   route_name: entity.embargoes_ip_range_entity.collection 
   title: 'IP Ranges'
   base_route: embargoes.settings 
   weight: 2 
 
-embargoes.settings.embargoes: 
-  route_name: entity.embargoes_embargo_entity.collection 
+entity.embargoes_embargo_entity.collection: 
+  route_name: entity.embargoes_embargo_entity.collection
   title: 'Embargoes'
   base_route: embargoes.settings 
   weight: 3 
