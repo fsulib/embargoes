@@ -3,11 +3,3 @@ system.embargoes_settings:
   parent: system.admin_config_content
   route_name: embargoes.settings
   description: 'Configure Embargoes settings.'
-
-# Embargo IP Range Entity menu items definition
-entity.embargo_ip_range_entity.collection:
-  title: 'Embargo IP Ranges'
-  route_name: entity.embargo_ip_range_entity.collection
-  description: 'List Embargo IP Range Entity (bundles)'
-  parent: system.admin_structure
-  weight: 99
