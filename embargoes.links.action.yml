@@ -1,0 +1,10 @@
+entity.embargoes_ip_range_entity.add_form:
+  route_name: entity.embargoes_ip_range_entity.add_form
+  title: 'Add IP Range'
+  appears_on:
+    - entity.embargoes_ip_range_entity.collection
+entity.embargoes_embargo_entity.add_form:
+  route_name: entity.embargoes_embargo_entity.add_form
+  title: 'Add Embargo'
+  appears_on:
+    - entity.embargoes_embargo_entity.collection

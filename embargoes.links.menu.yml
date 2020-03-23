@@ -3,3 +3,19 @@ system.embargoes_settings:
   parent: system.admin_config_content
   route_name: embargoes.settings
   description: 'Configure Embargoes settings.'
+
+# IP Range menu items definition
+entity.embargoes_ip_range_entity.collection:
+  title: 'IP Range'
+  route_name: entity.embargoes_ip_range_entity.collection
+  description: 'List IP Range (bundles)'
+  parent: system.admin_structure
+  weight: 99
+
+# Embargo menu items definition
+entity.embargoes_embargo_entity.collection:
+  title: 'Embargo'
+  route_name: entity.embargoes_embargo_entity.collection
+  description: 'List Embargo (bundles)'
+  parent: system.admin_structure
+  weight: 99

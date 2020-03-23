@@ -1,0 +1,12 @@
+embargoes.embargoes_embargo_entity.*:
+  type: config_entity
+  label: 'Embargo config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
