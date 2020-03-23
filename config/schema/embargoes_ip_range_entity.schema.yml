@@ -8,5 +8,8 @@ embargoes.embargoes_ip_range_entity.*:
     label:
       type: label
       label: 'Label'
+    range:
+      type: string
+      label: 'Range'
     uuid:
       type: string

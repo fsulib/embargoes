@@ -9,5 +9,8 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface EmbargoesIpRangeEntityInterface extends ConfigEntityInterface {
 
-  // Add get/set methods for your configuration properties here.
+  public function getRange();
+
+  public function setRange($range);
+
 }

@@ -16,6 +16,7 @@ class EmbargoesIpRangeEntityListBuilder extends ConfigEntityListBuilder {
   public function buildHeader() {
     $header['label'] = $this->t('IP Range');
     $header['id'] = $this->t('Machine name');
+    $header['range'] = $this->t('Ranges');
     return $header + parent::buildHeader();
   }
 
@@ -25,7 +26,7 @@ class EmbargoesIpRangeEntityListBuilder extends ConfigEntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
-    // You probably want a few more properties here...
+    $row['range'] = $entity->getRange();
     return $row + parent::buildRow($entity);
   }
 

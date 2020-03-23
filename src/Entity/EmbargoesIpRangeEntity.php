@@ -54,4 +54,20 @@ class EmbargoesIpRangeEntity extends ConfigEntityBase implements EmbargoesIpRang
    */
   protected $label;
 
+  /**
+   * The IP Range label.
+   *
+   * @var string
+   */
+  protected $range;
+
+  public function getRange() {
+    return $this->get('range');
+  }
+
+  public function setRange($range) {
+    $this->set('range', $range);
+    return $this;
+  }
+
 }
