@@ -61,13 +61,17 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#default_value' => $embargoes_embargo_entity->getExpirationDate(),
     );
 
+    $ip_ranges = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->loadMultiple();
+    $ip_range_options = [];
+    $ip_range_options['none'] = 'None';
+    foreach ($ip_ranges as $ip_range) {
+      $ip_range_options[$ip_range->id()] = $ip_range->label();
+    }
+    
     $form['exempt_ips'] = array(
       '#type' => 'select',
       '#title' => $this->t('Exempt IP ranges'),
-      '#options' => [
-        'none' => 'None',
-        'test' => 'Test IP Range',
-      ],
+      '#options' => $ip_range_options, 
       '#default_value' => $embargoes_embargo_entity->getExemptIps(),
     ); 
 

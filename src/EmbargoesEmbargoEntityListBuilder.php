@@ -46,12 +46,16 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
     $node_title = $node->title->value;
     $formatted_node_row = Markup::create("<a href='/node/{$nid}'>{$node_title}</a>");
 
+
+    $ip_range_label = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($entity->getExemptIps())->label();
+    $ip_range_formatted = Markup::create("<a href='/admin/structure/embargoes_ip_range_entity/{$entity->getExemptIps()}/edit'>{$ip_range_label}</a>");
+
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
     $row['embargo_type'] = ($entity->getEmbargoType() == 1 ? 'Node' : 'Files');
     $row['expiration_type'] = ($entity->getExpirationType() == 1 ? 'Indefinite' : 'Scheduled');
     $row['expiration_date'] = $entity->getExpirationDate();
-    $row['exempt_ips'] = $entity->getExemptIps();
+    $row['exempt_ips'] = $ip_range_formatted;
     $row['exempt_users'] = $formatted_exempt_users_row;
     $row['embargoed_node'] = $formatted_node_row;
     return $row + parent::buildRow($entity);

@@ -61,6 +61,14 @@ class EmbargoesIpRangeEntity extends ConfigEntityBase implements EmbargoesIpRang
    */
   protected $range;
 
+  public function id() {
+    return $this->get('id');
+  }
+
+  public function label() {
+    return $this->get('label');
+  }
+
   public function getRange() {
     return $this->get('range');
   }
