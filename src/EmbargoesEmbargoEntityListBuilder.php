@@ -4,6 +4,7 @@ namespace Drupal\embargoes;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Render\Markup;
 
 /**
  * Provides a listing of Embargo entities.
@@ -31,6 +32,7 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
     $row['embargo_type'] = ($entity->getEmbargoType() == 1 ? 'Node' : 'Files');
     $row['expiration_type'] = ($entity->getExpirationType() == 1 ? 'Indefinite' : 'Scheduled');
     $row['expiration_date'] = $entity->getExpirationDate();
+    //$row['range'] = Markup::create(str_replace('|', '<br>', $entity->getRange()));
     return $row + parent::buildRow($entity);
   }
 
