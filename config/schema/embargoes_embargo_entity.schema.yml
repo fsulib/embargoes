@@ -19,3 +19,17 @@ embargoes.embargoes_embargo_entity.*:
     expiration_date:
       type: string 
       label: 'Expiration Date'
+    exempt_ips:
+      type: string
+      label: 'Exempt IP Ranges'
+    exempt_users:
+      type: sequence
+      label: 'Exempt Users'
+      sequence:
+        type: mapping
+        mapping:
+          target_id:
+            type: integer
+    embargoed_node:
+      type: integer
+      label: 'Embargoed Node'

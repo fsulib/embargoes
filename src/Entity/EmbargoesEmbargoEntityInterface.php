@@ -19,4 +19,13 @@ interface EmbargoesEmbargoEntityInterface extends ConfigEntityInterface {
   public function getExpirationDate();
   public function setExpirationDate($date);
 
+  public function getExemptIps();
+  public function setExemptIps($range);
+
+  public function getExemptUsers();
+  public function setExemptUsers($user);
+
+  public function getEmbargoedNode();
+  public function setEmbargoedNode($node);
+
 }

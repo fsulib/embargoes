@@ -20,6 +20,9 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
     $header['embargo_type'] = $this->t('Embargo Type');
     $header['expiration_type'] = $this->t('Expiration Type');
     $header['expiration_date'] = $this->t('Expiration Date');
+    $header['exempt_ips'] = $this->t('Exempt IP Range');
+    $header['exempt_users'] = $this->t('Exempt Users');
+    $header['embargoed_node'] = $this->t('Embargoed Node');
     return $header + parent::buildHeader();
   }
 
@@ -27,12 +30,30 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
+
+    $formatted_users = [];
+    foreach ($entity->getExemptUsers() as $user){
+      $uid = $user['target_id'];
+      $user_entity = \Drupal\user\Entity\User::load($uid);
+      $user_name = $user_entity->getUserName();
+      $formatted_users[] = "<a href='/user/{$uid}'>{$user_name}</a>";
+
+    }
+    $formatted_exempt_users_row = Markup::create(implode("<br>", $formatted_users));
+
+    $nid = $entity->getEmbargoedNode();
+    $node = node_load($nid);
+    $node_title = $node->title->value;
+    $formatted_node_row = Markup::create("<a href='/node/{$nid}'>{$node_title}</a>");
+
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
     $row['embargo_type'] = ($entity->getEmbargoType() == 1 ? 'Node' : 'Files');
     $row['expiration_type'] = ($entity->getExpirationType() == 1 ? 'Indefinite' : 'Scheduled');
     $row['expiration_date'] = $entity->getExpirationDate();
-    //$row['range'] = Markup::create(str_replace('|', '<br>', $entity->getRange()));
+    $row['exempt_ips'] = $entity->getExemptIps();
+    $row['exempt_users'] = $formatted_exempt_users_row;
+    $row['embargoed_node'] = $formatted_node_row;
     return $row + parent::buildRow($entity);
   }
 

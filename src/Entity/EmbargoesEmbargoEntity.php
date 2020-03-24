@@ -60,6 +60,12 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   protected $expiration_date;
 
+  protected $exempt_ips;
+
+  protected $exempt_users;
+
+  protected $embargoed_node;
+
   public function getEmbargoType() {
     return $this->get('embargo_type');
   }
@@ -84,6 +90,33 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   public function setExpirationDate($date){
     $this->set('expiration_date', $date);
+    return $this;
+  }
+
+  public function getExemptIps() {
+    return $this->get('exempt_ips');
+  }
+
+  public function setExemptIps($range){
+    $this->set('exempt_ips', $range);
+    return $this;
+  }
+
+  public function getExemptUsers() {
+    return $this->get('exempt_users');
+  }
+
+  public function setExemptUsers($users){
+    $this->set('exempt_users', $users);
+    return $this;
+  }
+
+  public function getEmbargoedNode() {
+    return $this->get('embargoed_node');
+  }
+
+  public function setEmbargoedNode($node){
+    $this->set('embargoed_node', $node);
     return $this;
   }
 

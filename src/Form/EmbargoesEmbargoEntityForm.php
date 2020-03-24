@@ -61,6 +61,40 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#default_value' => $embargoes_embargo_entity->getExpirationDate(),
     );
 
+    $form['exempt_ips'] = array(
+      '#type' => 'select',
+      '#title' => $this->t('Exempt IP ranges'),
+      '#options' => [
+        'none' => 'None',
+        'test' => 'Test IP Range',
+      ],
+      '#default_value' => $embargoes_embargo_entity->getExemptIps(),
+    ); 
+
+    $exempt_user_entities = [];
+    foreach ($embargoes_embargo_entity->getExemptUsers() as $user) {
+      $exempt_user_entities[] = \Drupal\user\Entity\User::load($user['target_id']);
+    }
+
+    $form['exempt_users'] = array(
+      '#type' => 'entity_autocomplete',
+      '#target_type' => 'user',
+      '#title' => $this->t('Exempt users'),
+      '#tags' => TRUE,
+      '#default_value' => $exempt_user_entities,
+      '#selection_settings' => [
+        'include_anonymous' => FALSE,
+      ],
+    ); 
+
+    $form['embargoed_node'] = array(
+      '#type' => 'entity_autocomplete',
+      '#target_type' => 'node',
+      '#title' => $this->t('Embargoed node'),
+      '#default_value' => node_load($embargoes_embargo_entity->getEmbargoedNode()),
+    ); 
+
+
     return $form;
   }
 
@@ -72,6 +106,9 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $embargoes_embargo_entity->setEmbargoType($form_state->getValue('embargo_type'));
     $embargoes_embargo_entity->setExpirationType($form_state->getValue('expiration_type'));
     $embargoes_embargo_entity->setExpirationDate($form_state->getValue('expiration_date'));
+    $embargoes_embargo_entity->setExemptIps($form_state->getValue('exempt_ips'));
+    $embargoes_embargo_entity->setExemptUsers($form_state->getValue('exempt_users'));
+    $embargoes_embargo_entity->setEmbargoedNode($form_state->getValue('embargoed_node'));
 
     $status = $embargoes_embargo_entity->save();
 
