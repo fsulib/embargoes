@@ -30,11 +30,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "/admin/structure/embargoes_embargo_entity/{embargoes_embargo_entity}",
- *     "add-form" = "/admin/structure/embargoes_embargo_entity/add",
- *     "edit-form" = "/admin/structure/embargoes_embargo_entity/{embargoes_embargo_entity}/edit",
- *     "delete-form" = "/admin/structure/embargoes_embargo_entity/{embargoes_embargo_entity}/delete",
- *     "collection" = "/admin/structure/embargoes_embargo_entity"
+ *     "canonical" = "/admin/config/content/embargoes/settings/embargoes/{embargoes_embargo_entity}",
+ *     "add-form" = "/admin/config/content/embargoes/settings/embargoes/add",
+ *     "edit-form" = "/admin/config/content/embargoes/settings/embargoes/{embargoes_embargo_entity}/edit",
+ *     "delete-form" = "/admin/config/content/embargoes/settings/embargoes/{embargoes_embargo_entity}/delete",
+ *     "collection" = "/admin/config/content/embargoes/settings/embargoes"
  *   }
  * )
  */
