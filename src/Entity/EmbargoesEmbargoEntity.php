@@ -54,4 +54,37 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
    */
   protected $label;
 
+  protected $embargo_type;
+
+  protected $expiration_type;
+
+  protected $expiration_date;
+
+  public function getEmbargoType() {
+    return $this->get('embargo_type');
+  }
+
+  public function setEmbargoType($type){
+    $this->set('embargo_type', $type);
+    return $this;
+  }
+
+  public function getExpirationType() {
+    return $this->get('expiration_type');
+  }
+
+  public function setExpirationType($type){
+    $this->set('expiration_type', $type);
+    return $this;
+  }
+
+  public function getExpirationDate() {
+    return $this->get('expiration_date');
+  }
+
+  public function setExpirationDate($date){
+    $this->set('expiration_date', $date);
+    return $this;
+  }
+
 }

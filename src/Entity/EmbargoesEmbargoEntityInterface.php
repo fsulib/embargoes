@@ -9,5 +9,14 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface EmbargoesEmbargoEntityInterface extends ConfigEntityInterface {
 
-  // Add get/set methods for your configuration properties here.
+  public function getEmbargoType();
+  public function setEmbargoType($type);
+
+
+  public function getExpirationType();
+  public function setExpirationType($type);
+
+  public function getExpirationDate();
+  public function setExpirationDate($date);
+
 }

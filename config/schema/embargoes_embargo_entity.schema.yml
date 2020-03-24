@@ -10,3 +10,12 @@ embargoes.embargoes_embargo_entity.*:
       label: 'Label'
     uuid:
       type: string
+    embargo_type:
+      type: boolean 
+      label: 'Embargo Type'
+    expiration_type:
+      type: boolean 
+      label: 'Expiration Type'
+    expiration_date:
+      type: string 
+      label: 'Expiration Date'
