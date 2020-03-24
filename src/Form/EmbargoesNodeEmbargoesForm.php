@@ -20,7 +20,15 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state, $embargo_id = NULL) {
+
+    if ($embargo_id == "create") {
+      $new_embargo = TRUE;
+    }
+    else {
+      $new_embargo = FALSE;
+      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+    }
 
     $form['embargo_type'] = array(
       '#type' => 'radios',
@@ -120,6 +128,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Don't forget to log the embargo creation/deletion/update
     foreach ($form_state->getValues() as $key => $value) {
      #\Drupal::messenger()->addMessage($key . ': ' . ($key === 'text_format'?$value['value']:$value));
     }

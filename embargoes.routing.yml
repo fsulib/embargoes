@@ -25,7 +25,17 @@ embargoes.settings.log:
 embargoes.node.embargoes:
   path: '/node/{node}/embargoes'
   defaults:
-    _form: '\Drupal\embargoes\Form\EmbargoesNodeEmbargoesForm'
-    _title: 'Manage Embargoes'
+    _controller: '\Drupal\embargoes\Controller\EmbargoesNodeEmbargoesController::showEmbargoes'
+    _title: 'View Embargoes'
   requirements:
     _permission: 'manage embargoes'
+
+embargoes.node.embargo:
+  path: '/node/{node}/embargoes/{embargo_id}'
+  defaults:
+    _form: '\Drupal\embargoes\Form\EmbargoesNodeEmbargoesForm'
+    _title: 'Edit Embargo'
+  requirements:
+    _permission: 'manage embargoes'
+
+
