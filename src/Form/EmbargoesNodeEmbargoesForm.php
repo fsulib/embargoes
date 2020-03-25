@@ -118,8 +118,6 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     foreach ($form_state->getValues() as $key => $value) {
-      dsm($key);
-      dsm($value);
     }
     parent::validateForm($form, $form_state);
   }
@@ -128,7 +126,19 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Don't forget to log the embargo creation/deletion/update
+
+    $uuid = \Drupal::service('uuid')->generate();
+    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->create([
+      'id' => $uuid, 
+      'lable' => $uuid, 
+      'uuid' => $uuid,
+      'embargo_type' => 0,
+    ]);
+    $embargo->save();
+
+    dsm($embargo->label());
+
+
     foreach ($form_state->getValues() as $key => $value) {
      #\Drupal::messenger()->addMessage($key . ': ' . ($key === 'text_format'?$value['value']:$value));
     }

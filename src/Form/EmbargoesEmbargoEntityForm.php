@@ -16,23 +16,21 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     $embargoes_embargo_entity = $this->entity;
+    $name = str_replace('-', '_', $embargoes_embargo_entity->uuid());
 
     $form['id'] = [
       '#type' => 'machine_name',
-      '#default_value' => $embargoes_embargo_entity->id(),
-      '#machine_name' => [
-        'exists' => '\Drupal\embargoes\Entity\EmbargoesEmbargoEntity::load',
-      ],
-      '#disabled' => !$embargoes_embargo_entity->isNew(),
+      '#default_value' => $name,
+      '#disabled' => TRUE,
     ];
 
     $form['label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
       '#maxlength' => 255,
-      '#default_value' => $embargoes_embargo_entity->label(),
+      '#default_value' => $name,
       '#description' => $this->t("Label for the Embargo."),
-      '#required' => TRUE,
+      '#disabled' => TRUE,
     ];
 
     $form['embargo_type'] = array(

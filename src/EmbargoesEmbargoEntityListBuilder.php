@@ -15,7 +15,6 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['label'] = $this->t('Embargo');
     $header['id'] = $this->t('Machine name');
     $header['embargo_type'] = $this->t('Embargo Type');
     $header['expiration_type'] = $this->t('Expiration Type');
@@ -47,10 +46,15 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
     $formatted_node_row = Markup::create("<a href='/node/{$nid}'>{$node_title}</a>");
 
 
-    $ip_range_label = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($entity->getExemptIps())->label();
-    $ip_range_formatted = Markup::create("<a href='/admin/structure/embargoes_ip_range_entity/{$entity->getExemptIps()}/edit'>{$ip_range_label}</a>");
+    $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($entity->getExemptIps());
+    if (!is_null($ip_range)) {
+      $ip_range_label = $ip_range->label();
+      $ip_range_formatted = Markup::create("<a href='/admin/structure/embargoes_ip_range_entity/{$entity->getExemptIps()}/edit'>{$ip_range_label}</a>");
+    }
+    else {
+      $ip_range_formatted = "None";
+    }
 
-    $row['label'] = $entity->label();
     $row['id'] = $entity->id();
     $row['embargo_type'] = ($entity->getEmbargoType() == 1 ? 'Node' : 'Files');
     $row['expiration_type'] = ($entity->getExpirationType() == 1 ? 'Indefinite' : 'Scheduled');

@@ -40,11 +40,20 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           $formatted_users[] = "<a href='/user/{$uid}'>{$user_name}</a>";
         }
         $formatted_exempt_users_row = Markup::create(implode("<br>", $formatted_users));
-        $ip_range_label = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps())->label();
+
+        if ($embargo->getExemptIps() != 'none') {
+          $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
+          $ip_range_label = $ip_range->label();
+          $ip_range_formatted = Markup::create("<a href='/admin/structure/embargoes_ip_range_entity/{$embargo->getExemptIps()}/edit'>{$ip_range_label}</a>");
+        }
+        else {
+          $ip_range_formatted = "None";
+        }
+
         $row = [
           'type' => ($embargo->getEmbargoType() == 1 ? 'Node' : 'Files'),
           'expiry' => $expiry,
-          'exempt_ips' => $ip_range_label,
+          'exempt_ips' => $ip_range_formatted,
           'exempt_users' => $formatted_exempt_users_row,
           'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a>"),
         ];
