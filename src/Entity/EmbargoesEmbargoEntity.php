@@ -10,8 +10,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  * @ConfigEntityType(
  *   id = "embargoes_embargo_entity",
  *   label = @Translation("Embargo"),
- *   handlers = {
- *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *   handlers = { *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\embargoes\EmbargoesEmbargoEntityListBuilder",
  *     "form" = {
  *       "add" = "Drupal\embargoes\Form\EmbargoesEmbargoEntityForm",
@@ -65,6 +64,18 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
   protected $exempt_users;
 
   protected $embargoed_node;
+
+  public function __construct(array $values, $entity_type) {
+    $uuid = \Drupal::service('uuid')->generate();
+    $formatted_uuid = str_replace('-', '_', $uuid);
+    $this->uuid = $uuid;
+    $this->id = $formatted_uuid;
+    $this->label = $formatted_uuid;
+    parent::__construct($values, $entity_type);
+  }
+
+
+
 
   public function getEmbargoType() {
     return $this->get('embargo_type');

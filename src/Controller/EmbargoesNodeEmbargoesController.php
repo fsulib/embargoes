@@ -68,7 +68,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
 
     $markup['add'] = [
       '#type' => 'markup',
-      '#markup' => Markup::create("<p><a href='/node/{$node}/embargoes/create'>Add Embargo</a></p>"),
+      '#markup' => Markup::create("<p><a href='/node/{$node}/embargoes/add'>Add Embargo</a></p>"),
     ];
 
     return [
