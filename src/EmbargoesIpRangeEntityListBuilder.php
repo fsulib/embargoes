@@ -14,13 +14,7 @@ class EmbargoesIpRangeEntityListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-
-
-
   public function buildHeader() {
-
-
-
     $header['label'] = $this->t('IP Range');
     $header['id'] = $this->t('Machine name');
     $header['range'] = $this->t('Ranges');
