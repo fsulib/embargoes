@@ -159,14 +159,20 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     $embargo->setEmbargoedNode($form_state->getValue('embargoed_node'));
     $embargo->save();
 
+    $log_values['node'] = $embargo->getEmbargoedNode();
+    $log_values['user'] = \Drupal::currentUser()->id();
+    $log_values['embargo_id'] = $embargo->id();
+
     if ($embargo_id == 'add') {
-      // Log creation
+      $log_values['action'] = 'Created';
       \Drupal::messenger()->addMessage('Your embargo has been created.');
     }
     else {
-      // Log Update 
+      $log_values['action'] = 'Updated';
       \Drupal::messenger()->addMessage('Your embargo has been updated.');
     }
+
+    \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
     $form_state->setRedirect('embargoes.node.embargoes', ['node' => $form_state->getValue('embargoed_node')]);
 
   }

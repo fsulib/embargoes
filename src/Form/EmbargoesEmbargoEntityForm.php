@@ -21,6 +21,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#type' => 'radios',
       '#title' => $this->t('Embargo type'),
       '#default_value' => ($embargoes_embargo_entity->getEmbargoType() == 1 ? 1 : 0),
+      '#required' => TRUE,
       '#options' => [
         '0' => t('Files'),
         '1' => t('Node'),
@@ -31,9 +32,13 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#type' => 'radios',
       '#title' => $this->t('Expiration type'),
       '#default_value' => ($embargoes_embargo_entity->getExpirationType() == 1 ? 1 : 0),
+      '#required' => TRUE,
       '#options' => [
         '0' => t('Indefinite'),
         '1' => t('Scheduled'),
+      ],
+      '#attributes' => [
+        'name' => 'expiry_type',
       ],
     );
 
@@ -41,6 +46,14 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#type' => 'date',
       '#title' => $this->t('Expiration date'),
       '#default_value' => $embargoes_embargo_entity->getExpirationDate(),
+      '#states' => [
+        'visible' => [
+          ':input[name="expiry_type"]' => ['value' => '1'],
+        ],
+        'required' => [
+          ':input[name="expiry_type"]' => ['value' => '1'],
+        ],
+      ],
     );
 
     $exempt_ip_range_options = \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions();
@@ -73,6 +86,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#target_type' => 'node',
       '#title' => $this->t('Embargoed node'),
       '#default_value' => node_load($embargoes_embargo_entity->getEmbargoedNode()),
+      '#required' => TRUE,
     ); 
 
 
@@ -93,7 +107,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $status = $embargoes_embargo_entity->save();
 
     $log_values['node'] = $embargoes_embargo_entity->getEmbargoedNode();
-    $log_values['user'] = 1;
+    $log_values['user'] = \Drupal::currentUser()->id();
     $log_values['embargo_id'] = $embargoes_embargo_entity->id();
 
     switch ($status) {
