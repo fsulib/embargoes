@@ -15,14 +15,15 @@ class EmbargoesEmbargoEntityDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete %name?', ['%name' => $this->entity->label()]);
+    return $this->t('Are you sure you want to delete embargo %id?', ['%id' => $this->entity->id()]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('entity.embargoes_embargo_entity.collection');
+    $node = $this->entity->getEmbargoedNode();
+    return new Url('embargoes.node.embargoes', ['node' => $node]);
   }
 
   /**
@@ -39,11 +40,11 @@ class EmbargoesEmbargoEntityDeleteForm extends EntityConfirmFormBase {
     $this->entity->delete();
 
     $this->messenger()->addMessage(
-      $this->t('content @type: deleted @label.', [
-        '@type' => $this->entity->bundle(),
-        '@label' => $this->entity->label(),
+      $this->t('Embargo @id has been deleted.', [
+        '@id' => $this->entity->id(),
       ])
     );
+
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }

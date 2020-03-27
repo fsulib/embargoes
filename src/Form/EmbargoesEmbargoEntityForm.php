@@ -16,22 +16,6 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     $embargoes_embargo_entity = $this->entity;
-    $name = str_replace('-', '_', $embargoes_embargo_entity->uuid());
-
-    $form['id'] = [
-      '#type' => 'machine_name',
-      '#default_value' => $name,
-      '#disabled' => TRUE,
-    ];
-
-    $form['label'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Label'),
-      '#maxlength' => 255,
-      '#default_value' => $name,
-      '#description' => $this->t("Label for the Embargo."),
-      '#disabled' => TRUE,
-    ];
 
     $form['embargo_type'] = array(
       '#type' => 'radios',
@@ -48,8 +32,8 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#title' => $this->t('Expiration type'),
       '#default_value' => ($embargoes_embargo_entity->getExpirationType() == 1 ? 1 : 0),
       '#options' => [
-        '0' => t('Scheduled'),
-        '1' => t('Indefinite'),
+        '0' => t('Indefinite'),
+        '1' => t('Scheduled'),
       ],
     );
 

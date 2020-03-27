@@ -5,11 +5,6 @@ embargoes.embargoes_embargo_entity.*:
     id:
       type: string
       label: 'ID'
-    label:
-      type: label
-      label: 'Label'
-    uuid:
-      type: string
     embargo_type:
       type: boolean 
       label: 'Embargo Type'

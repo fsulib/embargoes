@@ -15,7 +15,7 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['id'] = $this->t('Machine name');
+    $header['id'] = $this->t('Embargo ID');
     $header['embargo_type'] = $this->t('Embargo Type');
     $header['expiration_type'] = $this->t('Expiration Type');
     $header['expiration_date'] = $this->t('Expiration Date');
@@ -57,7 +57,7 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
 
     $row['id'] = $entity->id();
     $row['embargo_type'] = ($entity->getEmbargoType() == 1 ? 'Node' : 'Files');
-    $row['expiration_type'] = ($entity->getExpirationType() == 1 ? 'Indefinite' : 'Scheduled');
+    $row['expiration_type'] = ($entity->getExpirationType() == 1 ? 'Scheduled' : 'Indefinite');
     $row['expiration_date'] = $entity->getExpirationDate();
     $row['exempt_ips'] = $ip_range_formatted;
     $row['exempt_users'] = $formatted_exempt_users_row;

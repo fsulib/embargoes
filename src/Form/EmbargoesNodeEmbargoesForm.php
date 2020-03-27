@@ -41,7 +41,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#type' => 'radios',
       '#title' => $this->t('Embargo type'),
       '#description' => $this->t('Select the type of embargo to be applied. "Files" will leave the node itself visible (including searches and indexing), only restricting access to the attached files. "Node" will suppress access of the node completely from users, searches and indexing.'),
-      '#default_value' => ( $embargo_id != 'add' ? $embargo->getEmbargoType() : 0 ), 
+      '#default_value' => ( $embargo_id != 'add' ? intval($embargo->getEmbargoType()) : FALSE ), 
       '#required' => TRUE,
       '#options' => [ 
         '0' => t('Files'),
@@ -60,7 +60,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     $form['expiry']['expiry_type'] = array(
       '#type' => 'radios',
       '#title' => $this->t('Expiration type'),
-      '#default_value' => ( $embargo_id != 'add' ? intval($embargo->getExpirationType()) : 0 ), 
+      '#default_value' => ( $embargo_id != 'add' ? intval($embargo->getExpirationType()) : FALSE ), 
       '#required' => TRUE,
       '#options' => [ 
         '0' => t('Indefinite'),
@@ -152,30 +152,29 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
 
     $embargo_id = $form_state->getValue('embargo_id');
     if ($embargo_id == 'add') {
-      $uuid = \Drupal::service('uuid')->generate();
-      $formatted_uuid = str_replace('-', '_', $uuid);
-      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->create([
-        'embargo_type' => $form_state->getValue('embargo_type'),
-        'expiry_type' => $form_state->getValue('expiry_type'),
-        'expiry_date' => $form_state->getValue('expiry_date'),
-        'exempt_ips' => $form_state->getValue('exempt_ips'),
-        'exempt_users' => $form_state->getValue('exempt_users'),
-        'embargoed_node' => $form_state->getValue('embargoed_node'),
-      ]);
-      $embargo->save();
-      \Drupal::messenger()->addMessage('Your embargo has been saved.');
+      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->create();
     }
     else {
       $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-      $embargo->setEmbargoType($form_state->getValue('embargo_type'));
-      $embargo->setExpirationType($form_state->getValue('embargo_type'));
-      $embargo->setExpirationDate($form_state->getValue('embargo_date'));
-      $embargo->setExemptIps($form_state->getValue('exempt_ips'));
-      $embargo->setExemptUsers($form_state->getValue('exempt_users'));
-      $embargo->setEmbargoedNode($form_state->getValue('embargoed_node'));
-      $status = $embargo->save();
+    }
+
+    $embargo->setEmbargoType($form_state->getValue('embargo_type'));
+    $embargo->setExpirationType($form_state->getValue('expiry_type'));
+    $embargo->setExpirationDate($form_state->getValue('expiry_date'));
+    $embargo->setExemptIps($form_state->getValue('exempt_ips'));
+    $embargo->setExemptUsers($form_state->getValue('exempt_users'));
+    $embargo->setEmbargoedNode($form_state->getValue('embargoed_node'));
+    $embargo->save();
+
+    if ($embargo_id == 'add') {
+      // Log creation
+      \Drupal::messenger()->addMessage('Your embargo has been created.');
+    }
+    else {
+      // Log Update 
       \Drupal::messenger()->addMessage('Your embargo has been updated.');
     }
+    $form_state->setRedirect('embargoes.node.embargoes', ['node' => $form_state->getValue('embargoed_node')]);
 
   }
 

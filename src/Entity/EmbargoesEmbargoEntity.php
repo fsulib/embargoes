@@ -46,13 +46,6 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
    */
   protected $id;
 
-  /**
-   * The Embargo label.
-   *
-   * @var string
-   */
-  protected $label;
-
   protected $embargo_type;
 
   protected $expiration_type;
@@ -67,15 +60,11 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   public function __construct(array $values, $entity_type) {
     $uuid = \Drupal::service('uuid')->generate();
-    $formatted_uuid = str_replace('-', '_', $uuid);
+    $checksummed_uuid = sha1($uuid);
     $this->uuid = $uuid;
-    $this->id = $formatted_uuid;
-    $this->label = $formatted_uuid;
+    $this->id = $checksummed_uuid;
     parent::__construct($values, $entity_type);
   }
-
-
-
 
   public function getEmbargoType() {
     return $this->get('embargo_type');

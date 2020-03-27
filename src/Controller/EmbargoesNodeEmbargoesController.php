@@ -27,17 +27,24 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
       foreach ($embargo_ids as $embargo_id) {
         $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
 
-        if ($embargo->getExpirationType() == 1 ) {
+        if ($embargo->getExpirationType() == 0 ) {
           $expiry = 'Indefinite';
         } else {
           $expiry = $embargo->getExpirationDate();
         }
+
         $formatted_users = [];
-        foreach ($embargo->getExemptUsers() as $user){
-          $uid = $user['target_id'];
-          $user_entity = \Drupal\user\Entity\User::load($uid);
-          $user_name = $user_entity->getUserName();
-          $formatted_users[] = "<a href='/user/{$uid}'>{$user_name}</a>";
+        $exempt_users = $embargo->getExemptUsers();
+        if (empty($exempt_users)) {
+          $formatted_users[] = "None";
+        }
+        else {
+          foreach ($embargo->getExemptUsers() as $user){
+            $uid = $user['target_id'];
+            $user_entity = \Drupal\user\Entity\User::load($uid);
+            $user_name = $user_entity->getUserName();
+            $formatted_users[] = "<a href='/user/{$uid}'>{$user_name}</a>";
+          }
         }
         $formatted_exempt_users_row = Markup::create(implode("<br>", $formatted_users));
 
@@ -55,13 +62,14 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           'expiry' => $expiry,
           'exempt_ips' => $ip_range_formatted,
           'exempt_users' => $formatted_exempt_users_row,
-          'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a>"),
+          //'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a><br><a href='/admin/config/content/embargoes/settings/embargoes/{$embargo_id}/delete?destination=/node/{$node}/embargoes'>Delete</a>"),
+          'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a><br><a href='/admin/config/content/embargoes/settings/embargoes/{$embargo_id}/delete'>Delete</a>"),
         ];
         array_push($rows, $row);
       }
       $markup['embargoes'] = [
         '#type' => 'table',
-        '#header' => ['Type', 'Expiry', 'Exempt IP Range', 'Exempt Users', 'Edit'],
+        '#header' => ['Type', 'Expiration Date', 'Exempt IP Range', 'Exempt Users', 'Edit'],
         '#rows' => $rows,
       ];
     }
