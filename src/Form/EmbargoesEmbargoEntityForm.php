@@ -15,13 +15,12 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
-    $embargoes_embargo_entity = $this->entity;
+    $embargo = $this->entity;
 
     $form['embargo_type'] = array(
       '#type' => 'radios',
       '#title' => $this->t('Embargo type'),
-      '#default_value' => ($embargoes_embargo_entity->getEmbargoType() == 1 ? 1 : 0),
-      '#required' => TRUE,
+      '#default_value' => $embargo->getEmbargoTypeAsInt(),
       '#options' => [
         '0' => t('Files'),
         '1' => t('Node'),
@@ -31,8 +30,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $form['expiration_type'] = array(
       '#type' => 'radios',
       '#title' => $this->t('Expiration type'),
-      '#default_value' => ($embargoes_embargo_entity->getExpirationType() == 1 ? 1 : 0),
-      '#required' => TRUE,
+      '#default_value' => $embargo->getExpirationTypeAsInt(),
       '#options' => [
         '0' => t('Indefinite'),
         '1' => t('Scheduled'),
@@ -45,7 +43,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $form['expiration_date'] = array(
       '#type' => 'date',
       '#title' => $this->t('Expiration date'),
-      '#default_value' => $embargoes_embargo_entity->getExpirationDate(),
+      '#default_value' => $embargo->getExpirationDate(),
       '#states' => [
         'visible' => [
           ':input[name="expiry_type"]' => ['value' => '1'],
@@ -56,26 +54,19 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       ],
     );
 
-    $exempt_ip_range_options = \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions();
-    
     $form['exempt_ips'] = array(
       '#type' => 'select',
       '#title' => $this->t('Exempt IP ranges'),
-      '#options' => $exempt_ip_range_options, 
-      '#default_value' => ( !is_null($embargoes_embargo_entity->getExemptIps()) ? $embargoes_embargo_entity->getExemptIps() : 'none' ),
+      '#options' => \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions(), 
+      '#default_value' => ( !is_null($embargo->getExemptIps()) ? $embargo->getExemptIps() : 'none' ),
     ); 
-
-    $exempt_user_entities = [];
-    foreach ($embargoes_embargo_entity->getExemptUsers() as $user) {
-      $exempt_user_entities[] = \Drupal\user\Entity\User::load($user['target_id']);
-    }
 
     $form['exempt_users'] = array(
       '#type' => 'entity_autocomplete',
       '#target_type' => 'user',
       '#title' => $this->t('Exempt users'),
       '#tags' => TRUE,
-      '#default_value' => $exempt_user_entities,
+      '#default_value' => $embargo->getExemptUsersEntities(),
       '#selection_settings' => [
         'include_anonymous' => FALSE,
       ],
@@ -85,7 +76,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#type' => 'entity_autocomplete',
       '#target_type' => 'node',
       '#title' => $this->t('Embargoed node'),
-      '#default_value' => node_load($embargoes_embargo_entity->getEmbargoedNode()),
+      '#default_value' => node_load($embargo->getEmbargoedNode()),
       '#required' => TRUE,
     ); 
 
@@ -97,35 +88,29 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    $embargoes_embargo_entity = $this->entity;
-    $embargoes_embargo_entity->setEmbargoType($form_state->getValue('embargo_type'));
-    $embargoes_embargo_entity->setExpirationType($form_state->getValue('expiration_type'));
-    $embargoes_embargo_entity->setExpirationDate($form_state->getValue('expiration_date'));
-    $embargoes_embargo_entity->setExemptIps($form_state->getValue('exempt_ips'));
-    $embargoes_embargo_entity->setExemptUsers($form_state->getValue('exempt_users'));
-    $embargoes_embargo_entity->setEmbargoedNode($form_state->getValue('embargoed_node'));
-    $status = $embargoes_embargo_entity->save();
+    $embargo = $this->entity;
+    $embargo->setEmbargoType($form_state->getValue('embargo_type'));
+    $embargo->setExpirationType($form_state->getValue('expiration_type'));
+    $embargo->setExpirationDate($form_state->getValue('expiration_date'));
+    $embargo->setExemptIps($form_state->getValue('exempt_ips'));
+    $embargo->setExemptUsers($form_state->getValue('exempt_users'));
+    $embargo->setEmbargoedNode($form_state->getValue('embargoed_node'));
+    $status = $embargo->save();
 
-    $log_values['node'] = $embargoes_embargo_entity->getEmbargoedNode();
+    $log_values['node'] = $embargo->getEmbargoedNode();
     $log_values['user'] = \Drupal::currentUser()->id();
-    $log_values['embargo_id'] = $embargoes_embargo_entity->id();
+    $log_values['embargo_id'] = $embargo->id();
 
-    switch ($status) {
-      case SAVED_NEW:
-        $this->messenger()->addMessage($this->t('Created the %label Embargo.', [
-          '%label' => $embargoes_embargo_entity->label(),
-        ]));
-        $log_values['action'] = 'Created';
-        break;
-
-      default:
-        $this->messenger()->addMessage($this->t('Saved the %label Embargo.', [
-          '%label' => $embargoes_embargo_entity->label(),
-        ]));
-        $log_values['action'] = 'Updated';
+    if ($status == SAVED_NEW) {
+        $log_values['action'] = 'created';
     }
+    else {
+        $log_values['action'] = 'updated';
+    }
+
+    \Drupal::messenger()->addMessage("Your embargo has been {$log_values['action']}.");
     \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
-    $form_state->setRedirectUrl($embargoes_embargo_entity->toUrl('collection'));
+    $form_state->setRedirectUrl($embargo->toUrl('collection'));
   }
 
 }

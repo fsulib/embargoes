@@ -10,10 +10,11 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface EmbargoesEmbargoEntityInterface extends ConfigEntityInterface {
 
   public function getEmbargoType();
+  public function getEmbargoTypeAsInt();
   public function setEmbargoType($type);
 
-
   public function getExpirationType();
+  public function getExpirationTypeAsInt();
   public function setExpirationType($type);
 
   public function getExpirationDate();
@@ -23,6 +24,7 @@ interface EmbargoesEmbargoEntityInterface extends ConfigEntityInterface {
   public function setExemptIps($range);
 
   public function getExemptUsers();
+  public function getExemptUsersEntities();
   public function setExemptUsers($user);
 
   public function getEmbargoedNode();

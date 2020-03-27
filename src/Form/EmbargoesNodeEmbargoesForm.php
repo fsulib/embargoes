@@ -41,7 +41,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#type' => 'radios',
       '#title' => $this->t('Embargo type'),
       '#description' => $this->t('Select the type of embargo to be applied. "Files" will leave the node itself visible (including searches and indexing), only restricting access to the attached files. "Node" will suppress access of the node completely from users, searches and indexing.'),
-      '#default_value' => ( $embargo_id != 'add' ? intval($embargo->getEmbargoType()) : FALSE ), 
+      '#default_value' => ( $embargo_id != 'add' ? $embargo->getEmbargoTypeAsInt() : FALSE ), 
       '#required' => TRUE,
       '#options' => [ 
         '0' => t('Files'),
@@ -60,7 +60,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     $form['expiry']['expiry_type'] = array(
       '#type' => 'radios',
       '#title' => $this->t('Expiration type'),
-      '#default_value' => ( $embargo_id != 'add' ? intval($embargo->getExpirationType()) : FALSE ), 
+      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExpirationTypeAsInt() : FALSE ), 
       '#required' => TRUE,
       '#options' => [ 
         '0' => t('Indefinite'),
@@ -70,6 +70,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
         'name' => 'expiry_type',
       ],
     ); 
+
     $form['expiry']['expiry_date'] = array(
       '#type' => 'date',
       '#title' => $this->t('Expiration date'),
@@ -90,27 +91,14 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#title' => $this->t('Exemptions'),
     );
 
-    $exempt_ip_range_options = \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions();
-
     $form['exemptions']['exempt_ips'] = array(
       '#type' => 'select',
       '#title' => $this->t('Exempt IP ranges'),
       '#description' => $this->t('Select the name of a pre-configured IP range that is exempt from this specific embargo. IP ranges must be set up by an administrator.'),
-      '#options' => $exempt_ip_range_options,
+      '#options' => \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions(),
       '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptIps() : FALSE ), 
     ); 
 
-
-    if ($embargo_id != 'add') {
-      $exempt_user_entities = [];
-      foreach ($embargo->getExemptUsers() as $user) {
-        $exempt_user_entities[] = \Drupal\user\Entity\User::load($user['target_id']);
-      }
-    }
-    else {
-      $exempt_user_entities = FALSE;
-    }
- 
 
     $form['exemptions']['exempt_users'] = array(
       '#type' => 'entity_autocomplete',
@@ -118,7 +106,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#tags' => TRUE,
       '#title' => $this->t('Exempt users'),
       '#description' => $this->t('Enter the username of users that are exempt from this specific embargo. Use a comma to separate multiple exempt users.'),
-      '#default_value' => $exempt_user_entities, 
+      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptUsersEntities() : FALSE ), 
     ); 
 
     $form['submit'] = [
@@ -133,8 +121,6 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    foreach ($form_state->getValues() as $key => $value) {
-    }
     parent::validateForm($form, $form_state);
   }
 
@@ -142,7 +128,6 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
     $embargo_id = $form_state->getValue('embargo_id');
     if ($embargo_id == 'add') {
       $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->create();
@@ -164,17 +149,15 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     $log_values['embargo_id'] = $embargo->id();
 
     if ($embargo_id == 'add') {
-      $log_values['action'] = 'Created';
-      \Drupal::messenger()->addMessage('Your embargo has been created.');
+      $log_values['action'] = 'created';
     }
     else {
-      $log_values['action'] = 'Updated';
-      \Drupal::messenger()->addMessage('Your embargo has been updated.');
+      $log_values['action'] = 'updated';
     }
 
+    \Drupal::messenger()->addMessage("Your embargo has been {$log_values['action']}.");
     \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
     $form_state->setRedirect('embargoes.node.embargoes', ['node' => $form_state->getValue('embargoed_node')]);
-
   }
 
 }

@@ -59,11 +59,11 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           'expiry' => $expiry,
           'exempt_ips' => $ip_range_formatted,
           'exempt_users' => $formatted_exempt_users_row,
-          //'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a><br><a href='/admin/config/content/embargoes/settings/embargoes/{$embargo_id}/delete?destination=/node/{$node}/embargoes'>Delete</a>"),
           'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a><br><a href='/admin/config/content/embargoes/settings/embargoes/{$embargo_id}/delete'>Delete</a>"),
         ];
         array_push($rows, $row);
       }
+
       $markup['embargoes'] = [
         '#type' => 'table',
         '#header' => ['Type', 'Expiration Date', 'Exempt IP Range', 'Exempt Users', 'Edit'],

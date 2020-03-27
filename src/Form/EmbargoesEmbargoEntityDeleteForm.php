@@ -42,16 +42,10 @@ class EmbargoesEmbargoEntityDeleteForm extends EntityConfirmFormBase {
     $log_values['node'] = $this->entity->getEmbargoedNode();
     $log_values['user'] = \Drupal::currentUser()->id();
     $log_values['embargo_id'] = $this->entity->id();
-    $log_values['action'] = 'Deleted';
+    $log_values['action'] = 'deleted';
+
+    \Drupal::messenger()->addMessage("Your embargo has been {$log_values['action']}.");
     \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
-
-    $this->messenger()->addMessage(
-      $this->t('Embargo @id has been deleted.', [
-        '@id' => $this->entity->id(),
-      ])
-    );
-
-
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
 

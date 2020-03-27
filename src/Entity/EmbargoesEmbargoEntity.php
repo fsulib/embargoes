@@ -70,6 +70,10 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
     return $this->get('embargo_type');
   }
 
+  public function getEmbargoTypeAsInt() {
+    return intval($this->get('embargo_type'));
+  }
+
   public function setEmbargoType($type){
     $this->set('embargo_type', $type);
     return $this;
@@ -77,6 +81,10 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   public function getExpirationType() {
     return $this->get('expiration_type');
+  }
+
+  public function getExpirationTypeAsInt() {
+    return intval($this->get('expiration_type'));
   }
 
   public function setExpirationType($type){
@@ -104,6 +112,14 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   public function getExemptUsers() {
     return $this->get('exempt_users');
+  }
+
+  public function getExemptUsersEntities() {
+    $exempt_user_entities = [];
+    foreach ($this->getExemptUsers() as $user) {
+      $exempt_user_entities[] = \Drupal\user\Entity\User::load($user['target_id']);
+    }
+    return $exempt_user_entities;
   }
 
   public function setExemptUsers($users){
