@@ -90,20 +90,13 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#title' => $this->t('Exemptions'),
     );
 
-    $ip_ranges = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->loadMultiple();
-    $ip_range_options = [];
-    $ip_range_options['none'] = 'None';
-    foreach ($ip_ranges as $ip_range) {
-      $ip_range_options[$ip_range->id()] = $ip_range->label();
-    }
-   
-    
+    $exempt_ip_range_options = \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions();
 
     $form['exemptions']['exempt_ips'] = array(
       '#type' => 'select',
       '#title' => $this->t('Exempt IP ranges'),
       '#description' => $this->t('Select the name of a pre-configured IP range that is exempt from this specific embargo. IP ranges must be set up by an administrator.'),
-      '#options' => $ip_range_options,
+      '#options' => $exempt_ip_range_options,
       '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptIps() : FALSE ), 
     ); 
 

@@ -43,18 +43,13 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#default_value' => $embargoes_embargo_entity->getExpirationDate(),
     );
 
-    $ip_ranges = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->loadMultiple();
-    $ip_range_options = [];
-    $ip_range_options['none'] = 'None';
-    foreach ($ip_ranges as $ip_range) {
-      $ip_range_options[$ip_range->id()] = $ip_range->label();
-    }
+    $exempt_ip_range_options = \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions();
     
     $form['exempt_ips'] = array(
       '#type' => 'select',
       '#title' => $this->t('Exempt IP ranges'),
-      '#options' => $ip_range_options, 
-      '#default_value' => $embargoes_embargo_entity->getExemptIps(),
+      '#options' => $exempt_ip_range_options, 
+      '#default_value' => ( !is_null($embargoes_embargo_entity->getExemptIps()) ? $embargoes_embargo_entity->getExemptIps() : 'none' ),
     ); 
 
     $exempt_user_entities = [];
@@ -95,21 +90,27 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $embargoes_embargo_entity->setExemptIps($form_state->getValue('exempt_ips'));
     $embargoes_embargo_entity->setExemptUsers($form_state->getValue('exempt_users'));
     $embargoes_embargo_entity->setEmbargoedNode($form_state->getValue('embargoed_node'));
-
     $status = $embargoes_embargo_entity->save();
+
+    $log_values['node'] = $embargoes_embargo_entity->getEmbargoedNode();
+    $log_values['user'] = 1;
+    $log_values['embargo_id'] = $embargoes_embargo_entity->id();
 
     switch ($status) {
       case SAVED_NEW:
         $this->messenger()->addMessage($this->t('Created the %label Embargo.', [
           '%label' => $embargoes_embargo_entity->label(),
         ]));
+        $log_values['action'] = 'Created';
         break;
 
       default:
         $this->messenger()->addMessage($this->t('Saved the %label Embargo.', [
           '%label' => $embargoes_embargo_entity->label(),
         ]));
+        $log_values['action'] = 'Updated';
     }
+    \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
     $form_state->setRedirectUrl($embargoes_embargo_entity->toUrl('collection'));
   }
 

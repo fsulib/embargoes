@@ -10,11 +10,6 @@ use Drupal\Core\Render\Markup;
  */
 class EmbargoesLogController extends ControllerBase {
 
-  public function logEmbargoEvent($data) {
-    $database = \Drupal::database();
-    $result = $database->query("INSERT INTO {embargoes_log} (time, action, node, user, embargo) VALUES ('{$data['time']}', '{$data['action']}', '{$data['node']}', '{$data['user']}','{$data['embargo']}');");
-  }
-
   public function showRenderedLog() {
     $database = \Drupal::database();
     $result = $database->query('SELECT * FROM {embargoes_log} ORDER BY time DESC;');

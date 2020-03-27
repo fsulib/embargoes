@@ -35,7 +35,8 @@ function embargoes_schema() {
         'not null' => TRUE,
       ],
       'embargo' => [
-        'type' => 'int',
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => TRUE,
       ],
     ],

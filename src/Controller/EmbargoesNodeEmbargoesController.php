@@ -12,10 +12,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
 
   public function showEmbargoes($node = NULL) {
 
-    $query = \Drupal::entityQuery('embargoes_embargo_entity')
-      ->condition('embargoed_node', $node);
-    $embargo_ids = $query->execute();
-
+    $embargo_ids = \Drupal::service('embargoes.embargoes')->getEmbargoesByNode($node);
     if (empty($embargo_ids)) {
       $markup['embargoes'] = [
         '#type' => 'markup',

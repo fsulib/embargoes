@@ -1,0 +1,13 @@
+services:
+  logger.channel.embargoes:
+    parent: logger.channel_base
+    arguments: ['embargoes']
+  embargoes.log:
+    class: Drupal\embargoes\EmbargoesLogService
+    arguments: []
+  embargoes.embargoes:
+    class: Drupal\embargoes\EmbargoesEmbargoesService
+    arguments: []
+  embargoes.ips:
+    class: Drupal\embargoes\EmbargoesIpRangesService
+    arguments: []
