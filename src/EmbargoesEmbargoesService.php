@@ -25,7 +25,10 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     $embargoes = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNode($nid);
     foreach ($embargoes as $embargo_id) {
       $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-      if ($embargo->getExpirationTypeAsInt() == 1) {
+      if ($embargo->getExpirationTypeAsInt() == 0) {
+        $current_embargoes[$embargo_id] = $embargo_id;
+      }
+      else {
         $now = time();
         $expiry = strtotime($embargo->getExpirationDate());
         if ($expiry > $now) {
