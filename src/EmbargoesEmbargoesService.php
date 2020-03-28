@@ -39,7 +39,7 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     return $current_embargoes;
   }
 
-  public function getActiveEmbargoesByNode($nid) {
+  public function getActiveEmbargoesByNode($nid, $ip, $user) {
     $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNode($nid);
     return $embargoes;
   }
