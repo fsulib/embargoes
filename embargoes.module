@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
   $nid = $entity->get('nid')->value;
-  $embargoes = \Drupal::service('embargoes.embargoes')->getEmbargoesByNode($nid);
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($nid);
   if (!empty($embargoes)) {
     throw new AccessDeniedHttpException(); 
   }

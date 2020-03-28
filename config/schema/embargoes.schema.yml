@@ -1,0 +1,6 @@
+condition.plugin.embargoes_embargoed_condition:
+  type: condition.plugin
+  mapping:
+    filter:
+      type: text
+      label: 'Embargo Filter'

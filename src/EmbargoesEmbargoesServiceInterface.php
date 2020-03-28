@@ -7,6 +7,8 @@ namespace Drupal\embargoes;
  */
 interface EmbargoesEmbargoesServiceInterface {
 
-  public function getEmbargoesByNode($node);
+  public function getAllEmbargoesByNode($node);
+  public function getCurrentEmbargoesByNode($node);
+  public function getActiveEmbargoesByNode($node);
 
 }

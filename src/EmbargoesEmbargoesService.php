@@ -13,11 +13,20 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
   public function __construct() {
   }
 
-  public function getEmbargoesByNode($nid) {
+  public function getAllEmbargoesByNode($nid) {
     $query = \Drupal::entityQuery('embargoes_embargo_entity')
       ->condition('embargoed_node', $nid);
-    $embargo_ids = $query->execute();
-    return $embargo_ids;
+    $embargoes = $query->execute();
+    return $embargoes;
   }
 
+  public function getCurrentEmbargoesByNode($nid) {
+    $embargoes = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNode($nid);
+    return $embargoes;
+  }
+
+  public function getActiveEmbargoesByNode($nid) {
+    $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNode($nid);
+    return $embargoes;
+  }
 }

@@ -32,6 +32,17 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form['filter'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Filter'),
+      '#default_value' => $this->configuration['filter'],
+      '#description' => $this->t('Select the scope of embargo to trigger on.'),
+      '#options' => [
+        'all' => 'All embargoes on node',
+        'current' => 'Current embargoes on node (ignore expired)',
+        'active' => 'Active embargoes on node (ignore bypassed)',
+      ],
+    ];
     return parent::buildConfigurationForm($form, $form_state);
   }
 
@@ -39,6 +50,7 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    $this->configuration['filter'] = $form_state->getValue('filter');
     parent::submitConfigurationForm($form, $form_state);
   }
 
@@ -46,7 +58,7 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return  parent::defaultConfiguration();
+    return ['filter' => 'all'] + parent::defaultConfiguration();
   }
 
   /**
@@ -58,11 +70,24 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
   public function evaluate() {
     $node = \Drupal::routeMatch()->getParameter('node');
     if ($node instanceof \Drupal\node\NodeInterface) {
-      $embargoed = \Drupal::service('embargoes.embargoes')->getEmbargoesByNode($node->id());
+
+      switch ($this->configuration['filter']) {
+        case 'all':
+          $embargoed = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNode($node->id());
+          break;
+        case 'current':
+          $embargoed = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNode($node->id());
+          break;
+        case 'active':
+          $embargoed = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($node->id());
+          break;
+      }
+
     }
     else {
       $embargoed = FALSE;
     }
+
     return $embargoed;
   }
 
