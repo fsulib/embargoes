@@ -71,17 +71,18 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
     $node = \Drupal::routeMatch()->getParameter('node');
     if ($node instanceof \Drupal\node\NodeInterface) {
 
+      $embargo_service = \Drupal::service('embargoes.embargoes');
       switch ($this->configuration['filter']) {
         case 'all':
-          $embargoed = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNode($node->id());
+          $embargoed = $embargo_service->getAllEmbargoesByNode($node->id());
           break;
         case 'current':
-          $embargoed = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNode($node->id());
+          $embargoed = $embargo_service->getCurrentEmbargoesByNode($node->id());
           break;
         case 'active':
           $ip = \Drupal::request()->getClientIp();
           $user = \Drupal::currentUser();
-          $embargoed = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($node->id(), $ip, $user);
+          $embargoed = $embargo_service->getActiveEmbargoesByNode($node->id(), $ip, $user);
           break;
       }
 

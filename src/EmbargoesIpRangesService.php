@@ -58,14 +58,22 @@ class EmbargoesIpRangesService implements EmbargoesIpRangesServiceInterface {
   }
 
   public function isIpInRange($ip, $range_name) {
-    $range_string = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($range_name)->getRange();
-    if (\Drupal::service('embargoes.ips')->detectIpRangeStringErrors($range_string)) {
-      // This is dumb, but better than revealing an embargoed node because of malformed range settings.
+    if ($range_name != 'none') {
+      $range_string = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($range_name)->getRange();
       $response = FALSE;
-    }
-    else {
-      // Check to see if IP is in any of the provided ranges
-      $response = TRUE; //Placeholder 
+      if (!\Drupal::service('embargoes.ips')->detectIpRangeStringErrors($range_string)) {
+        $ranges = explode('|', trim($range_string));
+        foreach ($ranges as $range) {
+          list($net, $mask) = explode("/", trim($range));
+          $ip_net = ip2long($net);
+          $ip_mask = ~((1 << (32 - $mask)) - 1);
+          $ip_ip = ip2long($ip);
+          $ip_ip_net = $ip_ip & $ip_mask;
+          if ($ip_ip_net == $ip_net) {
+            $response = TRUE;
+          }
+        }
+      }
     }
     return $response;
   }

@@ -54,7 +54,7 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
     $range = $this->entity;
     $range->setRange($form_state->getValue('range'));
     $status = $range->save();
-    
+
     $errors = \Drupal::service('embargoes.ips')->detectIpRangeStringErrors($form_state->getValue('range'));
     if (!$errors) {
       switch ($status) {

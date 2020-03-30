@@ -9,10 +9,10 @@
 * Implements hook_schema().
 */
 function embargoes_schema() {
-  $schema['embargoes_log'] = [ 
+  $schema['embargoes_log'] = [
     'description' => 'Embargo log table.',
     'fields' => [
-      'id' => [ 
+      'id' => [
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,

@@ -1,35 +1,35 @@
-embargoes.settings: 
-  route_name: embargoes.settings  
+embargoes.settings:
+  route_name: embargoes.settings
   title: 'Settings'
-  base_route: embargoes.settings 
+  base_route: embargoes.settings
   weight: 0
 
-embargoes.settings.notifications: 
-  route_name: embargoes.settings.notifications  
+embargoes.settings.notifications:
+  route_name: embargoes.settings.notifications
   title: 'Notifications'
-  base_route: embargoes.settings 
+  base_route: embargoes.settings
   weight: 1
 
-entity.embargoes_ip_range_entity.collection: 
-  route_name: entity.embargoes_ip_range_entity.collection 
+entity.embargoes_ip_range_entity.collection:
+  route_name: entity.embargoes_ip_range_entity.collection
   title: 'IP Ranges'
-  base_route: embargoes.settings 
-  weight: 2 
+  base_route: embargoes.settings
+  weight: 2
 
-entity.embargoes_embargo_entity.collection: 
+entity.embargoes_embargo_entity.collection:
   route_name: entity.embargoes_embargo_entity.collection
   title: 'Embargoes'
-  base_route: embargoes.settings 
-  weight: 3 
+  base_route: embargoes.settings
+  weight: 3
 
-embargoes.settings.log: 
-  route_name: embargoes.settings.log 
+embargoes.settings.log:
+  route_name: embargoes.settings.log
   title: 'Log'
-  base_route: embargoes.settings 
-  weight: 4 
+  base_route: embargoes.settings
+  weight: 4
 
 embargoes.node.embargoes:
   route_name: embargoes.node.embargoes
   title: 'Embargoes'
-  base_route: entity.node.canonical 
+  base_route: entity.node.canonical
   weight: 100

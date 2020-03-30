@@ -40,14 +40,14 @@ class EmbargoesNotificationsForm extends ConfigFormBase {
       '#type' => 'radios',
       '#title' => $this->t('Enable embargo application notification emails'),
       '#default_value' => $config->get('applications_active'),
-      '#options' => [ 
+      '#options' => [
         '0' => t('Disabled'),
         '1' => t('Enabled'),
       ],
       '#attributes' => [
         'name' => 'applications_active',
       ],
-    ); 
+    );
     $form['applications']['applications_emails'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Default email recipients'),
@@ -69,7 +69,7 @@ class EmbargoesNotificationsForm extends ConfigFormBase {
           ':input[name="applications_active"]' => ['value' => '1'],
         ],
       ],
-    ); 
+    );
 
     $form['updates'] = array(
       '#type' => 'fieldset',
@@ -79,14 +79,14 @@ class EmbargoesNotificationsForm extends ConfigFormBase {
       '#type' => 'radios',
       '#title' => $this->t('Enable embargo update notification emails'),
       '#default_value' => $config->get('updates_active'),
-      '#options' => [ 
+      '#options' => [
         '0' => t('Disabled'),
         '1' => t('Enabled'),
       ],
       '#attributes' => [
         'name' => 'updates_active',
       ],
-    ); 
+    );
     $form['updates']['updates_emails'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Default email recipients'),
@@ -118,14 +118,14 @@ class EmbargoesNotificationsForm extends ConfigFormBase {
       '#type' => 'radios',
       '#title' => $this->t('Enable embargo expiration warning notification emails'),
       '#default_value' => $config->get('warnings_active'),
-      '#options' => [ 
+      '#options' => [
         '0' => t('Disabled'),
         '1' => t('Enabled'),
       ],
       '#attributes' => [
         'name' => 'warnings_active',
       ],
-    ); 
+    );
     $form['warnings']['warnings_period'] = array(
       '#type' => 'number',
       '#title' => $this->t('Days until expiry'),
@@ -159,7 +159,7 @@ class EmbargoesNotificationsForm extends ConfigFormBase {
           ':input[name="warnings_active"]' => ['value' => '1'],
         ],
       ],
-    ); 
+    );
 
     $form['expirations'] = array(
       '#type' => 'fieldset',
@@ -169,14 +169,14 @@ class EmbargoesNotificationsForm extends ConfigFormBase {
       '#type' => 'radios',
       '#title' => $this->t('Enable embargo expiration notification emails'),
       '#default_value' => $config->get('expirations_active'),
-      '#options' => [ 
+      '#options' => [
         '0' => t('Disabled'),
         '1' => t('Enabled'),
       ],
       '#attributes' => [
         'name' => 'expirations_active',
       ],
-    ); 
+    );
     $form['expirations']['expirations_emails'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Default email recipients'),

@@ -33,7 +33,7 @@ class EmbargoesSettingsForm extends ConfigFormBase {
     $form['redirect_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Redirect URL'),
-      '#description' => $this->t('URL that user is to be redirected to (including parameters) if attempting to access IP restricted content from outside of an approved range.'), 
+      '#description' => $this->t('URL that user is to be redirected to (including parameters) if attempting to access IP restricted content from outside of an approved range.'),
       '#default_value' => $config->get('redirect_url'),
     ];
 
@@ -47,11 +47,9 @@ class EmbargoesSettingsForm extends ConfigFormBase {
     $config = $this->config('embargoes.settings');
 
     $config->set('redirect_url', $form_state->getValue('redirect_url'));
-    
+
     $config->save();
     parent::submitForm($form, $form_state);
   }
 
 }
-
-  

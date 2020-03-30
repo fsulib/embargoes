@@ -41,16 +41,16 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#type' => 'radios',
       '#title' => $this->t('Embargo type'),
       '#description' => $this->t('Select the type of embargo to be applied. "Files" will leave the node itself visible (including searches and indexing), only restricting access to the attached files. "Node" will suppress access of the node completely from users, searches and indexing.'),
-      '#default_value' => ( $embargo_id != 'add' ? $embargo->getEmbargoTypeAsInt() : FALSE ), 
+      '#default_value' => ( $embargo_id != 'add' ? $embargo->getEmbargoTypeAsInt() : FALSE ),
       '#required' => TRUE,
-      '#options' => [ 
+      '#options' => [
         '0' => t('Files'),
         '1' => t('Node'),
       ],
       '#attributes' => [
         'name' => 'embargo_type',
       ],
-    ); 
+    );
 
     $form['expiry'] = array(
       '#type' => 'fieldset',
@@ -60,22 +60,22 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     $form['expiry']['expiry_type'] = array(
       '#type' => 'radios',
       '#title' => $this->t('Expiration type'),
-      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExpirationTypeAsInt() : FALSE ), 
+      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExpirationTypeAsInt() : FALSE ),
       '#required' => TRUE,
-      '#options' => [ 
+      '#options' => [
         '0' => t('Indefinite'),
         '1' => t('Scheduled'),
       ],
       '#attributes' => [
         'name' => 'expiry_type',
       ],
-    ); 
+    );
 
     $form['expiry']['expiry_date'] = array(
       '#type' => 'date',
       '#title' => $this->t('Expiration date'),
       '#description' => $this->t('Schedule the date on which the embargo will expire'),
-      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExpirationDate() : FALSE ), 
+      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExpirationDate() : FALSE ),
       '#states' => [
         'visible' => [
           ':input[name="expiry_type"]' => ['value' => '1'],
@@ -96,8 +96,8 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#title' => $this->t('Exempt IP ranges'),
       '#description' => $this->t('Select the name of a pre-configured IP range that is exempt from this specific embargo. IP ranges must be set up by an administrator.'),
       '#options' => \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions(),
-      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptIps() : FALSE ), 
-    ); 
+      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptIps() : FALSE ),
+    );
 
 
     $form['exemptions']['exempt_users'] = array(
@@ -106,8 +106,8 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#tags' => TRUE,
       '#title' => $this->t('Exempt users'),
       '#description' => $this->t('Enter the username of users that are exempt from this specific embargo. Use a comma to separate multiple exempt users.'),
-      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptUsersEntities() : FALSE ), 
-    ); 
+      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptUsersEntities() : FALSE ),
+    );
 
     $form['submit'] = [
       '#type' => 'submit',

@@ -57,9 +57,9 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $form['exempt_ips'] = array(
       '#type' => 'select',
       '#title' => $this->t('Exempt IP ranges'),
-      '#options' => \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions(), 
+      '#options' => \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions(),
       '#default_value' => ( !is_null($embargo->getExemptIps()) ? $embargo->getExemptIps() : 'none' ),
-    ); 
+    );
 
     $form['exempt_users'] = array(
       '#type' => 'entity_autocomplete',
@@ -70,7 +70,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#selection_settings' => [
         'include_anonymous' => FALSE,
       ],
-    ); 
+    );
 
     $form['embargoed_node'] = array(
       '#type' => 'entity_autocomplete',
@@ -78,7 +78,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#title' => $this->t('Embargoed node'),
       '#default_value' => node_load($embargo->getEmbargoedNode()),
       '#required' => TRUE,
-    ); 
+    );
 
 
     return $form;

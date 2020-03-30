@@ -6,13 +6,13 @@ embargoes.embargoes_embargo_entity.*:
       type: string
       label: 'ID'
     embargo_type:
-      type: boolean 
+      type: boolean
       label: 'Embargo Type'
     expiration_type:
-      type: boolean 
+      type: boolean
       label: 'Expiration Type'
     expiration_date:
-      type: string 
+      type: string
       label: 'Expiration Date'
     exempt_ips:
       type: string

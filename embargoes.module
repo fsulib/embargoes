@@ -13,9 +13,9 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
   $nid = $entity->get('nid')->value;
   $ip = \Drupal::request()->getClientIp();
-  $user = \Drupal::currentUser(); 
+  $user = \Drupal::currentUser();
   $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($nid, $ip, $user);
   if (!empty($embargoes)) {
-    throw new AccessDeniedHttpException(); 
+    throw new AccessDeniedHttpException();
   }
 }

@@ -17,7 +17,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
       $markup['embargoes'] = [
         '#type' => 'markup',
         '#markup' => Markup::create('<p>There are no embargoes on this node.</p>'),
-      ]; 
+      ];
     }
     else {
       $rows = [];

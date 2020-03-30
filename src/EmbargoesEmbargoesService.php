@@ -46,7 +46,7 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     foreach ($embargoes as $embargo_id) {
       $user_is_exempt = \Drupal::service('embargoes.embargoes')->isUserInExemptUsers($user, $embargo_id);
       $ip_is_exempt = \Drupal::service('embargoes.embargoes')->isIpInExemptRange($ip, $embargo_id);
-      if ($user_is_exempt == FALSE && $ip_is_exempt == FALSE) {
+      if (!$user_is_exempt && !$ip_is_exempt) {
         $active_embargoes[$embargo_id] = $embargo_id;
       }
     }
@@ -61,7 +61,7 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
       foreach ($exempt_users as $exempt_user) {
         $exempt_users_flattened[] = $exempt_user['target_id'];
       }
-      if (in_array($current_user_id, $exempt_users_flattened)) {
+      if (in_array($user->id(), $exempt_users_flattened)) {
         $user_is_exempt = TRUE;
       }
       else {
@@ -73,7 +73,13 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
 
   public function isIpInExemptRange($ip, $embargo_id) {
     $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-    $ip_is_exempt = \Drupal::service('embargoes.ips')->isIpInRange($ip, $embargo->getExemptIps());
+    $range_id = $embargo->getExemptIps();
+    if ($range_id == 'none') {
+      $ip_is_exempt = FALSE;
+    }
+    else {
+      $ip_is_exempt = \Drupal::service('embargoes.ips')->isIpInRange($ip, $embargo->getExemptIps());
+    }
     return $ip_is_exempt;
   }
 
