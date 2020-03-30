@@ -10,5 +10,6 @@ interface EmbargoesEmbargoesServiceInterface {
   public function getAllEmbargoesByNode($node);
   public function getCurrentEmbargoesByNode($node);
   public function getActiveEmbargoesByNode($node, $ip, $user);
+  public function getActiveNodeEmbargoesByNode($node, $ip, $user);
 
 }

@@ -14,7 +14,7 @@ function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface 
   $nid = $entity->get('nid')->value;
   $ip = \Drupal::request()->getClientIp();
   $user = \Drupal::currentUser();
-  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($nid, $ip, $user);
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNode($nid, $ip, $user);
   if (!empty($embargoes)) {
     throw new AccessDeniedHttpException();
   }

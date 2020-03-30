@@ -53,6 +53,18 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     return $active_embargoes;
   }
 
+  public function getActiveNodeEmbargoesByNode($nid, $ip, $user) {
+    $active_node_embargoes = [];
+    $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($nid, $ip, $user);
+    foreach ($embargoes as $embargo_id) {
+      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+      if ($embargo->getEmbargoTypeAsInt() == 1) {
+        $active_node_embargoes[$embargo_id] = $embargo_id;
+      }
+    }
+    return $active_node_embargoes;
+  }
+
   public function isUserInExemptUsers($user, $embargo_id) {
     $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
     $exempt_users = $embargo->getExemptUsers();
