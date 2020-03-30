@@ -21,6 +21,7 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
     $header['expiration_date'] = $this->t('Expiration Date');
     $header['exempt_ips'] = $this->t('Exempt IP Range');
     $header['exempt_users'] = $this->t('Exempt Users');
+    $header['additional_emails'] = $this->t('Additional Emails');
     $header['embargoed_node'] = $this->t('Embargoed Node');
     return $header + parent::buildHeader();
   }
@@ -55,12 +56,15 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
       $ip_range_formatted = "None";
     }
 
+    $formatted_emails = Markup::create(str_replace(',', '<br>', str_replace(' ', '', $entity->getAdditionalEmails())));
+
     $row['id'] = $entity->id();
     $row['embargo_type'] = ($entity->getEmbargoType() == 1 ? 'Node' : 'Files');
     $row['expiration_type'] = ($entity->getExpirationType() == 1 ? 'Scheduled' : 'Indefinite');
-    $row['expiration_date'] = $entity->getExpirationDate();
+    $row['expiration_date'] = (!empty($entity->getExpirationDate()) ? $entity->getExpirationDate() : 'None');
     $row['exempt_ips'] = $ip_range_formatted;
     $row['exempt_users'] = $formatted_exempt_users_row;
+    $row['additional_emails'] = $formatted_emails;
     $row['embargoed_node'] = $formatted_node_row;
     return $row + parent::buildRow($entity);
   }

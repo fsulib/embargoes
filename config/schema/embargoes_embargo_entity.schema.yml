@@ -25,6 +25,9 @@ embargoes.embargoes_embargo_entity.*:
         mapping:
           target_id:
             type: integer
+    additional_emails:
+      type: string
+      label: 'Additional Emails'
     embargoed_node:
       type: integer
       label: 'Embargoed Node'

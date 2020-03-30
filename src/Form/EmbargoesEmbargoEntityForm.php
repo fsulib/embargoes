@@ -72,6 +72,12 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       ],
     );
 
+    $form['additional_emails'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Additional Emails'),
+      '#default_value' => $embargo->getAdditionalEmails(),
+    );
+
     $form['embargoed_node'] = array(
       '#type' => 'entity_autocomplete',
       '#target_type' => 'node',
@@ -94,6 +100,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $embargo->setExpirationDate($form_state->getValue('expiration_date'));
     $embargo->setExemptIps($form_state->getValue('exempt_ips'));
     $embargo->setExemptUsers($form_state->getValue('exempt_users'));
+    $embargo->setAdditionalEmails($form_state->getValue('additional_emails'));
     $embargo->setEmbargoedNode($form_state->getValue('embargoed_node'));
     $status = $embargo->save();
 

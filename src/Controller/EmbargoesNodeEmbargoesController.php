@@ -54,11 +54,14 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           $ip_range_formatted = "None";
         }
 
+        $formatted_emails = Markup::create(str_replace(',', '<br>', str_replace(' ', '', $embargo->getAdditionalEmails())));
+
         $row = [
           'type' => ($embargo->getEmbargoType() == 1 ? 'Node' : 'Files'),
           'expiry' => $expiry,
           'exempt_ips' => $ip_range_formatted,
           'exempt_users' => $formatted_exempt_users_row,
+          'additional_emails' => $formatted_emails,
           'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a><br><a href='/admin/config/content/embargoes/settings/embargoes/{$embargo_id}/delete'>Delete</a>"),
         ];
         array_push($rows, $row);
@@ -66,7 +69,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
 
       $markup['embargoes'] = [
         '#type' => 'table',
-        '#header' => ['Type', 'Expiration Date', 'Exempt IP Range', 'Exempt Users', 'Edit'],
+        '#header' => ['Type', 'Expiration Date', 'Exempt IP Range', 'Exempt Users', 'Additional Emails', 'Edit'],
         '#rows' => $rows,
       ];
     }

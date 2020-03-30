@@ -56,6 +56,8 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   protected $exempt_users;
 
+  protected $additional_emails;
+
   protected $embargoed_node;
 
   public function __construct(array $values, $entity_type) {
@@ -124,6 +126,15 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   public function setExemptUsers($users){
     $this->set('exempt_users', $users);
+    return $this;
+  }
+
+  public function getAdditionalEmails() {
+    return $this->get('additional_emails');
+  }
+
+  public function setAdditionalEmails($emails){
+    $this->set('additional_emails', $emails);
     return $this;
   }
 

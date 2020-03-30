@@ -30,4 +30,7 @@ interface EmbargoesEmbargoEntityInterface extends ConfigEntityInterface {
   public function getEmbargoedNode();
   public function setEmbargoedNode($node);
 
+  public function getAdditionalEmails();
+  public function setAdditionalEmails($emails);
+
 }

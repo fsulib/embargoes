@@ -109,6 +109,15 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptUsersEntities() : FALSE ),
     );
 
+    $form['additional_emails'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Additional Emails'),
+      '#description' => $this->t('Enter additional emails addresses that should recieve notifications regarding this embargo.'),
+      '#default_value' => $embargo->getAdditionalEmails(),
+    );
+
+
+
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Submit'),
@@ -141,6 +150,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     $embargo->setExpirationDate($form_state->getValue('expiry_date'));
     $embargo->setExemptIps($form_state->getValue('exempt_ips'));
     $embargo->setExemptUsers($form_state->getValue('exempt_users'));
+    $embargo->setAdditionalEmails($form_state->getValue('additional_emails'));
     $embargo->setEmbargoedNode($form_state->getValue('embargoed_node'));
     $embargo->save();
 
