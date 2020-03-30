@@ -44,31 +44,38 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     $active_embargoes = [];
     $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNode($nid);
     foreach ($embargoes as $embargo_id) {
-      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-
-      $exempt_users = $embargo->getExemptUsers();
-      if (!is_null($exempt_users)) {
-        $exempt_users_flattened = [];
-        foreach ($exempt_users as $exempt_user) {
-          $exempt_users_flattened[] = $exempt_user['target_id'];
-        }
-        if (in_array($current_user_id, $exempt_users_flattened)) {
-          $user_is_exempt = TRUE;
-        }
-        else {
-          $user_is_exempt = FALSE;
-        }
-      }
-
-
-      $ip_is_exempt = FALSE;
-
-
+      $user_is_exempt = \Drupal::service('embargoes.embargoes')->isUserInExemptUsers($user, $embargo_id);
+      $ip_is_exempt = \Drupal::service('embargoes.embargoes')->isIpInExemptRange($ip, $embargo_id);
       if ($user_is_exempt == FALSE && $ip_is_exempt == FALSE) {
         $active_embargoes[$embargo_id] = $embargo_id;
       }
-
     }
     return $active_embargoes;
   }
+
+  public function isUserInExemptUsers($user, $embargo_id) {
+    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+    $exempt_users = $embargo->getExemptUsers();
+    if (!is_null($exempt_users)) {
+      $exempt_users_flattened = [];
+      foreach ($exempt_users as $exempt_user) {
+        $exempt_users_flattened[] = $exempt_user['target_id'];
+      }
+      if (in_array($current_user_id, $exempt_users_flattened)) {
+        $user_is_exempt = TRUE;
+      }
+      else {
+        $user_is_exempt = FALSE;
+      }
+    }
+    return $user_is_exempt;
+  }
+
+  public function isIpInExemptRange($ip, $embargo_id) {
+    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+    $ip_is_exempt = \Drupal::service('embargoes.ips')->isIpInRange($ip, $embargo->getExemptIps());
+    return $ip_is_exempt;
+  }
+
+
 }

@@ -54,18 +54,22 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
     $range = $this->entity;
     $range->setRange($form_state->getValue('range'));
     $status = $range->save();
-
-    switch ($status) {
-      case SAVED_NEW:
-        $this->messenger()->addMessage($this->t('Created the %label IP Range.', [
-          '%label' => $range->label(),
-        ]));
-        break;
-
-      default:
-        $this->messenger()->addMessage($this->t('Saved the %label IP Range.', [
-          '%label' => $range->label(),
-        ]));
+    
+    $errors = \Drupal::service('embargoes.ips')->detectIpRangeStringErrors($form_state->getValue('range'));
+    if (!$errors) {
+      switch ($status) {
+        case SAVED_NEW:
+          $this->messenger()->addMessage($this->t('Created the %label IP Range.', ['%label' => $range->label()]));
+          break;
+        default:
+          $this->messenger()->addMessage($this->t('Saved the %label IP Range.', ['%label' => $range->label()]));
+      }
+    }
+    else {
+      drupal_set_message("Problems detected with the {$range->label()} IP Range.", 'error');
+      foreach ($errors as $error) {
+        drupal_set_message("Error: {$error}.", 'error');
+      }
     }
     $form_state->setRedirectUrl($range->toUrl('collection'));
   }
