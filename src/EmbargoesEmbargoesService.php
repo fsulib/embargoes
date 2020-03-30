@@ -44,9 +44,10 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     $active_embargoes = [];
     $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNode($nid);
     foreach ($embargoes as $embargo_id) {
-      $user_is_exempt = \Drupal::service('embargoes.embargoes')->isUserInExemptUsers($user, $embargo_id);
       $ip_is_exempt = \Drupal::service('embargoes.embargoes')->isIpInExemptRange($ip, $embargo_id);
-      if (!$user_is_exempt && !$ip_is_exempt) {
+      $user_is_exempt = \Drupal::service('embargoes.embargoes')->isUserInExemptUsers($user, $embargo_id);
+      $role_is_exempt = $user->hasPermission('bypass embargoes restrictions');
+      if (!$ip_is_exempt && !$user_is_exempt && !$role_is_exempt) {
         $active_embargoes[$embargo_id] = $embargo_id;
       }
     }
