@@ -96,7 +96,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#title' => $this->t('Exempt IP ranges'),
       '#description' => $this->t('Select the name of a pre-configured IP range that is exempt from this specific embargo. IP ranges must be set up by an administrator.'),
       '#options' => \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions(),
-      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptIps() : FALSE ),
+      '#default_value' => ($embargo_id != 'add' ? $embargo->getExemptIps() : FALSE),
     );
 
 
@@ -106,14 +106,14 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#tags' => TRUE,
       '#title' => $this->t('Exempt users'),
       '#description' => $this->t('Enter the username of users that are exempt from this specific embargo. Use a comma to separate multiple exempt users.'),
-      '#default_value' => ( $embargo_id != 'add' ? $embargo->getExemptUsersEntities() : FALSE ),
+      '#default_value' => ($embargo_id != 'add' ? $embargo->getExemptUsersEntities() : FALSE ),
     );
 
     $form['additional_emails'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Additional Emails'),
       '#description' => $this->t('Enter additional emails addresses that should recieve notifications regarding this embargo.'),
-      '#default_value' => $embargo->getAdditionalEmails(),
+      '#default_value' => ($embargo_id != 'add' ? $embargo->getAdditionalEmails() : ''),
     );
 
 
