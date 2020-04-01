@@ -1,6 +1,12 @@
 # Embargoes
 Drupal 8 module for managing embargo policies with access restrictions on content
 
+## Requirements
+Embargoes requires no other Drupal modules to work.
+
+## Installation 
+To install and enable Embargoes, see the [Installing Embargoes](https://github.com/fsulib/embargoes/wiki/Installing-Embargoes) wiki page.
+
 ## Documentation
 All documentation for the Embargoes module can be found in [this GitHub repository's wiki](https://github.com/fsulib/embargoes/wiki).
 
