@@ -69,7 +69,10 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
   public function isUserInExemptUsers($user, $embargo_id) {
     $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
     $exempt_users = $embargo->getExemptUsers();
-    if (!is_null($exempt_users)) {
+    if (is_null($exempt_users)) {
+      $user_is_exempt = FALSE;
+    }
+    else {
       $exempt_users_flattened = [];
       foreach ($exempt_users as $exempt_user) {
         $exempt_users_flattened[] = $exempt_user['target_id'];
