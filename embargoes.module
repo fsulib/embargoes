@@ -1,6 +1,6 @@
 <?php
 
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * @file
@@ -11,12 +11,24 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 /**
  * Implements hook_node_view().
  */
+/*
 function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
-  $nid = $entity->get('nid')->value;
+}
+*/
+
+/**
+ * Implements hook_node_access().
+ */
+function embargoes_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
+  $nid = $node->id();
   $ip = \Drupal::request()->getClientIp();
-  $user = \Drupal::currentUser();
-  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNode($nid, $ip, $user);
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNode($nid, $ip, $account);
   if (!empty($embargoes)) {
-    throw new AccessDeniedHttpException();
+    $access = \Drupal\Core\Access\AccessResult::forbidden();
   }
+  else {
+    $access = \Drupal\Core\Access\AccessResult::neutral();
+  }
+
+  return $access;
 }
