@@ -7,19 +7,16 @@ use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  * Contains embargoes.module.
  */
 
-
 /**
  * Implements hook_node_view().
  */
-/*
-function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
-}
-*/
+//function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+//}
 
 /**
  * Implements hook_node_access().
  */
-function embargoes_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
+function embargoes_node_access(\Drupal\node\NodeInterface $node, $operation, \Drupal\Core\Session\AccountInterface $account) {
   $nid = $node->id();
   $ip = \Drupal::request()->getClientIp();
   $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNode($nid, $ip, $account);
@@ -30,5 +27,36 @@ function embargoes_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Co
     $access = \Drupal\Core\Access\AccessResult::neutral();
   }
 
+  return $access;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function embargoes_file_access(\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account){
+  $relationships = file_get_file_references($entity);
+  if (!$relationships) {
+    $access = \Drupal\Core\Access\AccessResult::neutral();
+  }
+  else {
+    foreach ($relationships as $relationship) {
+      if (!$relationship) {
+        $access = \Drupal\Core\Access\AccessResult::neutral();
+      }
+      else {
+        foreach ($relationship['node'] as $key => $value) {
+          $nid = $key;
+          $ip = \Drupal::request()->getClientIp();
+          $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($nid, $ip, $account);
+          if (!empty($embargoes)) {
+            $access = \Drupal\Core\Access\AccessResult::forbidden();
+          }
+          else {
+            $access = \Drupal\Core\Access\AccessResult::neutral();
+          }
+        }
+      }
+    }
+  }
   return $access;
 }
