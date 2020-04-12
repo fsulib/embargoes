@@ -44,6 +44,14 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
       '#required' => TRUE,
     ];
 
+    $form['proxy_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Proxy URL'),
+      '#maxlength' => 255,
+      '#default_value' => $range->getProxyUrl(),
+      '#description' => $this->t("A proxy URL that can be used to gain access to this IP range. This URL will be used to generate a suggested proxy link with the embargoed resource's URL appended, so please include any required parameters."),
+    ];
+
     return $form;
   }
 
@@ -53,6 +61,7 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $range = $this->entity;
     $range->setRange($form_state->getValue('range'));
+    $range->setProxyUrl($form_state->getValue('proxy_url'));
     $status = $range->save();
 
     $errors = \Drupal::service('embargoes.ips')->detectIpRangeStringErrors($form_state->getValue('range'));

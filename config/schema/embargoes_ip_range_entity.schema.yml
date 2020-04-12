@@ -11,5 +11,8 @@ embargoes.embargoes_ip_range_entity.*:
     range:
       type: string
       label: 'Range'
+    proxy_url:
+      type: string
+      label: 'Proxy URL'
     uuid:
       type: string

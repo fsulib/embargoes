@@ -17,7 +17,8 @@ class EmbargoesIpRangeEntityListBuilder extends ConfigEntityListBuilder {
   public function buildHeader() {
     $header['label'] = $this->t('IP Range');
     $header['id'] = $this->t('Machine name');
-    $header['range'] = $this->t('Ranges');
+    $header['range'] = $this->t('Range');
+    $header['proxy_url'] = $this->t('Proxy URL');
     return $header + parent::buildHeader();
   }
 
@@ -28,6 +29,7 @@ class EmbargoesIpRangeEntityListBuilder extends ConfigEntityListBuilder {
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
     $row['range'] = Markup::create(str_replace('|', '<br>', $entity->getRange()));
+    $row['proxy_url'] = $entity->getProxyUrl();
     return $row + parent::buildRow($entity);
   }
 

@@ -55,11 +55,18 @@ class EmbargoesIpRangeEntity extends ConfigEntityBase implements EmbargoesIpRang
   protected $label;
 
   /**
-   * The IP Range label.
+   * The IP Range range.
    *
    * @var string
    */
   protected $range;
+
+  /**
+   * The IP Range proxy URL.
+   *
+   * @var string
+   */
+  protected $proxy_url;
 
   public function id() {
     return $this->get('id');
@@ -77,5 +84,15 @@ class EmbargoesIpRangeEntity extends ConfigEntityBase implements EmbargoesIpRang
     $this->set('range', $range);
     return $this;
   }
+
+  public function getProxyUrl() {
+    return $this->get('proxy_url');
+  }
+
+  public function setProxyUrl($proxy_url) {
+    $this->set('proxy_url', $proxy_url);
+    return $this;
+  }
+
 
 }

@@ -15,4 +15,6 @@ interface EmbargoesIpRangeEntityInterface extends ConfigEntityInterface {
   public function getRange();
   public function setRange($range);
 
+  public function getProxyUrl();
+  public function setProxyUrl($proxy_url);
 }
