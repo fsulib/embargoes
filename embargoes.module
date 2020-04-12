@@ -17,9 +17,9 @@ use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  * Implements hook_node_access().
  */
 function embargoes_node_access(\Drupal\node\NodeInterface $node, $operation, \Drupal\Core\Session\AccountInterface $account) {
-  $nid = $node->id();
+  $nids = array($node->id());
   $ip = \Drupal::request()->getClientIp();
-  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNode($nid, $ip, $account);
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids($nids, $ip, $account);
   if (!empty($embargoes)) {
     $access = \Drupal\Core\Access\AccessResult::forbidden();
   }
@@ -44,19 +44,27 @@ function embargoes_file_access(\Drupal\Core\Entity\EntityInterface $entity, $ope
         $access = \Drupal\Core\Access\AccessResult::neutral();
       }
       else {
-        foreach ($relationship['node'] as $key => $value) {
-          $nid = $key;
-          $ip = \Drupal::request()->getClientIp();
-          $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($nid, $ip, $account);
-          if (!empty($embargoes)) {
-            $access = \Drupal\Core\Access\AccessResult::forbidden();
-          }
-          else {
-            $access = \Drupal\Core\Access\AccessResult::neutral();
+        foreach ($relationship as $key => $value) {
+          switch ($key) {
+            case 'node':
+              $nids = array(array_keys($subkey)[0]);
+              break;
+            case 'media':
+              $mid = array_keys($value)[0];
+              $nids = \Drupal::service('embargoes.embargoes')->getMediaParentNids($mid);
+              break;
           }
         }
       }
     }
+  }
+  $ip = \Drupal::request()->getClientIp();
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $account);
+  if (!empty($embargoes)) {
+    $access = \Drupal\Core\Access\AccessResult::forbidden();
+  }
+  else {
+    $access = \Drupal\Core\Access\AccessResult::neutral();
   }
   return $access;
 }

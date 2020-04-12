@@ -7,9 +7,13 @@ namespace Drupal\embargoes;
  */
 interface EmbargoesEmbargoesServiceInterface {
 
-  public function getAllEmbargoesByNode($node);
-  public function getCurrentEmbargoesByNode($node);
-  public function getActiveEmbargoesByNode($node, $ip, $user);
-  public function getActiveNodeEmbargoesByNode($node, $ip, $user);
+  public function getAllEmbargoesByNids($nids);
+  public function getCurrentEmbargoesByNids($nids);
+  public function getActiveEmbargoesByNids($nids, $ip, $user);
+  public function getActiveNodeEmbargoesByNids($nids, $ip, $user);
+  public function isUserInExemptUsers($user, $embargo_id);
+  public function isIpInExemptRange($ip, $embargo_id);
+  public function getNodeMediaReferenceFields();
+  public function getMediaParentNids($mid);
 
 }

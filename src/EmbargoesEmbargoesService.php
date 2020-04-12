@@ -13,16 +13,20 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
   public function __construct() {
   }
 
-  public function getAllEmbargoesByNode($nid) {
-    $query = \Drupal::entityQuery('embargoes_embargo_entity')
-      ->condition('embargoed_node', $nid);
-    $embargoes = $query->execute();
-    return $embargoes;
+  public function getAllEmbargoesByNids($nids) {
+    $all_embargoes = [];
+    foreach ($nids as $nid) {
+      $query = \Drupal::entityQuery('embargoes_embargo_entity')
+        ->condition('embargoed_node', $nid);
+      $node_embargoes = $query->execute();
+      $all_embargoes = array_merge($all_embargoes, $node_embargoes);
+    }
+    return $all_embargoes;
   }
 
-  public function getCurrentEmbargoesByNode($nid) {
+  public function getCurrentEmbargoesByNids($nids) {
     $current_embargoes = [];
-    $embargoes = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNode($nid);
+    $embargoes = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids($nids);
     foreach ($embargoes as $embargo_id) {
       $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
       if ($embargo->getExpirationTypeAsInt() == 0) {
@@ -39,10 +43,10 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     return $current_embargoes;
   }
 
-  public function getActiveEmbargoesByNode($nid, $ip, $user) {
+  public function getActiveEmbargoesByNids($nids, $ip, $user) {
     $current_user_id = $user->id();
     $active_embargoes = [];
-    $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNode($nid);
+    $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids($nids);
     foreach ($embargoes as $embargo_id) {
       $ip_is_exempt = \Drupal::service('embargoes.embargoes')->isIpInExemptRange($ip, $embargo_id);
       $user_is_exempt = \Drupal::service('embargoes.embargoes')->isUserInExemptUsers($user, $embargo_id);
@@ -54,9 +58,9 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     return $active_embargoes;
   }
 
-  public function getActiveNodeEmbargoesByNode($nid, $ip, $user) {
+  public function getActiveNodeEmbargoesByNids($nids, $ip, $user) {
     $active_node_embargoes = [];
-    $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNode($nid, $ip, $user);
+    $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $user);
     foreach ($embargoes as $embargo_id) {
       $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
       if ($embargo->getEmbargoTypeAsInt() == 1) {
@@ -97,6 +101,33 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
       $ip_is_exempt = \Drupal::service('embargoes.ips')->isIpInRange($ip, $embargo->getExemptIps());
     }
     return $ip_is_exempt;
+  }
+
+  public function getNodeMediaReferenceFields() {
+    $efm = \Drupal::service('entity_field.manager');
+    $entity_fields = array_keys($efm->getFieldMapByFieldType('entity_reference')['node']);
+    $media_fields = [];
+    foreach ($entity_fields as $field) {
+      if (strpos($field, 'field_') === 0) {
+        $field_data = \Drupal\field\Entity\FieldStorageConfig::loadByName('node', $field);
+        if ($field_data->getSetting('target_type') == 'media') {
+          $media_fields[] = $field;
+        }
+      }
+    }
+    return $media_fields;
+  }
+
+  public function getMediaParentNids($mid) {
+    $media_fields = \Drupal::service('embargoes.embargoes')->getNodeMediaReferenceFields();
+    $query = \Drupal::entityQuery('node');
+    $group = $query->orConditionGroup();
+    foreach ($media_fields as $field) {
+      $group->condition($field, $mid);
+    }
+    $result = $query->condition($group)->execute();
+    $nids = array_values($result);
+    return $nids;
   }
 
 

@@ -22,7 +22,7 @@ class EmbargoesEmbargoPoliciesBlock extends BlockBase {
   public function build() {
     $node = \Drupal::routeMatch()->getParameter('node');
     if ($node instanceof \Drupal\node\NodeInterface) {
-      $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNode($node->id());
+      $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids(array($node->id()));
       $embargo_count = count($embargoes);
       if (count($embargoes) > 0) {
         $embargo_plurality = ($embargo_count == 1 ? "embargo" : "embargoes");
