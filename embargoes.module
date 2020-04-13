@@ -1,6 +1,7 @@
 <?php
 
 use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * @file
@@ -8,15 +9,60 @@ use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 
 /**
+ * Implements hook_node_access().
+ */
+function embargoes_node_access(\Drupal\node\NodeInterface $node, $operation, \Drupal\Core\Session\AccountInterface $account) {
+  $nids = array($node->id());
+  $ip = \Drupal::request()->getClientIp();
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids($nids, $ip, $account);
+  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($embargoes);
+  if (!empty($embargoes) && empty($ip_allowed_embargoes)) {
+    $access = \Drupal\Core\Access\AccessResult::forbidden();
+  }
+  else {
+    $access = \Drupal\Core\Access\AccessResult::neutral();
+  }
+  return $access;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function embargoes_file_access(\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account){
+  $nids = \Drupal::service('embargoes.embargoes')->getParentNidsOfFileEntity($entity);
+  $ip = \Drupal::request()->getClientIp();
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $account);
+  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($embargoes);
+  if (!empty($embargoes) && empty($ip_allowed_embargoes)) {
+    $access = \Drupal\Core\Access\AccessResult::forbidden();
+  }
+  else {
+    $access = \Drupal\Core\Access\AccessResult::neutral();
+  }
+  return $access;
+}
+
+/**
  * Implements hook_node_view().
  */
 function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
-  if (\Drupal::config('embargoes.settings')->get('show_embargo_message')) {;
+  $ip = \Drupal::request()->getClientIp();
+  $user = \Drupal::currentUser();
+  $path = \Drupal::request()->getRequestUri();
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids(array($entity->id()), $ip, $user);
+  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($embargoes);
+  if (!empty($embargoes) && !empty($ip_allowed_embargoes)) {
+    $imploded_ranges = implode('.', array_unique($ip_allowed_embargoes));
+    $response = new RedirectResponse("/embargoes/ip-access-denied?path={$path}&ranges={$imploded_ranges}");
+    $response->send();
+  }
+  else if (\Drupal::config('embargoes.settings')->get('show_embargo_message')) {;
     $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids(array($entity->id()));
     if (!empty($embargoes)) {
       $build['#cache']['max-age'] = 0;
       $embargo_count = count($embargoes);
-      drupal_set_message("This resource is under {$embargo_count} embargoes:", 'warning');
+      $embargo_word = ($embargo_count > 1 ? "embargoes" : "embargo" );
+      drupal_set_message("This resource is under {$embargo_count} {$embargo_word}:", 'warning');
       foreach ($embargoes as $embargo_id) {
         $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
         $embargo_message = "- Access to ";
@@ -46,56 +92,23 @@ function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface 
 }
 
 /**
- * Implements hook_node_access().
+ * Implements hook_file_download().
  */
-function embargoes_node_access(\Drupal\node\NodeInterface $node, $operation, \Drupal\Core\Session\AccountInterface $account) {
-  $nids = array($node->id());
+function embargoes_file_download($uri) {
+  $files = \Drupal::entityTypeManager()
+    ->getStorage('file')
+    ->loadByProperties(['uri' => $uri]);
+  $file = array_values($files)[0];
+  $nids = \Drupal::service('embargoes.embargoes')->getParentNidsOfFileEntity($file);
   $ip = \Drupal::request()->getClientIp();
-  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids($nids, $ip, $account);
-  if (!empty($embargoes)) {
-    $access = \Drupal\Core\Access\AccessResult::forbidden();
+  $user = \Drupal::currentUser();
+  $path = \Drupal::request()->getRequestUri();
+  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $user);
+  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($embargoes);
+  if (!empty($embargoes) && !empty($ip_allowed_embargoes)) {
+    $imploded_ranges = implode('.', array_unique($ip_allowed_embargoes));
+    $response = new RedirectResponse("/embargoes/ip-access-denied?path={$path}&ranges={$imploded_ranges}");
+    $response->send();
   }
-  else {
-    $access = \Drupal\Core\Access\AccessResult::neutral();
-  }
-  return $access;
-}
-
-/**
- * Implements hook_ENTITY_TYPE_access().
- */
-function embargoes_file_access(\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account){
-  $relationships = file_get_file_references($entity);
-  if (!$relationships) {
-    $access = \Drupal\Core\Access\AccessResult::neutral();
-  }
-  else {
-    foreach ($relationships as $relationship) {
-      if (!$relationship) {
-        $access = \Drupal\Core\Access\AccessResult::neutral();
-      }
-      else {
-        foreach ($relationship as $key => $value) {
-          switch ($key) {
-            case 'node':
-              $nids = array(array_keys($value)[0]);
-              break;
-            case 'media':
-              $mid = array_keys($value)[0];
-              $nids = \Drupal::service('embargoes.embargoes')->getMediaParentNids($mid);
-              break;
-          }
-        }
-      }
-    }
-  }
-  $ip = \Drupal::request()->getClientIp();
-  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $account);
-  if (!empty($embargoes)) {
-    $access = \Drupal\Core\Access\AccessResult::forbidden();
-  }
-  else {
-    $access = \Drupal\Core\Access\AccessResult::neutral();
-  }
-  return $access;
+  return NULL;
 }

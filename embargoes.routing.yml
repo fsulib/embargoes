@@ -38,4 +38,10 @@ embargoes.node.embargo:
   requirements:
     _permission: 'manage embargoes'
 
-
+embargoes.ip_access_denied:
+  path: '/embargoes/ip-access-denied'
+  defaults:
+    _controller: '\Drupal\embargoes\Controller\EmbargoesIpAccessDeniedController::response'
+    _title: 'Access Denied'
+  requirements:
+    _permission: 'access content'

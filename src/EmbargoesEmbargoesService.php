@@ -4,8 +4,7 @@ namespace Drupal\embargoes;
 
 /**
  * Class EmbargoesEmbargoesService.
- */
-class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
+ */ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
 
   /**
    * Constructs a new EmbargoesEmbargoesService object.
@@ -43,6 +42,21 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     return $current_embargoes;
   }
 
+  public function getIpAllowedCurrentEmbargoesByNids($nids) {
+    $ip_allowed_current_embargoes = [];
+    $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids($nids);
+    foreach ($embargoes as $embargo_id) {
+      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+      if ($embargo->getExemptIps() != 'none') {
+        $ip_allowed_current_embargoes[$embargo_id] = $embargo_id;
+      }
+    }
+    return $ip_allowed_current_embargoes;
+  }
+
+
+
+
   public function getActiveEmbargoesByNids($nids, $ip, $user) {
     $current_user_id = $user->id();
     $active_embargoes = [];
@@ -69,6 +83,19 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     }
     return $active_node_embargoes;
   }
+
+  public function getIpAllowedEmbargoes($embargoes) {
+    $ip_allowed_embargoes = [];
+    foreach ($embargoes as $embargo_id) {
+      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+      if ($embargo->getExemptIps() != 'none') {
+        $ip_allowed_embargoes[$embargo_id] = $embargo->getExemptIps();
+      }
+    }
+    return $ip_allowed_embargoes;
+  }
+
+
 
   public function isUserInExemptUsers($user, $embargo_id) {
     $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
@@ -130,5 +157,32 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     return $nids;
   }
 
+  public function getParentNidsOfFileEntity($file) {
+    $relationships = file_get_file_references($file);
+    if (!$relationships) {
+      $nids = NULL;
+    }
+    else {
+      foreach ($relationships as $relationship) {
+        if (!$relationship) {
+          $nids = NULL;
+        }
+        else {
+          foreach ($relationship as $key => $value) {
+            switch ($key) {
+              case 'node':
+                $nids = array(array_keys($value)[0]);
+                break;
+              case 'media':
+                $mid = array_keys($value)[0];
+                $nids = \Drupal::service('embargoes.embargoes')->getMediaParentNids($mid);
+                break;
+            }
+          }
+        }
+      }
+    }
+    return $nids;
+  }
 
 }

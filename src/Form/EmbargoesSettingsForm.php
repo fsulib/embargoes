@@ -30,6 +30,13 @@ class EmbargoesSettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('embargoes.settings');
 
+    $form['embargo_contact_email'] = [
+      '#type' => 'email',
+      '#title' => $this->t('Contact Email'),
+      '#description' => $this->t('Email address for who should be contacted in case users have questions about access.'),
+      '#default_value' => ( !empty($config->get('embargo_contact_email')) ? $config->get('embargo_contact_email') : '' ),
+    ];
+
     $form['show_embargo_message'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Show embargo message'),
@@ -46,6 +53,7 @@ class EmbargoesSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('embargoes.settings');
     $config->set('show_embargo_message', $form_state->getValue('show_embargo_message'));
+    $config->set('embargo_contact_email', $form_state->getValue('embargo_contact_email'));
     $config->save();
     parent::submitForm($form, $form_state);
     drupal_flush_all_caches();
