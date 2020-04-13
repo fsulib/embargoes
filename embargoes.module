@@ -10,8 +10,40 @@ use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 /**
  * Implements hook_node_view().
  */
-//function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
-//}
+function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+  if (\Drupal::config('embargoes.settings')->get('show_embargo_message')) {;
+    $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids(array($entity->id()));
+    if (!empty($embargoes)) {
+      $build['#cache']['max-age'] = 0;
+      $embargo_count = count($embargoes);
+      drupal_set_message("This resource is under {$embargo_count} embargoes:", 'warning');
+      foreach ($embargoes as $embargo_id) {
+        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+        $embargo_message = "- Access to ";
+        if ($embargo->getEmbargoTypeAsInt() == 0) {
+          $embargo_message .= " all associated files of this resource";
+        }
+        else {
+          $embargo_message .= " this resource and all associated files";
+        }
+        $embargo_message .= " is restricted";
+        if ($embargo->getExemptIps() != 'none') {
+          $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
+          $embargo_message .= " to the {$ip_range->label()} network";
+        }
+        else {
+        }
+        if ($embargo->getExpirationTypeAsInt() == 0) {
+          $embargo_message .= " indefinitely.";
+        }
+        else {
+          $embargo_message .= " until {$embargo->getExpirationDate()}.";
+        }
+        drupal_set_message($embargo_message, 'warning');
+      }
+    }
+  }
+}
 
 /**
  * Implements hook_node_access().
@@ -26,7 +58,6 @@ function embargoes_node_access(\Drupal\node\NodeInterface $node, $operation, \Dr
   else {
     $access = \Drupal\Core\Access\AccessResult::neutral();
   }
-
   return $access;
 }
 
@@ -47,7 +78,7 @@ function embargoes_file_access(\Drupal\Core\Entity\EntityInterface $entity, $ope
         foreach ($relationship as $key => $value) {
           switch ($key) {
             case 'node':
-              $nids = array(array_keys($subkey)[0]);
+              $nids = array(array_keys($value)[0]);
               break;
             case 'media':
               $mid = array_keys($value)[0];

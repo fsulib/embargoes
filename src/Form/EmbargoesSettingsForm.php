@@ -30,14 +30,12 @@ class EmbargoesSettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('embargoes.settings');
 
-    /*
-    $form['redirect_url'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Redirect URL'),
-      '#description' => $this->t('URL that user is to be redirected to (including parameters) if attempting to access IP restricted content from outside of an approved range.'),
-      '#default_value' => $config->get('redirect_url'),
+    $form['show_embargo_message'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show embargo message'),
+      '#description' => $this->t('Show a Drupal warning message on nodes under active embargoes.'),
+      '#default_value' => ( !is_null($config->get('show_embargo_message')) ? $config->get('show_embargo_message') : TRUE ),
     ];
-    */
 
     return $form;
   }
@@ -47,11 +45,10 @@ class EmbargoesSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('embargoes.settings');
-
-    //$config->set('redirect_url', $form_state->getValue('redirect_url'));
-
+    $config->set('show_embargo_message', $form_state->getValue('show_embargo_message'));
     $config->save();
     parent::submitForm($form, $form_state);
+    drupal_flush_all_caches();
   }
 
 }

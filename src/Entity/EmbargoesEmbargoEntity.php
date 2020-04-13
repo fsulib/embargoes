@@ -68,6 +68,16 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
     parent::__construct($values, $entity_type);
   }
 
+  public function save() {
+    parent::save();
+    drupal_flush_all_caches();
+  }
+
+  public function delete() {
+    parent::delete();
+    drupal_flush_all_caches();
+  }
+
   public function getEmbargoType() {
     return $this->get('embargo_type');
   }
