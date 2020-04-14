@@ -37,6 +37,13 @@ class EmbargoesSettingsForm extends ConfigFormBase {
       '#default_value' => ( !empty($config->get('embargo_contact_email')) ? $config->get('embargo_contact_email') : \Drupal::config('system.site')->get('mail') ),
     ];
 
+    $form['add_contact_to_notifications'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Add contact to notifications'),
+      '#description' => $this->t('Add contact email to all embargo notifications by default.'),
+      '#default_value' => ( !is_null($config->get('add_contact_to_notifications')) ? $config->get('add_contact_to_notifications') : TRUE ),
+    ];
+
     $form['show_embargo_message'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Show embargo message'),
@@ -53,6 +60,7 @@ class EmbargoesSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('embargoes.settings');
     $config->set('show_embargo_message', $form_state->getValue('show_embargo_message'));
+    $config->set('add_contact_to_notifications', $form_state->getValue('add_contact_to_notifications'));
     $config->set('embargo_contact_email', $form_state->getValue('embargo_contact_email'));
     $config->save();
     parent::submitForm($form, $form_state);
