@@ -60,6 +60,8 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   protected $embargoed_node;
 
+  protected $notification_status;
+
   public function __construct(array $values, $entity_type) {
     $uuid = \Drupal::service('uuid')->generate();
     $checksummed_uuid = sha1($uuid);
@@ -154,6 +156,15 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   public function setEmbargoedNode($node){
     $this->set('embargoed_node', $node);
+    return $this;
+  }
+
+  public function getNotificationStatus() {
+    return $this->get('notification_status');
+  }
+
+  public function setNotificationStatus($status){
+    $this->set('notification_status', $status);
     return $this;
   }
 

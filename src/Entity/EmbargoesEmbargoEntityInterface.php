@@ -33,4 +33,7 @@ interface EmbargoesEmbargoEntityInterface extends ConfigEntityInterface {
   public function getAdditionalEmails();
   public function setAdditionalEmails($emails);
 
+  public function getNotificationStatus();
+  public function setNotificationStatus($status);
+
 }

@@ -86,6 +86,18 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#required' => TRUE,
     );
 
+    $form['notification_status'] = array(
+      '#type' => 'select',
+      '#title' => $this->t('Notification status'),
+      '#default_value' => $embargo->getNotificationStatus(),
+      '#options' => [
+        'new' => 'New',
+        'updated' => 'Updated',
+        'warned' => 'Warned',
+        'expired' => 'Expired',
+      ],
+      '#required' => TRUE,
+    );
 
     return $form;
   }
@@ -102,6 +114,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $embargo->setExemptUsers($form_state->getValue('exempt_users'));
     $embargo->setAdditionalEmails($form_state->getValue('additional_emails'));
     $embargo->setEmbargoedNode($form_state->getValue('embargoed_node'));
+    $embargo->setNotificationStatus($form_state->getValue('notification_status'));
     $status = $embargo->save();
 
     $log_values['node'] = $embargo->getEmbargoedNode();

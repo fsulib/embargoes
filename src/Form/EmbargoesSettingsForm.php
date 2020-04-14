@@ -34,7 +34,7 @@ class EmbargoesSettingsForm extends ConfigFormBase {
       '#type' => 'email',
       '#title' => $this->t('Contact Email'),
       '#description' => $this->t('Email address for who should be contacted in case users have questions about access.'),
-      '#default_value' => ( !empty($config->get('embargo_contact_email')) ? $config->get('embargo_contact_email') : '' ),
+      '#default_value' => ( !empty($config->get('embargo_contact_email')) ? $config->get('embargo_contact_email') : \Drupal::config('system.site')->get('mail') ),
     ];
 
     $form['show_embargo_message'] = [

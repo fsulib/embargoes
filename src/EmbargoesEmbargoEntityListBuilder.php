@@ -22,6 +22,7 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
     $header['exempt_ips'] = $this->t('Exempt IP Range');
     $header['exempt_users'] = $this->t('Exempt Users');
     $header['additional_emails'] = $this->t('Additional Emails');
+    $header['notification_status'] = $this->t('Notification Status');
     $header['embargoed_node'] = $this->t('Embargoed Node');
     return $header + parent::buildHeader();
   }
@@ -65,6 +66,7 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
     $row['exempt_ips'] = $ip_range_formatted;
     $row['exempt_users'] = $formatted_exempt_users_row;
     $row['additional_emails'] = $formatted_emails;
+    $row['notification_status'] = ucfirst($entity->getNotificationStatus());
     $row['embargoed_node'] = $formatted_node_row;
     return $row + parent::buildRow($entity);
   }
