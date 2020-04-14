@@ -38,9 +38,10 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
       '#default_value' => $this->configuration['filter'],
       '#description' => $this->t('Select the scope of embargo to trigger on.'),
       '#options' => [
-        'all' => 'All embargoes on node',
-        'current' => 'Current embargoes on node (ignore expired)',
-        'active' => 'Active embargoes on node (ignore bypassed)',
+        '0' => 'Always trigger regardless of embargo status',
+        '1' => 'All embargoes on node',
+        '2' => 'Current embargoes on node (ignore expired)',
+        '3' => 'Active embargoes on node (ignore bypassed)',
       ],
     ];
     return parent::buildConfigurationForm($form, $form_state);
@@ -73,13 +74,16 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
 
       $embargo_service = \Drupal::service('embargoes.embargoes');
       switch ($this->configuration['filter']) {
-        case 'all':
+        case '0':
+          $embargoed = TRUE;
+          break;
+        case '1':
           $embargoed = $embargo_service->getAllEmbargoesByNids(array($node->id()));
           break;
-        case 'current':
+        case '2':
           $embargoed = $embargo_service->getCurrentEmbargoesByNids(array($node->id()));
           break;
-        case 'active':
+        case '3':
           $ip = \Drupal::request()->getClientIp();
           $user = \Drupal::currentUser();
           $embargoed = $embargo_service->getActiveEmbargoesByNids(array($node->id()), $ip, $user);
