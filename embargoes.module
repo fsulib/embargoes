@@ -2,7 +2,6 @@
 
 use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-
 /**
  * @file
  * Contains embargoes.module.
@@ -49,9 +48,13 @@ function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface 
   $ip = \Drupal::request()->getClientIp();
   $user = \Drupal::currentUser();
   $path = \Drupal::request()->getRequestUri();
-  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids(array($entity->id()), $ip, $user);
+  $active_embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids(array($entity->id()), $ip, $user);
+  $active_node_embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids(array($entity->id()), $ip, $user);
   $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($embargoes);
-  if (!empty($embargoes) && !empty($ip_allowed_embargoes)) {
+  if (!empty($active_embargoes)) {
+    $build['#attached']['library'][] = 'embargoes/embargoes-file-embargoes';
+  }
+  if (!empty($active_node_embargoes) && !empty($ip_allowed_embargoes)) {
     $imploded_ranges = implode('.', array_unique($ip_allowed_embargoes));
     $response = new RedirectResponse("/embargoes/ip-access-denied?path={$path}&ranges={$imploded_ranges}");
     $response->send();
