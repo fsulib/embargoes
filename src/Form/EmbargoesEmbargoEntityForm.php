@@ -91,7 +91,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#title' => $this->t('Notification status'),
       '#default_value' => $embargo->getNotificationStatus(),
       '#options' => [
-        'new' => 'New',
+        'created' => 'Created',
         'updated' => 'Updated',
         'warned' => 'Warned',
         'expired' => 'Expired',
