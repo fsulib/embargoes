@@ -76,7 +76,7 @@ function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface 
     $response = new RedirectResponse("/embargoes/ip-access-denied?path={$path}&ranges={$imploded_ranges}");
     $response->send();
   }
-  else if ((\Drupal::config('embargoes.settings')->get('show_embargo_message') == FALSE) || (is_null(\Drupal::config('embargoes.settings')->get('show_embargo_message')))) {;
+  else if ((\Drupal::config('embargoes.settings')->get('show_embargo_message') == FALSE || is_null(\Drupal::config('embargoes.settings')->get('show_embargo_message'))) && $view_mode != 'teaser') {;
     $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids(array($entity->id()));
     if (!empty($embargoes)) {
       $build['#cache']['max-age'] = 0;
@@ -130,7 +130,7 @@ function embargoes_media_view(array &$build, \Drupal\Core\Entity\EntityInterface
     $response = new RedirectResponse("/embargoes/ip-access-denied?path={$path}&ranges={$imploded_ranges}");
     $response->send();
   }
-  else if ((\Drupal::config('embargoes.settings')->get('show_embargo_message') == FALSE) || (is_null(\Drupal::config('embargoes.settings')->get('show_embargo_message')))) {;
+  else if ((\Drupal::config('embargoes.settings')->get('show_embargo_message') == FALSE) || is_null(\Drupal::config('embargoes.settings')->get('show_embargo_message')) && $view_mode != 'teaser') {;
     $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids(array($entity->id()));
     if (!empty($embargoes)) {
       $build['#cache']['max-age'] = 0;
