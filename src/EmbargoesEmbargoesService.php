@@ -146,14 +146,21 @@ namespace Drupal\embargoes;
   }
 
   public function getMediaParentNids($mid) {
-    $media_fields = \Drupal::service('embargoes.embargoes')->getNodeMediaReferenceFields();
-    $query = \Drupal::entityQuery('node');
-    $group = $query->orConditionGroup();
-    foreach ($media_fields as $field) {
-      $group->condition($field, $mid);
+    $media_entity = \Drupal::entityTypeManager()->getStorage('media')->load($mid);
+    if ($media_entity->hasField('field_media_of')) {
+      $nid = $media_entity->get('field_media_of')->getString();
+      $nids = array($nid);
+    } 
+    else {
+      $media_fields = \Drupal::service('embargoes.embargoes')->getNodeMediaReferenceFields();
+      $query = \Drupal::entityQuery('node');
+      $group = $query->orConditionGroup();
+      foreach ($media_fields as $field) {
+        $group->condition($field, $mid);
+      }
+      $result = $query->condition($group)->execute();
+      $nids = array_values($result);
     }
-    $result = $query->condition($group)->execute();
-    $nids = array_values($result);
     return $nids;
   }
 

@@ -48,7 +48,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
         if ($embargo->getExemptIps() != 'none') {
           $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
           $ip_range_label = $ip_range->label();
-          $ip_range_formatted = Markup::create("<a href='/admin/structure/embargoes_ip_range_entity/{$embargo->getExemptIps()}/edit'>{$ip_range_label}</a>");
+          $ip_range_formatted = Markup::create("<a href='/admin/config/content/embargoes/settings/ips/{$embargo->getExemptIps()}/edit'>{$ip_range_label}</a>");
         }
         else {
           $ip_range_formatted = "None";

@@ -30,7 +30,7 @@ class EmbargoesLogController extends ControllerBase {
         'id' => $record->id,
         'embargo' => $embargo_formatted,
         'time' => $formatted_time,
-        'action' => $record->action,
+        'action' => ucfirst($record->action),
         'node' => Markup::create("<a href='/node/{$record->node}'>$node_title</a>"),
         'user' =>  Markup::create("<a href='/user/{$record->user}'>$username</a>"),
       ];
