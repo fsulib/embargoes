@@ -17,7 +17,7 @@ class EmbargoesLogService implements EmbargoesLogServiceInterface {
   public function logEmbargoEvent($values) {
     $time = time();
     $database = \Drupal::database();
-    $result = $database->query("INSERT INTO {embargoes_log} (time, action, node, user, embargo) VALUES ('{$time}', '{$values['action']}', '{$values['node']}', '{$values['user']}','{$values['embargo_id']}');");
+    $result = $database->query("INSERT INTO {embargoes_log} (time, action, node, uid, embargo) VALUES ('{$time}', '{$values['action']}', '{$values['node']}', '{$values['user']}','{$values['embargo_id']}');");
     return $result;
   }
 
