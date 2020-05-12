@@ -4,15 +4,16 @@ namespace Drupal\embargoes\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\Markup;
+use Drupal\node\NodeInterface;
 
 /**
  * Class EmbargoesLogController.
  */
 class EmbargoesNodeEmbargoesController extends ControllerBase {
 
-  public function showEmbargoes($node = NULL) {
+  public function showEmbargoes(NodeInterface $node = NULL) {
 
-    $embargo_ids = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids(array($node));
+    $embargo_ids = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids(array($node->id()));
     if (empty($embargo_ids)) {
       $markup['embargoes'] = [
         '#type' => 'markup',
@@ -62,7 +63,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           'exempt_ips' => $ip_range_formatted,
           'exempt_users' => $formatted_exempt_users_row,
           'additional_emails' => $formatted_emails,
-          'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a><br><a href='/admin/config/content/embargoes/settings/embargoes/{$embargo_id}/delete'>Delete</a>"),
+          'edit' => Markup::create("<a href='/node/{$node->id()}/embargoes/{$embargo_id}'>Edit</a><br><a href='/admin/config/content/embargoes/settings/embargoes/{$embargo_id}/delete'>Delete</a>"),
         ];
         array_push($rows, $row);
       }
@@ -76,7 +77,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
 
     $markup['add'] = [
       '#type' => 'markup',
-      '#markup' => Markup::create("<p><a href='/node/{$node}/embargoes/add'>Add Embargo</a></p>"),
+      '#markup' => Markup::create("<p><a href='/node/{$node->id()}/embargoes/add'>Add Embargo</a></p>"),
     ];
 
     return [
