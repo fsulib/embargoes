@@ -52,11 +52,11 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
 
   protected $expiration_date;
 
-  protected $exempt_ips;
+  protected $exempt_ips = [];
 
-  protected $exempt_users;
+  protected $exempt_users = [];
 
-  protected $additional_emails;
+  protected $additional_emails = [];
 
   protected $embargoed_node;
 
