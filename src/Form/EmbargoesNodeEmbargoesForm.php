@@ -35,7 +35,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
 
     $form['embargoed_node'] = array(
       '#type' => 'hidden',
-      '#value' => $node,
+      '#value' => $node->id(),
     );
 
     $form['embargo_type'] = array(
