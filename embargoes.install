@@ -51,52 +51,8 @@ function embargoes_schema() {
  * Update the 'user' column to be called 'uid'.
  */
 function embargoes_update_8001(&$sandbox) {
-  $conn = Database::getConnection();
-
-  // Add the new field. Initially nullable; this will be changed once all fields
-  // have content.
-  $conn->schema()->addField('embargoes_log', 'uid', [
+  Database::getConnection()->schema()->changeField('embargoes_log', 'user', 'uid', [
+    'not null' => TRUE,
     'type' => 'int',
   ]);
-
-  // Migrate current data.
-  if (!isset($sandbox['progress'])) {
-    $sandbox['progress'] = 0;
-    $sandbox['current'] = 0;
-    $sandbox['total'] = $conn
-      ->select('embargoes_log', 'el')
-      ->countQuery()
-      ->execute()
-      ->fetchField();
-    if (empty($sandbox['total'])) {
-      $sandbox['#finished'] = 1;
-      $conn->schema()->changeField('embargoes_log', 'uid', 'uid', ['not null' => TRUE]);
-      $conn->schema()->dropField('embargoes_log', 'user');
-      return t('No logs to update');
-    }
-  }
-  $logs = $conn
-    ->select('embargoes_log', 'el')
-    ->fields('el', ['id', 'user'])
-    ->condition('id', $sandbox['current'], '>')
-    ->range(0, 20)
-    ->orderBy('id', 'ASC')
-    ->execute();
-  foreach ($logs as $log) {
-    $conn
-      ->update('embargoes_log')
-      ->fields(['uid' => $log->user])
-      ->condition('id', $log->id)
-      ->execute();
-    $sandbox['#message'] = t('Updated log ID: %id', ['%id' => $log->id]);
-    $sandbox['progress']++;
-  }
-
-  // Finish check.
-  $sandbox['#finished'] = empty($sandbox['total']) ? 1 : floor($sandbox['progress'] / $sandbox['max']);
-  if ($sandbox['#finished']) {
-    $conn->schema()->changeField('embargoes_log', 'uid', 'uid', ['not null' => TRUE]);
-    $conn->schema()->dropField('embargoes_log', 'user');
-    return t('Updated %count logs', ['%count' => $sandbox['progress']]);
-  }
 }
