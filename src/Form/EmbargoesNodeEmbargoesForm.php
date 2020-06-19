@@ -155,7 +155,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     $embargo->save();
 
     $log_values['node'] = $embargo->getEmbargoedNode();
-    $log_values['user'] = \Drupal::currentUser()->id();
+    $log_values['uid'] = \Drupal::currentUser()->id();
     $log_values['embargo_id'] = $embargo->id();
 
     if ($embargo_id == 'add') {
