@@ -4,6 +4,7 @@ namespace Drupal\embargoes\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeInterface;
 
 /**
  * Class EmbargoesNodeEmbargoesForm.
@@ -20,7 +21,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $node = NULL, $embargo_id = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, NodeInterface $node = NULL, $embargo_id = NULL) {
 
 
     if ($embargo_id != "add") {
@@ -34,7 +35,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
 
     $form['embargoed_node'] = array(
       '#type' => 'hidden',
-      '#value' => $node,
+      '#value' => $node->id(),
     );
 
     $form['embargo_type'] = array(

@@ -29,6 +29,10 @@ embargoes.node.embargoes:
     _title: 'View Embargoes'
   requirements:
     _permission: 'manage embargoes'
+  options:
+    parameters:
+      node:
+        type: entity:node
 
 embargoes.node.embargo:
   path: '/node/{node}/embargoes/{embargo_id}'
@@ -37,6 +41,10 @@ embargoes.node.embargo:
     _title: 'Edit Embargo'
   requirements:
     _permission: 'manage embargoes'
+  options:
+    parameters:
+      node:
+        type: entity:node
 
 embargoes.ip_access_denied:
   path: '/embargoes/ip-access-denied'
