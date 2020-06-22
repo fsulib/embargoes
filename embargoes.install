@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Database\Database;
+
 /**
 * @file
 * Install, update and uninstall functions for the embargoes module.
@@ -30,7 +32,7 @@ function embargoes_schema() {
         'type' => 'int',
         'not null' => TRUE,
       ],
-      'user' => [
+      'uid' => [
         'type' => 'int',
         'not null' => TRUE,
       ],
@@ -43,4 +45,14 @@ function embargoes_schema() {
     'primary key' => ['id'],
   ];
   return $schema;
+}
+
+/**
+ * Update the 'user' column to be called 'uid'.
+ */
+function embargoes_update_8001(&$sandbox) {
+  Database::getConnection()->schema()->changeField('embargoes_log', 'user', 'uid', [
+    'not null' => TRUE,
+    'type' => 'int',
+  ]);
 }
