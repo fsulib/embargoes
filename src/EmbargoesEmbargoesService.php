@@ -167,12 +167,12 @@ namespace Drupal\embargoes;
   public function getParentNidsOfFileEntity($file) {
     $relationships = file_get_file_references($file);
     if (!$relationships) {
-      $nids = NULL;
+      $nids = [];
     }
     else {
       foreach ($relationships as $relationship) {
         if (!$relationship) {
-          $nids = NULL;
+          $nids = [];
         }
         else {
           foreach ($relationship as $key => $value) {
