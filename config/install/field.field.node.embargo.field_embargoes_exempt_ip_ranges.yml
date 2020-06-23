@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_embargoes_exempt_ip_ranges
+    - node.type.embargo
+id: node.embargo.field_embargoes_exempt_ip_ranges
+field_name: field_embargoes_exempt_ip_ranges
+entity_type: node
+bundle: embargo
+label: 'Exempt IP Ranges'
+description: 'Select any predefined IP ranges that should bypass this embargo.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:embargoes_ip_range_entity'
+  handler_settings:
+    target_bundles: null
+    auto_create: false
+field_type: entity_reference

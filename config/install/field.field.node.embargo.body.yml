@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.embargo
+  module:
+    - text
+id: node.embargo.body
+field_name: body
+entity_type: node
+bundle: embargo
+label: Note
+description: 'Use this field to record any contextual information about the embargo, such as why it is being implemented.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+field_type: text_with_summary

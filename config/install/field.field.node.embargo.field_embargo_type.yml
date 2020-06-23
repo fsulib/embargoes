@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_embargo_type
+    - node.type.embargo
+  module:
+    - options
+id: node.embargo.field_embargo_type
+field_name: field_embargo_type
+entity_type: node
+bundle: embargo
+label: Type
+description: 'Select what type of embargo should be implemented.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

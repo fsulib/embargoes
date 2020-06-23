@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_embargo_expiration
+    - node.type.embargo
+  module:
+    - datetime
+id: node.embargo.field_embargo_expiration
+field_name: field_embargo_expiration
+entity_type: node
+bundle: embargo
+label: Expiration
+description: 'Select the date when this embargo should expire; leave blank to keep the embargo active indefinitely.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime
