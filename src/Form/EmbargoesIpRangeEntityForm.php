@@ -33,6 +33,7 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
       '#default_value' => $range->label(),
       '#description' => $this->t("Label for the IP range."),
       '#required' => TRUE,
+      '#id' => 'ip-range-label',
     ];
 
     $form['range'] = [

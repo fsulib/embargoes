@@ -12,7 +12,11 @@ class EmbargoesLogController extends ControllerBase {
 
   public function showRenderedLog() {
     $database = \Drupal::database();
-    $result = $database->query('SELECT * FROM {embargoes_log} ORDER BY time DESC;');
+    $result = $database->getConnection()
+      ->select('embargoes_log', 'el')
+      ->fields('el')
+      ->orderBy('el.time', 'DESC')
+      ->execute();
 
     $formatted_log = [];
     foreach ($result as $record) {
