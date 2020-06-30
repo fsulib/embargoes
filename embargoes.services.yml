@@ -4,7 +4,7 @@ services:
     arguments: ['embargoes']
   embargoes.log:
     class: Drupal\embargoes\EmbargoesLogService
-    arguments: []
+    arguments: ['@database']
   embargoes.embargoes:
     class: Drupal\embargoes\EmbargoesEmbargoesService
     arguments: []
