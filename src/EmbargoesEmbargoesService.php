@@ -2,6 +2,8 @@
 
 namespace Drupal\embargoes;
 
+use Drupal\node\Entity\Node;
+
 /**
  * Class EmbargoesEmbargoesService.
  */ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
@@ -15,8 +17,10 @@ namespace Drupal\embargoes;
   public function getAllEmbargoesByNids($nids) {
     $all_embargoes = [];
     foreach ($nids as $nid) {
-      $query = \Drupal::entityQuery('embargoes_embargo_entity')
-        ->condition('embargoed_node', $nid);
+      $query = \Drupal::entityQuery('node')
+        ->condition('type', 'embargo')
+        ->condition('status', TRUE)
+        ->condition('field_embargoes_embargoed_nodes', $nid);
       $node_embargoes = $query->execute();
       $all_embargoes = array_merge($all_embargoes, $node_embargoes);
     }
@@ -27,13 +31,14 @@ namespace Drupal\embargoes;
     $current_embargoes = [];
     $embargoes = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids($nids);
     foreach ($embargoes as $embargo_id) {
-      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-      if ($embargo->getExpirationTypeAsInt() == 0) {
+      $embargo = Node::load($embargo_id);
+      $embargo_expiry = $embargo->get('field_embargo_expiration')->date;
+      if (is_null($embargo_expiry)) {
         $current_embargoes[$embargo_id] = $embargo_id;
       }
       else {
         $now = time();
-        $expiry = strtotime($embargo->getExpirationDate());
+        $expiry = $embargo_expiry->getTimestamp();
         if ($expiry > $now) {
           $current_embargoes[$embargo_id] = $embargo_id;
         }
@@ -46,8 +51,8 @@ namespace Drupal\embargoes;
     $ip_allowed_current_embargoes = [];
     $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids($nids);
     foreach ($embargoes as $embargo_id) {
-      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-      if ($embargo->getExemptIps() != 'none') {
+      $embargo = Node::load($embargo_id);
+      if (!empty($embargo->get('field_embargoes_exempt_ip_ranges')->getValue())) {
         $ip_allowed_current_embargoes[$embargo_id] = $embargo_id;
       }
     }
@@ -76,8 +81,8 @@ namespace Drupal\embargoes;
     $active_node_embargoes = [];
     $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $user);
     foreach ($embargoes as $embargo_id) {
-      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-      if ($embargo->getEmbargoTypeAsInt() == 1) {
+      $embargo = Node::load($embargo_id);
+      if ($embargo->get('field_embargo_type')->value == 'node') {
         $active_node_embargoes[$embargo_id] = $embargo_id;
       }
     }
@@ -87,9 +92,12 @@ namespace Drupal\embargoes;
   public function getIpAllowedEmbargoes($embargoes) {
     $ip_allowed_embargoes = [];
     foreach ($embargoes as $embargo_id) {
-      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-      if ($embargo->getExemptIps() != 'none') {
-        $ip_allowed_embargoes[$embargo_id] = $embargo->getExemptIps();
+      $embargo = Node::load($embargo_id);
+      $embargo_exempt_ips = $embargo->get('field_embargoes_exempt_ip_ranges')->getValue();
+      if (!empty($embargo_exempt_ips)) {
+        foreach ($embargo_exempt_ips as $ip) {
+          $ip_allowed_embargoes[$embargo_id] = $ip['target_id'];
+        }
       }
     }
     return $ip_allowed_embargoes;
@@ -98,9 +106,9 @@ namespace Drupal\embargoes;
 
 
   public function isUserInExemptUsers($user, $embargo_id) {
-    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-    $exempt_users = $embargo->getExemptUsers();
-    if (is_null($exempt_users)) {
+    $embargo = Node::load($embargo_id);
+    $exempt_users = $embargo->get('field_embargoes_exempt_users')->getValue();
+    if (empty($exempt_users)) {
       $user_is_exempt = FALSE;
     }
     else {
@@ -119,13 +127,17 @@ namespace Drupal\embargoes;
   }
 
   public function isIpInExemptRange($ip, $embargo_id) {
-    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-    $range_id = $embargo->getExemptIps();
-    if ($range_id == 'none') {
+    $embargo = Node::load($embargo_id);
+    $ranges = $embargo->get('field_embargoes_exempt_ip_ranges')->getValue();
+    if (empty($ranges)) {
       $ip_is_exempt = FALSE;
     }
     else {
-      $ip_is_exempt = \Drupal::service('embargoes.ips')->isIpInRange($ip, $embargo->getExemptIps());
+      $ranges_flattened = [];
+      foreach ($ranges as $range) {
+        $ranges_flattened[] = $range['target_id'];
+      }
+      $ip_is_exempt = \Drupal::service('embargoes.ips')->isIpInRange($ip, $ranges_flattened);
     }
     return $ip_is_exempt;
   }

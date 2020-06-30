@@ -2,6 +2,8 @@
 
 use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\node\Entity\Node;
+
 /**
  * @file
  * Contains embargoes.module.
@@ -84,20 +86,19 @@ function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface 
       $embargo_word = ($embargo_count > 1 ? "embargoes" : "embargo" );
       drupal_set_message("This resource is under {$embargo_count} {$embargo_word}:", 'warning');
       foreach ($embargoes as $embargo_id) {
-        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+        $embargo = Node::load($embargo_id);
         $embargo_message = "- Access to ";
-        if ($embargo->getEmbargoTypeAsInt() == 0) {
+        if ($embargo->get('field_embargo_type')->value == 'files') {
           $embargo_message .= " all associated files of this resource";
         }
-        else {
+        else if ($embargo->get('field_embargo_type')->value == 'node') {
           $embargo_message .= " this resource and all associated files";
         }
         $embargo_message .= " is restricted";
-        if ($embargo->getExemptIps() != 'none') {
-          $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
+        if (!empty($embargo->get('field_embargoes_exempt_ip_ranges')->getValues())) {
+          $ip_range_id = $embargo->get('field_embargoes_exempt_ip_ranges')->getValues()[0];
+          $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($ip_range_id);
           $embargo_message .= " to the {$ip_range->label()} network";
-        }
-        else {
         }
         if ($embargo->getExpirationTypeAsInt() == 0) {
           $embargo_message .= " indefinitely.";
@@ -151,13 +152,11 @@ function embargoes_media_view(array &$build, \Drupal\Core\Entity\EntityInterface
           $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
           $embargo_message .= " to the {$ip_range->label()} network";
         }
-        else {
-        }
-        if ($embargo->getExpirationTypeAsInt() == 0) {
+        if (is_null($embargo->get('field_embargo_expiration')->date)) {
           $embargo_message .= " indefinitely.";
         }
         else {
-          $embargo_message .= " until {$embargo->getExpirationDate()}.";
+          $embargo_message .= " until {$embargo->get('field_embargo_expiration')->date->format('Y-m-d')}.";
         }
         drupal_set_message($embargo_message, 'warning');
       }
@@ -185,4 +184,31 @@ function embargoes_file_download($uri) {
     $response->send();
   }
   return NULL;
+}
+
+/**
+ * Implements hook_node_create().
+ */
+function embargoes_node_create(\Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->bundle() == 'embargo') {
+    drupal_flush_all_caches();
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function embargoes_node_update(\Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->bundle() == 'embargo') {
+    drupal_flush_all_caches();
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function embargoes_node_delete(\Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->bundle() == 'embargo') {
+    drupal_flush_all_caches();
+  }
 }
