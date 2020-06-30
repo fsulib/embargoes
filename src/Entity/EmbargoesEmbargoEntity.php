@@ -119,7 +119,10 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
     return $this->get('exempt_ips');
   }
 
-  public function setExemptIps($range){
+  public function setExemptIps($range) {
+    if (!$range) {
+      $range = [];
+    }
     $this->set('exempt_ips', $range);
     return $this;
   }
@@ -136,7 +139,10 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
     return $exempt_user_entities;
   }
 
-  public function setExemptUsers($users){
+  public function setExemptUsers($users) {
+    if (!$users) {
+      $users = [];
+    }
     $this->set('exempt_users', $users);
     return $this;
   }
@@ -145,7 +151,10 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
     return $this->get('additional_emails');
   }
 
-  public function setAdditionalEmails($emails){
+  public function setAdditionalEmails($emails) {
+    if (!$emails) {
+      $emails = [];
+    }
     $this->set('additional_emails', $emails);
     return $this;
   }
@@ -154,7 +163,7 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
     return $this->get('embargoed_node');
   }
 
-  public function setEmbargoedNode($node){
+  public function setEmbargoedNode($node) {
     $this->set('embargoed_node', $node);
     return $this;
   }
@@ -163,7 +172,7 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
     return $this->get('notification_status');
   }
 
-  public function setNotificationStatus($status){
+  public function setNotificationStatus($status) {
     $this->set('notification_status', $status);
     return $this;
   }
