@@ -31,7 +31,7 @@ embargoes.
 ### Applying an embargo
 
 An embargo can be applied to an existing node by navigating to
-`node/{node_id/embargoes`. From here, an embargo can be applied if it doesn't
+`node/{node_id}/embargoes`. From here, an embargo can be applied if it doesn't
 already exist, and existing embargoes can be modified or removed.
 
 ### Logging
