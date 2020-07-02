@@ -78,11 +78,13 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#default_value' => $embargo->getAdditionalEmails(),
     );
 
+    $embargoed_node = $embargo->getEmbargoedNode();
     $form['embargoed_node'] = array(
       '#type' => 'entity_autocomplete',
       '#target_type' => 'node',
       '#title' => $this->t('Embargoed node'),
-      '#default_value' => node_load($embargo->getEmbargoedNode()),
+      '#maxlength' => 255,
+      '#default_value' => $embargoed_node ? $embargoed_node : '',
       '#required' => TRUE,
     );
 
@@ -119,7 +121,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
 
     $log_values['node'] = $embargo->getEmbargoedNode();
     $log_values['uid'] = \Drupal::currentUser()->id();
-    $log_values['embargo_id'] = $embargo->id();
+    $log_values['embargo'] = $embargo->id();
 
     if ($status == SAVED_NEW) {
         $log_values['action'] = 'created';
