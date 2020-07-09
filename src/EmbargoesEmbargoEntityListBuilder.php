@@ -2,6 +2,7 @@
 
 namespace Drupal\embargoes;
 
+use Drupal\user\Entity\User;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\Markup;
@@ -33,9 +34,9 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
   public function buildRow(EntityInterface $entity) {
 
     $formatted_users = [];
-    foreach ($entity->getExemptUsers() as $user){
+    foreach ($entity->getExemptUsers() as $user) {
       $uid = $user['target_id'];
-      $user_entity = \Drupal\user\Entity\User::load($uid);
+      $user_entity = User::load($uid);
       $user_name = $user_entity->getUserName();
       $formatted_users[] = "<a href='/user/{$uid}'>{$user_name}</a>";
 
@@ -47,7 +48,6 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
     $node_title = $node->title->value;
     $formatted_node_row = Markup::create("<a href='/node/{$nid}'>{$node_title}</a>");
 
-
     $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($entity->getExemptIps());
     if (!is_null($ip_range)) {
       $ip_range_label = $ip_range->label();
@@ -57,7 +57,7 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder {
       $ip_range_formatted = "None";
     }
 
-    $formatted_emails = Markup::create(str_replace(',', '<br>', str_replace(' ', '', $entity->getAdditionalEmails())));
+    $formatted_emails = Markup::create(implode('<br>', $entity->getAdditionalEmails()));
 
     $row['id'] = $entity->id();
     $row['embargo_type'] = ($entity->getEmbargoType() == 1 ? 'Node' : 'Files');

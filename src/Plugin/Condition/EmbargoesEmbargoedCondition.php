@@ -2,12 +2,12 @@
 
 namespace Drupal\embargoes\Plugin\Condition;
 
+use Drupal\node\NodeInterface;
 use Drupal\Core\Condition\ConditionPluginBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\Context\ContextDefinition;
 
 /**
- * Provides a 'Node is embargoed (embargoes)' condition to enable a condition based in module selected status.
+ * Condition to filter on whether or not a node is embargoed.
  *
  * @Condition(
  *   id = "embargoes_embargoed_condition",
@@ -16,7 +16,6 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
  *     "node" = @ContextDefinition("entity:node", required = TRUE , label = @Translation("Node"))
  *   }
  * )
- *
  */
 class EmbargoesEmbargoedCondition extends ConditionPluginBase {
 
@@ -38,10 +37,10 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
       '#default_value' => $this->configuration['filter'],
       '#description' => $this->t('Select the scope of embargo to trigger on.'),
       '#options' => [
-        'off' => 'Always trigger regardless of embargo status',
-        'all' => 'All embargoes on node',
-        'current' => 'Current embargoes on node (ignore expired)',
-        'active' => 'Active embargoes on node (ignore bypassed)',
+        'off' => $this->t('Always trigger regardless of embargo status'),
+        'all' => $this->t('All embargoes on node'),
+        'current' => $this->t('Current embargoes on node (ignore expired)'),
+        'active' => $this->t('Active embargoes on node (ignore bypassed)'),
       ],
     ];
     return parent::buildConfigurationForm($form, $form_state);
@@ -70,23 +69,26 @@ class EmbargoesEmbargoedCondition extends ConditionPluginBase {
    */
   public function evaluate() {
     $node = \Drupal::routeMatch()->getParameter('node');
-    if ($node instanceof \Drupal\node\NodeInterface) {
+    if ($node instanceof NodeInterface) {
 
       $embargo_service = \Drupal::service('embargoes.embargoes');
       switch ($this->configuration['filter']) {
         case 'off':
           $embargoed = TRUE;
           break;
+
         case 'all':
-          $embargoed = $embargo_service->getAllEmbargoesByNids(array($node->id()));
+          $embargoed = $embargo_service->getAllEmbargoesByNids([$node->id()]);
           break;
+
         case 'current':
-          $embargoed = $embargo_service->getCurrentEmbargoesByNids(array($node->id()));
+          $embargoed = $embargo_service->getCurrentEmbargoesByNids([$node->id()]);
           break;
+
         case 'active':
           $ip = \Drupal::request()->getClientIp();
           $user = \Drupal::currentUser();
-          $embargoed = $embargo_service->getActiveEmbargoesByNids(array($node->id()), $ip, $user);
+          $embargoed = $embargo_service->getActiveEmbargoesByNids([$node->id()], $ip, $user);
           break;
       }
 

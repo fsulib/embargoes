@@ -28,7 +28,7 @@ class EmbargoesIpRangeEntityListBuilder extends ConfigEntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
-    $row['range'] = Markup::create(str_replace('|', '<br>', $entity->getRange()));
+    $row['range'] = Markup::create(implode('<br>', $entity->getRanges()));
     $row['proxy_url'] = $entity->getProxyUrl();
     return $row + parent::buildRow($entity);
   }

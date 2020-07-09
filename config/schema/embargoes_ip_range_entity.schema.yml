@@ -8,9 +8,14 @@ embargoes.embargoes_ip_range_entity.*:
     label:
       type: label
       label: 'Label'
-    range:
-      type: string
-      label: 'Range'
+    ranges:
+      type: sequence
+      label: 'Ranges'
+      sequence:
+        type: mapping
+        mapping:
+          range:
+            type: string
     proxy_url:
       type: string
       label: 'Proxy URL'

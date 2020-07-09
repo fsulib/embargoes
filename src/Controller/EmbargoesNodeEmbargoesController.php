@@ -2,18 +2,50 @@
 
 namespace Drupal\embargoes\Controller;
 
+use Drupal\embargoes\EmbargoesEmbargoesServiceInterface;
+use Drupal\node\NodeInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\Markup;
-use Drupal\node\NodeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class EmbargoesLogController.
  */
 class EmbargoesNodeEmbargoesController extends ControllerBase {
 
+  /**
+   * Embargoes service.
+   *
+   * @var \Drupal\embargoes\EmbargoesEmbargoesServiceInterface
+   */
+  protected $embargoes;
+
+  /**
+   * Constructs an embargoes node controller.
+   *
+   * @param \Drupal\embargoes\EmbargoesEmbargoesServiceInterface $embargoes
+   *   Embargoes service.
+   */
+  public function __construct(EmbargoesEmbargoesServiceInterface $embargoes) {
+    $this->embargoes = $embargoes;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('embargoes.embargoes'));
+  }
+
+  /**
+   * Gets markup for displaying embargoes on a node.
+   *
+   * @return array
+   *   Renderable array to show the embargoes on a node.
+   */
   public function showEmbargoes(NodeInterface $node = NULL) {
 
-    $embargo_ids = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids(array($node->id()));
+    $embargo_ids = $this->embargoes->getAllEmbargoesByNids([$node->id()]);
     if (empty($embargo_ids)) {
       $markup['embargoes'] = [
         '#type' => 'markup',
@@ -23,11 +55,12 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
     else {
       $rows = [];
       foreach ($embargo_ids as $embargo_id) {
-        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+        $embargo = $this->entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
 
-        if ($embargo->getExpirationType() == 0 ) {
+        if ($embargo->getExpirationType() == 0) {
           $expiry = 'Indefinite';
-        } else {
+        }
+        else {
           $expiry = $embargo->getExpirationDate();
         }
 
@@ -37,17 +70,17 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           $formatted_users[] = "None";
         }
         else {
-          foreach ($embargo->getExemptUsers() as $user){
+          foreach ($embargo->getExemptUsers() as $user) {
             $uid = $user['target_id'];
-            $user_entity = \Drupal\user\Entity\User::load($uid);
-            $user_name = $user_entity->getUserName();
+            $user_entity = $this->entityTypeManager()->getStorage('user')->load($uid);
+            $user_name = $user_entity ? $user_entity->getUserName() : 'Missing User';
             $formatted_users[] = "<a href='/user/{$uid}'>{$user_name}</a>";
           }
         }
         $formatted_exempt_users_row = Markup::create(implode("<br>", $formatted_users));
 
-        if ($embargo->getExemptIps() != 'none') {
-          $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
+        if (!is_null($embargo->getExemptIps())) {
+          $ip_range = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
           $ip_range_label = $ip_range->label();
           $ip_range_formatted = Markup::create("<a href='/admin/config/content/embargoes/settings/ips/{$embargo->getExemptIps()}/edit'>{$ip_range_label}</a>");
         }
@@ -55,7 +88,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           $ip_range_formatted = "None";
         }
 
-        $formatted_emails = Markup::create(str_replace(',', '<br>', str_replace(' ', '', $embargo->getAdditionalEmails())));
+        $formatted_emails = Markup::create(implode('<br>', $embargo->getAdditionalEmails()));
 
         $row = [
           'type' => ($embargo->getEmbargoType() == 1 ? 'Node' : 'Files'),
@@ -70,7 +103,14 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
 
       $markup['embargoes'] = [
         '#type' => 'table',
-        '#header' => ['Type', 'Expiration Date', 'Exempt IP Range', 'Exempt Users', 'Additional Emails', 'Edit'],
+        '#header' => [
+          'Type',
+          'Expiration Date',
+          'Exempt IP Range',
+          'Exempt Users',
+          'Additional Emails',
+          'Edit',
+        ],
         '#rows' => $rows,
       ];
     }

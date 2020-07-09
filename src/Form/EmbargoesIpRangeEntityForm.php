@@ -2,13 +2,39 @@
 
 namespace Drupal\embargoes\Form;
 
+use Drupal\embargoes\EmbargoesIpRangesServiceInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class EmbargoesIpRangeEntityForm.
  */
 class EmbargoesIpRangeEntityForm extends EntityForm {
+
+  /**
+   * An embargoes IP ranges manager.
+   *
+   * @var \Drupal\embargoes\EmbargoesIpRangesServiceInterface
+   */
+  protected $ipRanges;
+
+  /**
+   * Constructor for the IP range entity form.
+   *
+   * @param \Drupal\embargoes\EmbargoesIpRangesServiceInterface $ip_ranges
+   *   An embargoes IP ranges manager.
+   */
+  public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges) {
+    $this->ipRanges = $ip_ranges;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('embargoes.ips'));
+  }
 
   /**
    * {@inheritdoc}
@@ -40,7 +66,7 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
       '#type' => 'textfield',
       '#title' => $this->t('Range'),
       '#maxlength' => 255,
-      '#default_value' => $range->getRange(),
+      '#default_value' => implode('|', $range->getRanges()),
       '#description' => $this->t("IP range to be used. Please list in CIDR format, and separate multiple ranges with a '|'."),
       '#required' => TRUE,
     ];
@@ -65,12 +91,13 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
     $range->setProxyUrl($form_state->getValue('proxy_url'));
     $status = $range->save();
 
-    $errors = \Drupal::service('embargoes.ips')->detectIpRangeStringErrors($form_state->getValue('range'));
+    $errors = $this->ipRanges->detectIpRangeStringErrors($form_state->getValue('range'));
     if (!$errors) {
       switch ($status) {
         case SAVED_NEW:
           $this->messenger()->addMessage($this->t('Created the %label IP Range.', ['%label' => $range->label()]));
           break;
+
         default:
           $this->messenger()->addMessage($this->t('Saved the %label IP Range.', ['%label' => $range->label()]));
       }
