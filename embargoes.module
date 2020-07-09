@@ -95,8 +95,8 @@ function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface 
           $embargo_message .= " this resource and all associated files";
         }
         $embargo_message .= " is restricted";
-        if (!empty($embargo->get('field_embargoes_exempt_ip_ranges')->getValue())) {
-          $ip_range_id = $embargo->get('field_embargoes_exempt_ip_ranges')->getValue()[0];
+        if (!empty($embargo->get('field_embargo_exempt_ip_ranges')->getValue())) {
+          $ip_range_id = $embargo->get('field_embargo_exempt_ip_ranges')->getValue()[0];
           $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($ip_range_id);
           $embargo_message .= " to the {$ip_range->label()} network";
         }

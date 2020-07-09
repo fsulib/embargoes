@@ -20,7 +20,7 @@ use Drupal\node\Entity\Node;
       $query = \Drupal::entityQuery('node')
         ->condition('type', 'embargo')
         ->condition('status', TRUE)
-        ->condition('field_embargoes_embargoed_nodes', $nid);
+        ->condition('field_embargo_embargoed_nodes', $nid);
       $node_embargoes = $query->execute();
       $all_embargoes = array_merge($all_embargoes, $node_embargoes);
     }
@@ -52,7 +52,7 @@ use Drupal\node\Entity\Node;
     $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids($nids);
     foreach ($embargoes as $embargo_id) {
       $embargo = Node::load($embargo_id);
-      if (!empty($embargo->get('field_embargoes_exempt_ip_ranges')->getValue())) {
+      if (!empty($embargo->get('field_embargo_exempt_ip_ranges')->getValue())) {
         $ip_allowed_current_embargoes[$embargo_id] = $embargo_id;
       }
     }
@@ -93,7 +93,7 @@ use Drupal\node\Entity\Node;
     $ip_allowed_embargoes = [];
     foreach ($embargoes as $embargo_id) {
       $embargo = Node::load($embargo_id);
-      $embargo_exempt_ips = $embargo->get('field_embargoes_exempt_ip_ranges')->getValue();
+      $embargo_exempt_ips = $embargo->get('field_embargo_exempt_ip_ranges')->getValue();
       if (!empty($embargo_exempt_ips)) {
         foreach ($embargo_exempt_ips as $ip) {
           $ip_allowed_embargoes[$embargo_id] = $ip['target_id'];
@@ -107,7 +107,7 @@ use Drupal\node\Entity\Node;
 
   public function isUserInExemptUsers($user, $embargo_id) {
     $embargo = Node::load($embargo_id);
-    $exempt_users = $embargo->get('field_embargoes_exempt_users')->getValue();
+    $exempt_users = $embargo->get('field_embargo_exempt_users')->getValue();
     if (empty($exempt_users)) {
       $user_is_exempt = FALSE;
     }
@@ -128,7 +128,7 @@ use Drupal\node\Entity\Node;
 
   public function isIpInExemptRange($ip, $embargo_id) {
     $embargo = Node::load($embargo_id);
-    $ranges = $embargo->get('field_embargoes_exempt_ip_ranges')->getValue();
+    $ranges = $embargo->get('field_embargo_exempt_ip_ranges')->getValue();
     if (empty($ranges)) {
       $ip_is_exempt = FALSE;
     }

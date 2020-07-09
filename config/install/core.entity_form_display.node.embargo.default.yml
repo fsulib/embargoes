@@ -5,11 +5,11 @@ dependencies:
     - field.field.node.embargo.body
     - field.field.node.embargo.field_embargo_expiration
     - field.field.node.embargo.field_embargo_type
-    - field.field.node.embargo.field_embargoes_addl_emails
-    - field.field.node.embargo.field_embargoes_embargoed_nodes
-    - field.field.node.embargo.field_embargoes_exempt_ip_ranges
-    - field.field.node.embargo.field_embargoes_exempt_users
-    - field.field.node.embargo.field_embargoes_notif_status
+    - field.field.node.embargo.field_embargo_addl_emails
+    - field.field.node.embargo.field_embargo_embargoed_nodes
+    - field.field.node.embargo.field_embargo_exempt_ip_ranges
+    - field.field.node.embargo.field_embargo_exempt_users
+    - field.field.node.embargo.field_embargo_notif_status
     - node.type.embargo
   module:
     - datetime
@@ -48,7 +48,7 @@ content:
     third_party_settings: {  }
     type: options_select
     region: content
-  field_embargoes_addl_emails:
+  field_embargo_addl_emails:
     weight: 126
     settings:
       size: 60
@@ -56,7 +56,7 @@ content:
     third_party_settings: {  }
     type: email_default
     region: content
-  field_embargoes_embargoed_nodes:
+  field_embargo_embargoed_nodes:
     weight: 127
     settings:
       match_operator: CONTAINS
@@ -66,7 +66,7 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_embargoes_exempt_ip_ranges:
+  field_embargo_exempt_ip_ranges:
     weight: 124
     settings:
       match_operator: CONTAINS
@@ -76,7 +76,7 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_embargoes_exempt_users:
+  field_embargo_exempt_users:
     weight: 125
     settings:
       match_operator: CONTAINS
@@ -86,7 +86,7 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_embargoes_notif_status:
+  field_embargo_notif_status:
     weight: 128
     settings: {  }
     third_party_settings: {  }

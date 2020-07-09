@@ -2,14 +2,14 @@ langcode: en
 status: true
 dependencies:
   module:
-    - embargoes
     - node
-id: node.field_embargoes_exempt_ip_ranges
-field_name: field_embargoes_exempt_ip_ranges
+    - user
+id: node.field_embargo_exempt_users
+field_name: field_embargo_exempt_users
 entity_type: node
 type: entity_reference
 settings:
-  target_type: embargoes_ip_range_entity
+  target_type: user
 module: core
 locked: false
 cardinality: -1

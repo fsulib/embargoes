@@ -5,11 +5,11 @@ dependencies:
     - field.field.node.embargo.body
     - field.field.node.embargo.field_embargo_expiration
     - field.field.node.embargo.field_embargo_type
-    - field.field.node.embargo.field_embargoes_addl_emails
-    - field.field.node.embargo.field_embargoes_embargoed_nodes
-    - field.field.node.embargo.field_embargoes_exempt_ip_ranges
-    - field.field.node.embargo.field_embargoes_exempt_users
-    - field.field.node.embargo.field_embargoes_notif_status
+    - field.field.node.embargo.field_embargo_addl_emails
+    - field.field.node.embargo.field_embargo_embargoed_nodes
+    - field.field.node.embargo.field_embargo_exempt_ip_ranges
+    - field.field.node.embargo.field_embargo_exempt_users
+    - field.field.node.embargo.field_embargo_notif_status
     - node.type.embargo
   module:
     - datetime
@@ -44,14 +44,14 @@ content:
     third_party_settings: {  }
     type: list_default
     region: content
-  field_embargoes_addl_emails:
+  field_embargo_addl_emails:
     weight: 106
     label: above
     settings: {  }
     third_party_settings: {  }
     type: basic_string
     region: content
-  field_embargoes_embargoed_nodes:
+  field_embargo_embargoed_nodes:
     weight: 107
     label: above
     settings:
@@ -59,7 +59,7 @@ content:
     third_party_settings: {  }
     type: entity_reference_label
     region: content
-  field_embargoes_exempt_ip_ranges:
+  field_embargo_exempt_ip_ranges:
     weight: 104
     label: above
     settings:
@@ -67,7 +67,7 @@ content:
     third_party_settings: {  }
     type: entity_reference_label
     region: content
-  field_embargoes_exempt_users:
+  field_embargo_exempt_users:
     weight: 105
     label: above
     settings:
@@ -75,7 +75,7 @@ content:
     third_party_settings: {  }
     type: entity_reference_label
     region: content
-  field_embargoes_notif_status:
+  field_embargo_notif_status:
     weight: 108
     label: above
     settings: {  }

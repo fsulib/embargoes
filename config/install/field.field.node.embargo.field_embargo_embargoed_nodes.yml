@@ -2,10 +2,10 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_embargoes_embargoed_nodes
+    - field.storage.node.field_embargo_embargoed_nodes
     - node.type.embargo
-id: node.embargo.field_embargoes_embargoed_nodes
-field_name: field_embargoes_embargoed_nodes
+id: node.embargo.field_embargo_embargoed_nodes
+field_name: field_embargo_embargoed_nodes
 entity_type: node
 bundle: embargo
 label: 'Embargoed Nodes'

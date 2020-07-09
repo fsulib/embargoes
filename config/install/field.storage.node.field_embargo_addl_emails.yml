@@ -3,12 +3,11 @@ status: true
 dependencies:
   module:
     - node
-id: node.field_embargoes_embargoed_nodes
-field_name: field_embargoes_embargoed_nodes
+id: node.field_embargo_addl_emails
+field_name: field_embargo_addl_emails
 entity_type: node
-type: entity_reference
-settings:
-  target_type: node
+type: email
+settings: {  }
 module: core
 locked: false
 cardinality: -1

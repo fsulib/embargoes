@@ -2,10 +2,10 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_embargoes_exempt_ip_ranges
+    - field.storage.node.field_embargo_exempt_ip_ranges
     - node.type.embargo
-id: node.embargo.field_embargoes_exempt_ip_ranges
-field_name: field_embargoes_exempt_ip_ranges
+id: node.embargo.field_embargo_exempt_ip_ranges
+field_name: field_embargo_exempt_ip_ranges
 entity_type: node
 bundle: embargo
 label: 'Exempt IP Ranges'

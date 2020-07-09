@@ -6,11 +6,11 @@ dependencies:
     - field.field.node.embargo.body
     - field.field.node.embargo.field_embargo_expiration
     - field.field.node.embargo.field_embargo_type
-    - field.field.node.embargo.field_embargoes_addl_emails
-    - field.field.node.embargo.field_embargoes_embargoed_nodes
-    - field.field.node.embargo.field_embargoes_exempt_ip_ranges
-    - field.field.node.embargo.field_embargoes_exempt_users
-    - field.field.node.embargo.field_embargoes_notif_status
+    - field.field.node.embargo.field_embargo_addl_emails
+    - field.field.node.embargo.field_embargo_embargoed_nodes
+    - field.field.node.embargo.field_embargo_exempt_ip_ranges
+    - field.field.node.embargo.field_embargo_exempt_users
+    - field.field.node.embargo.field_embargo_notif_status
     - node.type.embargo
   module:
     - text
@@ -36,9 +36,9 @@ content:
 hidden:
   field_embargo_expiration: true
   field_embargo_type: true
-  field_embargoes_addl_emails: true
-  field_embargoes_embargoed_nodes: true
-  field_embargoes_exempt_ip_ranges: true
-  field_embargoes_exempt_users: true
-  field_embargoes_notif_status: true
+  field_embargo_addl_emails: true
+  field_embargo_embargoed_nodes: true
+  field_embargo_exempt_ip_ranges: true
+  field_embargo_exempt_users: true
+  field_embargo_notif_status: true
   search_api_excerpt: true

@@ -4,8 +4,8 @@ dependencies:
   module:
     - node
     - options
-id: node.field_embargoes_notif_status
-field_name: field_embargoes_notif_status
+id: node.field_embargo_notif_status
+field_name: field_embargo_notif_status
 entity_type: node
 type: list_string
 settings:

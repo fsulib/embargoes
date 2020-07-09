@@ -2,10 +2,10 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_embargoes_addl_emails
+    - field.storage.node.field_embargo_addl_emails
     - node.type.embargo
-id: node.embargo.field_embargoes_addl_emails
-field_name: field_embargoes_addl_emails
+id: node.embargo.field_embargo_addl_emails
+field_name: field_embargo_addl_emails
 entity_type: node
 bundle: embargo
 label: 'Additional Emails'
