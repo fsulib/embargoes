@@ -81,9 +81,9 @@ class EmbargoesIpRangesService implements EmbargoesIpRangesServiceInterface {
    * {@inheritdoc}
    */
   public function isIpInRange($ip, $range_name) {
-    if ($range_name != 'none') {
+    $response = FALSE;
+    if (!empty($range_name)) {
       $ranges = $this->rangeStorage->load($range_name)->getRanges();
-      $response = FALSE;
       if (!$this->detectIpRangeStringErrors($ranges)) {
         foreach ($ranges as $range) {
           list($net, $mask) = explode("/", trim($range));

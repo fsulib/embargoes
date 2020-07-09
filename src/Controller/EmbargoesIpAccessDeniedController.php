@@ -57,14 +57,12 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
    *   Renderable array of markup for IP access denied.
    */
   public function response() {
-
-    $allowed_ranges = explode('.', $this->request->query->get('ranges'));
     $requested_resource = $this->getRequestedResource();
     $contact_email = $this->config('embargoes.settings')->get('embargo_contact_email');
 
     $message = "<p>Your request for the following resource could not be resolved:<br/><strong>{$requested_resource}</strong></p><br/>";
     $message .= "<p>Access to this resource is restricted to the following networks:<br/><ul>";
-    foreach ($allowed_ranges as $allowed_range) {
+    foreach ($this->request->query->get('ranges') as $allowed_range) {
       $allowed_range_entity = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($allowed_range);
       if ($allowed_range_entity->getProxyUrl() != '') {
         $message .= "<li><a href='{$allowed_range_entity->getProxyUrl()}{$requested_resource}'>{$allowed_range_entity->label()}</a></li>";

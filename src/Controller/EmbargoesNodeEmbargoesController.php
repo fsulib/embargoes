@@ -81,8 +81,13 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
 
         if (!is_null($embargo->getExemptIps())) {
           $ip_range = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
-          $ip_range_label = $ip_range->label();
-          $ip_range_formatted = Markup::create("<a href='/admin/config/content/embargoes/settings/ips/{$embargo->getExemptIps()}/edit'>{$ip_range_label}</a>");
+          if (!is_null($ip_range)) {
+            $ip_range_label = $ip_range->label();
+            $ip_range_formatted = Markup::create("<a href='/admin/config/content/embargoes/settings/ips/{$embargo->getExemptIps()}/edit'>{$ip_range_label}</a>");
+          }
+          else {
+            $ip_range_formatted = 'None';
+          }
         }
         else {
           $ip_range_formatted = "None";

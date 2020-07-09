@@ -147,7 +147,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
       '#title' => $this->t('Exempt IP ranges'),
       '#description' => $this->t('Select the name of a pre-configured IP range that is exempt from this specific embargo. IP ranges must be set up by an administrator.'),
       '#options' => $this->ipRanges->getIpRangesAsSelectOptions(),
-      '#default_value' => ($embargo_id != 'add' ? (is_null($embargo->getExemptIps()) ? 'none' : $embargo->getExemptIps()) : NULL),
+      '#default_value' => ($embargo_id != 'add' ? (is_null($embargo->getExemptIps()) ? NULL : $embargo->getExemptIps()) : NULL),
     ];
 
     $form['exemptions']['exempt_users'] = [

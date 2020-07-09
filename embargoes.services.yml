@@ -13,7 +13,15 @@ services:
     arguments: ['@entity_type.manager']
   embargoes.node_access:
     class: Drupal\embargoes\Access\EmbargoedNodeAccess
-    arguments: ['@embargoes.embargoes', '@request_stack', '@entity_type.manager', '@config.factory', '@messenger', '@string_translation', '@url_generator', '@current_user']
+    arguments:
+      - '@embargoes.embargoes'
+      - '@request_stack'
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@messenger'
+      - '@string_translation'
+      - '@url_generator'
+      - '@current_user'
   embargoes.media_access:
     class: Drupal\embargoes\Access\EmbargoedMediaAccess
     arguments:

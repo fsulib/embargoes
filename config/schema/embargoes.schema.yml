@@ -1,6 +1,19 @@
+---
 condition.plugin.embargoes_embargoed_condition:
   type: condition.plugin
   mapping:
     filter:
       type: text
       label: 'Embargo Filter'
+embargoes.settings:
+  type: config_object
+  mapping:
+    embargo_contact_email:
+      type: email
+      label: 'Contact email for embargo notifications'
+    add_contact_to_notifications:
+      type: boolean
+      label: 'Whether to add contact information to embargo notifications'
+    show_embargo_message:
+      type: boolean
+      label: 'Whether to display an embargo warning on embargoed nodes'

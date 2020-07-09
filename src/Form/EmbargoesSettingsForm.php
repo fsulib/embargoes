@@ -35,21 +35,21 @@ class EmbargoesSettingsForm extends ConfigFormBase {
       '#type' => 'email',
       '#title' => $this->t('Contact Email'),
       '#description' => $this->t('Email address for who should be contacted in case users have questions about access.'),
-      '#default_value' => (!empty($config->get('embargo_contact_email')) ? $config->get('embargo_contact_email') : $this->config('system.site')->get('mail')),
+      '#default_value' => $config->get('embargo_contact_email'),
     ];
 
     $form['add_contact_to_notifications'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Add contact to notifications'),
       '#description' => $this->t('Add contact email to all embargo notifications by default.'),
-      '#default_value' => (!is_null($config->get('add_contact_to_notifications')) ? $config->get('add_contact_to_notifications') : TRUE),
+      '#default_value' => $config->get('add_contact_to_notifications'),
     ];
 
     $form['show_embargo_message'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Show embargo message'),
       '#description' => $this->t('Show a Drupal warning message on nodes under active embargoes.'),
-      '#default_value' => (!is_null($config->get('show_embargo_message')) ? $config->get('show_embargo_message') : TRUE),
+      '#default_value' => $config->get('show_embargo_message'),
     ];
 
     return $form;
