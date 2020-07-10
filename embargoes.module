@@ -77,3 +77,22 @@ function embargoes_file_download($uri) {
     $response->send();
   }
 }
+
+/**
+ * Implements hook_theme().
+ */
+function embargoes_theme($existing, $type, $theme, $path) {
+  return [
+    'embargoes_ip_access_denied' => [
+      'render element' => 'children',
+      'template' => 'embargoes-ip-access-denied',
+      'variables' => [
+        'requested_resource' => NULL,
+        // Indexed array of ranges containing a 'proxy URL' (NULL if none exist)
+        // and a display 'label'.
+        'ranges' => [],
+        'contact_email' => '',
+      ],
+    ],
+  ];
+}

@@ -12,7 +12,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   label = @Translation("IP Range"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\embargoes\EmbargoesIpRangeEntityListBuilder",
+ *     "list_builder" = "Drupal\embargoes\Controller\EmbargoesIpRangeEntityListBuilder",
  *     "form" = {
  *       "add" = "Drupal\embargoes\Form\EmbargoesIpRangeEntityForm",
  *       "edit" = "Drupal\embargoes\Form\EmbargoesIpRangeEntityForm",

@@ -6,7 +6,6 @@ use Drupal\node\NodeInterface;
 use Drupal\embargoes\EmbargoesEmbargoesServiceInterface;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\ResettableStackedRouteMatchInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -122,7 +121,7 @@ class EmbargoesEmbargoPoliciesBlock extends BlockBase implements ContainerFactor
     }
 
     return [
-      '#markup' => Markup::create($body),
+      '#markup' => $body,
     ];
   }
 

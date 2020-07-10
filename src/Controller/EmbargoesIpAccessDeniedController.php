@@ -59,28 +59,25 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
   public function response() {
     $requested_resource = $this->getRequestedResource();
     $contact_email = $this->config('embargoes.settings')->get('embargo_contact_email');
-
-    $message = "<p>Your request for the following resource could not be resolved:<br/><strong>{$requested_resource}</strong></p><br/>";
-    $message .= "<p>Access to this resource is restricted to the following networks:<br/><ul>";
+    $ranges = [];
     foreach ($this->request->query->get('ranges') as $allowed_range) {
       $allowed_range_entity = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($allowed_range);
+      $proxy_url = $allowed_range_entity->getProxyUrl() != '' ? $allowed_range_entity->getProxyUrl() : NULL;
       if ($allowed_range_entity->getProxyUrl() != '') {
-        $message .= "<li><a href='{$allowed_range_entity->getProxyUrl()}{$requested_resource}'>{$allowed_range_entity->label()}</a></li>";
+        $ranges[] = [
+          'proxy_url' => $proxy_url,
+          'label' => $allowed_range_entity->label(),
+        ];
       }
-      else {
-        $message .= "<li>{$allowed_range_entity->label()}</li>";
-      }
-    }
-    $message .= "</ul></p>";
-    $message .= "<p>If any of the listed networks above appear as links, you may be able to reach the resource by authenticating through a proxy.</p>";
-    if ($contact_email != '') {
-      $message .= "<p>If you have any questions about access to this resource, contact <a href='mailto:{$contact_email}'>{$contact_email}</a> for more information.</p>";
     }
 
     return [
-      '#type' => 'markup',
-      '#markup' => render($message),
-      '#cache' => ["max-age" => 0],
+      '#theme' => 'embargoes_ip_access_denied',
+      '#variables' => [
+        'requested_resource' => $requested_resource,
+        'ranges' => $ranges,
+        'contact_email' => $contact_email,
+      ],
     ];
   }
 

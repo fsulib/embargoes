@@ -12,7 +12,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   id = "embargoes_embargo_entity",
  *   label = @Translation("Embargo"),
  *   handlers = { *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\embargoes\EmbargoesEmbargoEntityListBuilder",
+ *     "list_builder" = "Drupal\embargoes\Controller\EmbargoesEmbargoEntityListBuilder",
  *     "form" = {
  *       "add" = "Drupal\embargoes\Form\EmbargoesEmbargoEntityForm",
  *       "edit" = "Drupal\embargoes\Form\EmbargoesEmbargoEntityForm",
@@ -104,22 +104,6 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
    * @var string
    */
   protected $notification_status;
-
-  /**
-   * Constructor function.
-   *
-   * @param array $values
-   *   Associative array of parameters to apply to this entity.
-   * @param string $entity_type
-   *   The type of entity.
-   */
-  public function __construct(array $values, $entity_type) {
-    $uuid = \Drupal::service('uuid')->generate();
-    $checksummed_uuid = sha1($uuid);
-    $this->uuid = $uuid;
-    $this->id = $checksummed_uuid;
-    parent::__construct($values, $entity_type);
-  }
 
   /**
    * {@inheritdoc}
