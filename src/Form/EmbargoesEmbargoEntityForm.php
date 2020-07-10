@@ -4,6 +4,7 @@ namespace Drupal\embargoes\Form;
 
 use Drupal\embargoes\EmbargoesIpRangesServiceInterface;
 use Drupal\embargoes\EmbargoesLogServiceInterface;
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,16 +29,26 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   protected $embargoesLog;
 
   /**
+   * UUID interface.
+   *
+   * @var \Drupal\Component\Uuid\UuidInterface
+   */
+  protected $uuidGenerator;
+
+  /**
    * Constructor for the node embargo form.
    *
    * @param \Drupal\embargoes\EmbargoesIpRangesServiceInterface $ip_ranges
    *   An embargoes IP ranges manager.
    * @param \Drupal\embargoes\EmbargoesLogServiceInterface $embargoes_log
    *   An embargoes logging service.
+   * @param \Drupal\Component\Uuid\UuidInterface $uuid_generator
+   *   A UUID generator.
    */
-  public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log) {
+  public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator) {
     $this->ipRanges = $ip_ranges;
     $this->embargoesLog = $embargoes_log;
+    $this->uuidGenerator = $uuid_generator;
   }
 
   /**
@@ -46,7 +57,8 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('embargoes.ips'),
-      $container->get('embargoes.log'));
+      $container->get('embargoes.log'),
+      $container->get('uuid'));
   }
 
   /**
@@ -55,6 +67,12 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     $embargo = $this->entity;
+
+    $id = $this->entity->id();
+    $form['id'] = [
+      '#type' => 'value',
+      '#value' => isset($id) ? $id : sha1($this->uuidGenerator->generate()),
+    ];
 
     $form['embargo_type'] = [
       '#type' => 'radios',
@@ -118,12 +136,15 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     ];
 
     $embargoed_node = $embargo->getEmbargoedNode();
+    if ($embargoed_node) {
+      $embargoed_node = $this->entityTypeManager->getStorage('node')->load($embargoed_node);
+    }
     $form['embargoed_node'] = [
       '#type' => 'entity_autocomplete',
       '#target_type' => 'node',
       '#title' => $this->t('Embargoed node'),
       '#maxlength' => 255,
-      '#default_value' => $embargoed_node ? $embargoed_node : '',
+      '#default_value' => $embargoed_node ? $embargoed_node : [],
       '#required' => TRUE,
     ];
 

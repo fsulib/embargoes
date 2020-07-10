@@ -5,6 +5,7 @@ namespace Drupal\embargoes\Controller;
 use Drupal\embargoes\EmbargoesEmbargoesServiceInterface;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -75,7 +76,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
             $formatted_users[] = [
               '#type' => 'link',
               '#title' => $user_name,
-              '#url' => $this->urlGenerator->generateFromRoute('entity.user.canonical', [
+              '#url' => Url::fromRoute('entity.user.canonical', [
                 'user' => $uid,
               ]),
             ];
@@ -89,7 +90,7 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
             $ip_range_formatted = [
               '#type' => 'link',
               '#title' => $ip_range->label(),
-              '#url' => $this->urlGenerator->generateFromRoute('entity.embargoes_ip_range.edit_form', [
+              '#url' => Url::fromRoute('entity.embargoes_ip_range.edit_form', [
                 'id' => $embargo->getExemptIps(),
               ]),
             ];
@@ -115,14 +116,14 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           'edit' => [
             '#type' => 'link',
             '#title' => $this->t('Edit'),
-            '#url' => $this->urlGenerator->generateFromRoute('entity.embargoes_embargo_entity.edit_form', [
+            '#url' => Url::fromRoute('entity.embargoes_embargo_entity.edit_form', [
               'id' => $embargo_id,
             ]),
           ],
           'delete' => [
             '#type' => 'link',
             '#title' => $this->t('Delete'),
-            '#url' => $this->urlGenerator->generateFromRoute('entity.embargoes_embargo_entity.delete_form', [
+            '#url' => Url::fromRoute('entity.embargoes_embargo_entity.delete_form', [
               'id' => $embargo_id,
             ]),
           ],
@@ -145,11 +146,13 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
       ];
     }
 
-    $markup['add'] = [
+    $markup['add_embargo'] = [
       '#type' => 'link',
       '#title' => $this->t('Add Embargo'),
-      '#link' => $this->urlGenerator->generateFromRoute('entity.embargoes_embargo_entity.add_form'),
+      '#link' => Url::fromRoute('entity.embargoes_embargo_entity.add_form'),
     ];
+
+    ksm($markup);
 
     return $markup;
   }

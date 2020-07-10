@@ -87,11 +87,11 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $range = $this->entity;
-    $range->setRange($form_state->getValue('range'));
+    $range->setRanges($form_state->getValue('range'));
     $range->setProxyUrl($form_state->getValue('proxy_url'));
     $status = $range->save();
 
-    $errors = $this->ipRanges->detectIpRangeStringErrors($form_state->getValue('range'));
+    $errors = $this->ipRanges->detectIpRangeStringErrors(array_map('trim', explode('|', trim($form_state->getValue('range')))));
     if (!$errors) {
       switch ($status) {
         case SAVED_NEW:

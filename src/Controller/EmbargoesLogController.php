@@ -4,6 +4,7 @@ namespace Drupal\embargoes\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -58,13 +59,9 @@ class EmbargoesLogController extends ControllerBase {
         $embargo_formatted = ['#markup' => "<span style='text-decoration:line-through;'>{$record->embargo}</span>"];
       }
       else {
-        $embargo_formatted = [
-          '#type' => 'link',
-          '#title' => $record->embargo,
-          '#link' => $this->urlGenerator->generateFromRoute('entity.embargoes_embargo_entity.edit_form', [
-            'id' => $record->embargo,
-          ]),
-        ];
+        $embargo_formatted = $this->getLinkGenerator()->generate($record->embargo, Url::fromRoute('entity.embargoes_embargo_entity.edit_form', [
+          'embargoes_embargo_entity' => $record->embargo,
+        ]));
       }
 
       $row = [
@@ -72,25 +69,17 @@ class EmbargoesLogController extends ControllerBase {
         'embargo' => $embargo_formatted,
         'time' => $formatted_time,
         'action' => ucfirst($record->action),
-        'node' => [
-          '#type' => 'link',
-          '#title' => $node_title,
-          '#link' => $this->urlGenerator->generateFromRoute('entity.node.canonical', [
-            'node' => $record->node,
-          ]),
-        ],
-        'user' => [
-          '#type' => 'link',
-          '#title' => $username,
-          '#link' => $this->urlGenerator->generateFromRoute('entity.user.canonical', [
-            'user' => $record->uid,
-          ]),
-        ],
+        'node' => $this->getLinkGenerator()->generate($node_title, Url::fromRoute('entity.node.canonical', [
+          'node' => $record->node,
+        ])),
+        'user' => $this->getLinkGenerator()->generate($username, Url::fromRoute('entity.user.canonical', [
+          'user' => $record->uid,
+        ])),
       ];
       array_push($formatted_log, $row);
     }
 
-    $pre_rendered_log = [
+    $log = [
       '#type' => 'table',
       '#header' => [
         $this->t('Event ID'),
@@ -104,8 +93,7 @@ class EmbargoesLogController extends ControllerBase {
     ];
 
     return [
-      '#type' => 'markup',
-      '#markup' => $pre_rendered_log,
+      'log' => $log,
     ];
   }
 

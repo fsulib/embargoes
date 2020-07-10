@@ -59,7 +59,7 @@ class EmbargoesIpRangeEntity extends ConfigEntityBase implements EmbargoesIpRang
    *
    * @var string[]
    */
-  protected $ranges;
+  protected $ranges = [];
 
   /**
    * The IP Range proxy URL.

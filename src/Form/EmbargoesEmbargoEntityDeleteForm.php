@@ -5,6 +5,7 @@ namespace Drupal\embargoes\Form;
 use Drupal\embargoes\EmbargoesLogServiceInterface;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

@@ -7,9 +7,11 @@ use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\NodeStorageInterface;
-use Drupal\Core\Entity\UserStorageInterface;
 use Drupal\Core\Routing\UrlGeneratorInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Utility\LinkGeneratorInterface;
+use Drupal\node\NodeStorageInterface;
+use Drupal\user\UserStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -39,11 +41,11 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
   protected $ipRanges;
 
   /**
-   * URL generator.
+   * Link generating service.
    *
-   * @var \Drupal\Core\Routing\UrlGeneratorInterface
+   * @var \Drupal\Core\Utility\LinkGeneratorInterface
    */
-  protected $urlGenerator;
+  protected $linkGenerator;
 
   /**
    * Create an embargo entity list builder.
@@ -52,21 +54,21 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
    *   An entity type interface for embargoes.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   Entity storage for embargoes.
-   * @param \Drupal\Core\Entity\UserStorageInterface $user
+   * @param \Drupal\user\UserStorageInterface $user
    *   User storage.
-   * @param \Drupal\Core\Entity\NodeStorageInterface $node
+   * @param \Drupal\node\NodeStorageInterface $node
    *   Node storage.
-   * @param \Drupal\embargoes\EmbargoesIpRangeEntityInterface $ip_ranges
+   * @param \Drupal\Core\Entity\EntityStorageInterface $ip_ranges
    *   IP range entity interface.
-   * @param \Drupal\Core\Routing\UrlGeneratorInterface $url_generator
-   *   A URL generator.
+   * @param \Drupal\Core\Utility\LinkGeneratorInterface $link_generator
+   *   Link generator.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, UserStorageInterface $user, NodeStorageInterface $node, EmbargoesIpRangeEntityInterface $ip_ranges, UrlGeneratorInterface $url_generator) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, UserStorageInterface $user, NodeStorageInterface $node, EntityStorageInterface $ip_ranges, LinkGeneratorInterface $link_generator) {
     parent::__construct($entity_type, $storage);
     $this->user = $user;
     $this->node = $node;
     $this->ipRanges = $ip_ranges;
-    $this->urlGenerator = $url_generator;
+    $this->linkGenerator = $link_generator;
   }
 
   /**
@@ -79,7 +81,7 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
       $container->get('entity_type.manager')->getStorage('user'),
       $container->get('entity_type.manager')->getStorage('node'),
       $container->get('entity_type.manager')->getStorage('embargoes_ip_range_entity'),
-      $container->get('url_generator'));
+      $container->get('link_generator'));
   }
 
   /**
@@ -107,39 +109,26 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
     foreach ($entity->getExemptUsers() as $user) {
       $uid = $user['target_id'];
       $user_entity = $this->user->load($uid);
-      $formatted_users[] = [
-        '#type' => 'link',
-        '#title' => $user_entity->getUserName(),
-        '#url' => $this->urlGenerator->generateFromRoute('entity.user.canonical', [
-          'user' => $uid,
-        ]),
-      ];
-
+      $formatted_users[] = $this->linkGenerator->generate($user_entity->getUserName(), Url::fromRoute('entity.user.canonical', [
+        'user' => $uid,
+      ]));
     }
     $formatted_exempt_users_row = ['data' => $formatted_users];
 
     $nid = $entity->getEmbargoedNode();
     $node = $this->node->load($nid);
-    $formatted_node_row = [
-      '#type' => 'link',
-      '#title' => $node->title->value,
-      '#url' => $this->urlGenerator->generateFromRoute('entity.node.canonical', [
-        'node' => $nid,
-      ]),
-    ];
+    $formatted_node_row = $this->linkGenerator->generate($node->title->value, Url::fromRoute('entity.node.canonical', [
+      'node' => $nid,
+    ]));
 
     $ip_range = $this->ipRanges->load($entity->getExemptIps());
     if (!is_null($ip_range)) {
-      $ip_range_formatted = [
-        '#type' => 'link',
-        '#title' => $ip_range->label(),
-        '#url' => $this->urlGenerator->generateFromRoute('entity.embargoes_ip_range_entity.add_form', [
-          'id' => $entity->getExemptIps(),
-        ]),
-      ];
+      $ip_range_formatted = $this->linkGenerator->generate($ip_range->label(), Url::fromRoute('entity.embargoes_ip_range_entity.add_form', [
+        'embargoes_ip_range_entity' => $entity->getExemptIps(),
+      ]));
     }
     else {
-      $ip_range_formatted = "None";
+      $ip_range_formatted = $this->t("None");
     }
 
     $formatted_emails = [
