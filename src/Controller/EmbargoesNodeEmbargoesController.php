@@ -152,8 +152,6 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
       '#link' => Url::fromRoute('entity.embargoes_embargo_entity.add_form'),
     ];
 
-    ksm($markup);
-
     return $markup;
   }
 
