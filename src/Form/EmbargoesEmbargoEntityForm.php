@@ -144,7 +144,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#target_type' => 'node',
       '#title' => $this->t('Embargoed node'),
       '#maxlength' => 255,
-      '#default_value' => $embargoed_node ? $embargoed_node : [],
+      '#default_value' => $embargoed_node ? $embargoed_node : NULL,
       '#required' => TRUE,
     ];
 
