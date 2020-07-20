@@ -36,6 +36,7 @@ function embargoes_file_access(EntityInterface $file, $operation, AccountInterfa
  * Implements hook_node_view().
  */
 function embargoes_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  \Drupal::service('embargoes.node_access')->isActivelyEmbargoed($entity, \Drupal::currentUser());
   $node_embargo = \Drupal::service('embargoes.node_access');
   $ip_url = $node_embargo->getIpEmbargoedRedirectUrl($entity);
   if ($ip_url) {

@@ -12,6 +12,7 @@ use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use InvalidArgumentException;
 
 /**
  * Base implementation of embargoed access.
@@ -111,19 +112,17 @@ abstract class EmbargoedAccessResult implements EmbargoedAccessInterface {
    * @return string
    *   The entity type this access control should apply to.
    */
-  public static function entityType() {
-    return '';
-  }
+  abstract public static function entityType();
 
   /**
    * {@inheritdoc}
    */
   public function isActivelyEmbargoed(EntityInterface $entity) {
-    $group_type = $entity->getEntityType()->getGroupType();
+    $entity_type = $entity->getEntityType()->id();
     $expected = static::entityType();
-    if ($group_type !== $expected) {
+    if ($entity_type !== $expected) {
       throw new InvalidArgumentException($this->translator->translate('Attempting to check embargoed access status for an entity of type %type (expected: %expected)', [
-        '%type' => $group_type,
+        '%type' => $entity_type,
         '%expected' => $expected,
       ]));
     }

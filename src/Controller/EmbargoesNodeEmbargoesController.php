@@ -44,7 +44,6 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
    *   Renderable array to show the embargoes on a node.
    */
   public function showEmbargoes(NodeInterface $node = NULL) {
-
     $embargo_ids = $this->embargoes->getAllEmbargoesByNids([$node->id()]);
     if (empty($embargo_ids)) {
       $markup['embargoes'] = [
@@ -66,7 +65,9 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
         $formatted_users = [];
         $exempt_users = $embargo->getExemptUsers();
         if (empty($exempt_users)) {
-          $formatted_users[] = "None";
+          $formatted_users = [
+            '#markup' => $this->t('None'),
+          ];
         }
         else {
           foreach ($embargo->getExemptUsers() as $user) {
@@ -88,11 +89,13 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           $ip_range = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
           if (!is_null($ip_range)) {
             $ip_range_formatted = [
-              '#type' => 'link',
-              '#title' => $ip_range->label(),
-              '#url' => Url::fromRoute('entity.embargoes_ip_range.edit_form', [
-                'id' => $embargo->getExemptIps(),
-              ]),
+              'data' => [
+                '#type' => 'link',
+                '#title' => $ip_range->label(),
+                '#url' => Url::fromRoute('entity.embargoes_ip_range.edit_form', [
+                  'embargoes_embargo_entity' => $embargo->getExemptIps(),
+                ]),
+              ],
             ];
           }
           else {
@@ -113,19 +116,24 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           'exempt_ips' => $ip_range_formatted,
           'exempt_users' => $formatted_exempt_users_row,
           'additional_emails' => $formatted_emails,
-          'edit' => [
-            '#type' => 'link',
-            '#title' => $this->t('Edit'),
-            '#url' => Url::fromRoute('entity.embargoes_embargo_entity.edit_form', [
-              'id' => $embargo_id,
-            ]),
-          ],
-          'delete' => [
-            '#type' => 'link',
-            '#title' => $this->t('Delete'),
-            '#url' => Url::fromRoute('entity.embargoes_embargo_entity.delete_form', [
-              'id' => $embargo_id,
-            ]),
+          'operations' => [
+            'data' => [
+              '#type' => 'operations',
+              '#links' => [
+                'edit' => [
+                  'title' => $this->t('Edit'),
+                  'url' => Url::fromRoute('entity.embargoes_embargo_entity.edit_form', [
+                    'embargoes_embargo_entity' => $embargo_id,
+                  ]),
+                ],
+                'delete' => [
+                  'title' => $this->t('Delete'),
+                  'url' => Url::fromRoute('entity.embargoes_embargo_entity.delete_form', [
+                    'embargoes_embargo_entity' => $embargo_id,
+                  ]),
+                ],
+              ],
+            ],
           ],
         ];
         array_push($rows, $row);
@@ -139,17 +147,24 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
           $this->t('Exempt IP Range'),
           $this->t('Exempt Users'),
           $this->t('Additional Emails'),
-          $this->t('Edit'),
-          $this->t('Delete'),
+          $this->t('Operations'),
         ],
         '#rows' => $rows,
       ];
+
     }
 
     $markup['add_embargo'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Add Embargo'),
-      '#link' => Url::fromRoute('entity.embargoes_embargo_entity.add_form'),
+      '#type' => 'operations',
+      '#links' => [
+        'add' => [
+          'title' => $this->t('Add New Embargo'),
+          'url' => Url::fromRoute('embargoes.node.embargo', [
+            'node' => $node->id(),
+            'embargo_id' => 'add',
+          ]),
+        ],
+      ],
     ];
 
     return $markup;
