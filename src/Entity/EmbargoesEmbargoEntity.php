@@ -235,7 +235,7 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
    * {@inheritdoc}
    */
   public function setAdditionalEmails($emails) {
-    $emails = array_map('trim', explode(',', trim($emails)));
+    $emails = empty($emails) ? [] : array_map('trim', explode(',', trim($emails)));
     $this->set('additional_emails', $emails);
     return $this;
   }

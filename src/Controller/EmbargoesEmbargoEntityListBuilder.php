@@ -104,15 +104,33 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
    */
   public function buildRow(EntityInterface $entity) {
 
-    $formatted_users = [];
+    $users = [
+      'data' => [
+        '#type' => 'container',
+      ],
+    ];
     foreach ($entity->getExemptUsers() as $user) {
       $uid = $user['target_id'];
       $user_entity = $this->user->load($uid);
-      $formatted_users[] = $this->linkGenerator->generate($user_entity->getUserName(), Url::fromRoute('entity.user.canonical', [
-        'user' => $uid,
-      ]));
+      if ($user_entity) {
+        $users['data'][$user_entity->getUserName()] = [
+          '#type' => 'link',
+          '#title' => $user_entity->getUserName(),
+          '#url' => Url::fromRoute('entity.user.canonical', [
+            'user' => $uid,
+          ]),
+          '#suffix' => '<br>',
+        ];
+      }
+      else {
+        $users['data']["missing-{$uid}"] = [
+          '#markup' => $this->t('Invalid user (%uid)', [
+            '%uid' => (string) $uid,
+          ]),
+          '#suffix' => '<br>',
+        ];
+      }
     }
-    $formatted_exempt_users_row = ['data' => $formatted_users];
 
     $nid = $entity->getEmbargoedNode();
     $node = $this->node->load($nid);
@@ -131,15 +149,23 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
     }
 
     $formatted_emails = [
-      '#markup' => implode('<br>', $entity->getAdditionalEmails()),
+      'data' => [
+        '#type' => 'container',
+      ],
     ];
+    foreach ($entity->getAdditionalEmails() as $email) {
+      $formatted_emails['data'][$email] = [
+        '#markup' => $email,
+        '#suffix' => '<br>',
+      ];
+    }
 
     $row['id'] = $entity->id();
     $row['embargo_type'] = ($entity->getEmbargoType() == 1 ? 'Node' : 'Files');
     $row['expiration_type'] = ($entity->getExpirationType() == 1 ? 'Scheduled' : 'Indefinite');
     $row['expiration_date'] = (!empty($entity->getExpirationDate()) ? $entity->getExpirationDate() : 'None');
     $row['exempt_ips'] = $ip_range_formatted;
-    $row['exempt_users'] = $formatted_exempt_users_row;
+    $row['exempt_users'] = $users;
     $row['additional_emails'] = $formatted_emails;
     $row['notification_status'] = ucfirst($entity->getNotificationStatus());
     $row['embargoed_node'] = $formatted_node_row;
