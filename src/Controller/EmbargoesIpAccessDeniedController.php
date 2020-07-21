@@ -60,7 +60,7 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
     $requested_resource = $this->getRequestedResource();
     $contact_email = $this->config('embargoes.settings')->get('embargo_contact_email');
     $ranges = [];
-    foreach ($this->request->query->get('ranges') as $allowed_range) {
+    foreach ($this->request->query->get('ranges', []) as $allowed_range) {
       $allowed_range_entity = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($allowed_range);
       $proxy_url = $allowed_range_entity->getProxyUrl() != '' ? $allowed_range_entity->getProxyUrl() : NULL;
       if ($allowed_range_entity->getProxyUrl() != '') {
