@@ -1,0 +1,21 @@
+<!-- IP access denied. -->
+
+<p>{% trans %}Your request for the following resource could not be resolved: {{ requested_resource|placeholder }}{% endtrans %}</strong></p><br/>
+
+<p>{% trans %}Access to this resource is restricted to the following networks:{% endtrans %}</p>
+
+<ul>
+  {% for item in ranges %}
+    {% if item.proxy_url is defined %}
+    <li><a href='{{ item.proxy_url }}'>{{ item.label }}</a></li>
+    {% else %}
+    <li>{{ item.label }}</li>
+    {% endif %}
+  {% endfor %}
+</ul>
+
+<p>{% trans %}If any of the listed networks above appear as links, you may be able to reach the resource by authenticating through a proxy.{% endtrans %}</p>
+
+{% if contact_email != '' %}
+<p>If you have any questions about access to this resource, contact <a href='mailto:{{ contact_email }}'>{{ contact_email }}</a> for more information.</p>
+{% endif %}

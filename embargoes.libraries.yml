@@ -1,7 +1,0 @@
-embargoes-file-embargoes:
-  version: 1.x
-  js:
-    js/embargoes-file-embargoes.js: {}
-  dependencies:
-    - core/jquery
-    - core/jquery.once

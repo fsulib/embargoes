@@ -1,15 +1,15 @@
 <?php
 
+/**
+ * @file
+ * Install, update and uninstall functions for the embargoes module.
+ */
+
 use Drupal\Core\Database\Database;
 
 /**
-* @file
-* Install, update and uninstall functions for the embargoes module.
-*/
-
-/**
-* Implements hook_schema().
-*/
+ * Implements hook_schema().
+ */
 function embargoes_schema() {
   $schema['embargoes_log'] = [
     'description' => 'Embargo log table.',
