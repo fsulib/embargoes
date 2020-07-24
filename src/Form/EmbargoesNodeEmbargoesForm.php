@@ -53,7 +53,7 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
    *   An embargoes IP ranges manager.
    * @param \Drupal\embargoes\EmbargoesLogServiceInterface $embargoes_log
    *   An embargoes logging service.
-   * @param \Drupal\Component\Uuid\UuidInterface
+   * @param \Drupal\Component\Uuid\UuidInterface $uuid_generator
    *   A UUID generator.
    */
   public function __construct(EntityTypeManagerInterface $entity_manager, EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator) {
