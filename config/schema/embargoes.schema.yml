@@ -1,10 +1,10 @@
----
 condition.plugin.embargoes_embargoed_condition:
   type: condition.plugin
   mapping:
     filter:
       type: text
       label: 'Embargo Filter'
+
 embargoes.settings:
   type: config_object
   mapping:
@@ -17,3 +17,70 @@ embargoes.settings:
     show_embargo_message:
       type: boolean
       label: 'Whether to display an embargo warning on embargoed nodes'
+
+embargoes.embargoes_embargo_entity.*:
+  type: config_entity
+  label: 'Embargo config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    embargo_type:
+      type: boolean
+      label: 'Embargo Type'
+    expiration_type:
+      type: boolean
+      label: 'Expiration Type'
+    expiration_date:
+      type: string
+      label: 'Expiration Date'
+    exempt_ips:
+      type: string
+      label: 'Exempt IP Ranges'
+      nullable: true
+    exempt_users:
+      type: sequence
+      label: 'Exempt Users'
+      sequence:
+        type: mapping
+        mapping:
+          target_id:
+            type: integer
+    additional_emails:
+      type: sequence
+      label: 'Additional Emails'
+      sequence:
+        type: mapping
+        mapping:
+          additional_email:
+            type: string
+    embargoed_node:
+      type: integer
+      label: 'Embargoed Node'
+    notification_status:
+      type: string
+      label: 'Notification Status'
+
+embargoes.embargoes_ip_range_entity.*:
+  type: config_entity
+  label: 'IP Range config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    ranges:
+      type: sequence
+      label: 'Ranges'
+      sequence:
+        type: mapping
+        mapping:
+          range:
+            type: string
+    proxy_url:
+      type: string
+      label: 'Proxy URL'
+    uuid:
+      type: string

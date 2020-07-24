@@ -5,6 +5,7 @@ namespace Drupal\embargoes\Form;
 use Drupal\embargoes\EmbargoesIpRangesServiceInterface;
 use Drupal\embargoes\EmbargoesLogServiceInterface;
 use Drupal\node\NodeInterface;
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -37,6 +38,13 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
   protected $embargoesLog;
 
   /**
+   * A UUID generator service.
+   *
+   * @var \Drupal\Component\Uuid\UuidInterface
+   */
+  protected $uuidGenerator;
+
+  /**
    * Constructor for the node embargo form.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
@@ -45,11 +53,14 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
    *   An embargoes IP ranges manager.
    * @param \Drupal\embargoes\EmbargoesLogServiceInterface $embargoes_log
    *   An embargoes logging service.
+   * @param \Drupal\Component\Uuid\UuidInterface
+   *   A UUID generator.
    */
-  public function __construct(EntityTypeManagerInterface $entity_manager, EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log) {
+  public function __construct(EntityTypeManagerInterface $entity_manager, EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator) {
     $this->entityManager = $entity_manager;
     $this->ipRanges = $ip_ranges;
     $this->embargoesLog = $embargoes_log;
+    $this->uuidGenerator = $uuid_generator;
   }
 
   /**
@@ -59,7 +70,8 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('embargoes.ips'),
-      $container->get('embargoes.log'));
+      $container->get('embargoes.log'),
+      $container->get('uuid'));
   }
 
   /**
@@ -180,7 +192,9 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $embargo_id = $form_state->getValue('embargo_id');
     if ($embargo_id == 'add') {
-      $embargo = $this->entityManager->getStorage('embargoes_embargo_entity')->create();
+      $embargo = $this->entityManager->getStorage('embargoes_embargo_entity')->create([
+        'id' => sha1($this->uuidGenerator->generate()),
+      ]);
     }
     else {
       $embargo = $this->entityManager->getStorage('embargoes_embargo_entity')->load($embargo_id);
