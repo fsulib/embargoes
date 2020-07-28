@@ -9,10 +9,9 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Implements hook_node_access().
+ * Implements hook_ENTITY_TYPE_access().
  */
 function embargoes_node_access(NodeInterface $node, $operation, AccountInterface $account) {
   return \Drupal::service('embargoes.node_access')->isActivelyEmbargoed($node, $account);
@@ -33,50 +32,17 @@ function embargoes_file_access(EntityInterface $file, $operation, AccountInterfa
 }
 
 /**
- * Implements hook_node_view().
+ * Implements hook_ENTITY_TYPE_view().
  */
-function embargoes_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  \Drupal::service('embargoes.node_access')->isActivelyEmbargoed($entity, \Drupal::currentUser());
-  $node_embargo = \Drupal::service('embargoes.node_access');
-  $ip_url = $node_embargo->getIpEmbargoedRedirectUrl($entity);
-  if ($ip_url) {
-    $response = new RedirectResponse($ip_url);
-    $response->send();
-  }
-  else {
-    $node_embargo->setEmbargoMessage($entity);
-  }
+function embargoes_node_view(array &$build, EntityInterface $node, EntityViewDisplayInterface $display, $view_mode) {
+  \Drupal::service('embargoes.node_access')->setEmbargoMessage($node);
 }
 
 /**
  * Implements hook_ENTITY_TYPE_view().
  */
-function embargoes_media_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  $media_embargo = \Drupal::service('embargoes.media_access');
-  $ip_url = $media_embargo->getIpEmbargoedRedirectUrl($entity);
-  if ($ip_url) {
-    $response = new RedirectResponse($ip_url);
-    $response->send();
-  }
-  else {
-    $media_embargo->setEmbargoMessage($entity);
-  }
-}
-
-/**
- * Implements hook_file_download().
- */
-function embargoes_file_download($uri) {
-  $files = \Drupal::entityTypeManager()
-    ->getStorage('file')
-    ->loadByProperties(['uri' => $uri]);
-  $file = reset($files);
-  $file_embargo = \Drupal::service('embargoes.file_access');
-  $ip_url = $file_embargo->getIpEmbargoedRedirectUrl($file);
-  if ($ip_url) {
-    $response = new RedirectResponse($ip_url);
-    $response->send();
-  }
+function embargoes_media_view(array &$build, EntityInterface $media, EntityViewDisplayInterface $display, $view_mode) {
+  \Drupal::service('embargoes.media_access')->setEmbargoMessage($media);
 }
 
 /**
@@ -85,14 +51,13 @@ function embargoes_file_download($uri) {
 function embargoes_theme($existing, $type, $theme, $path) {
   return [
     'embargoes_ip_access_denied' => [
-      'render element' => 'children',
       'template' => 'embargoes-ip-access-denied',
       'variables' => [
         'requested_resource' => NULL,
         // Indexed array of ranges containing a 'proxy URL' (NULL if none exist)
         // and a display 'label'.
         'ranges' => [],
-        'contact_email' => '',
+        'contact_email' => NULL,
       ],
     ],
   ];

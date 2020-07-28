@@ -44,3 +44,12 @@ services:
       - '@string_translation'
       - '@url_generator'
       - '@current_user'
+  ip_redirect_attacher:
+    class: '\Drupal\embargoes\EventSubscriber\IpRedirectAttacher'
+    arguments:
+      - '@embargoes.node_access'
+      - '@embargoes.media_access'
+      - '@embargoes.file_access'
+      - '@current_user'
+    tags:
+      - { name: 'event_subscriber' }
