@@ -2,6 +2,10 @@
 
 namespace Drupal\embargoes\Plugin\Condition;
 
+use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\embargoes\EmbargoesEmbargoesServiceInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Condition\ConditionPluginBase;
 use Drupal\Core\Form\FormStateInterface;
