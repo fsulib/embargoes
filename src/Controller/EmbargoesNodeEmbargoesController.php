@@ -9,7 +9,7 @@ use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class EmbargoesLogController.
+ * Controller for displaying node embargoes.
  */
 class EmbargoesNodeEmbargoesController extends ControllerBase {
 

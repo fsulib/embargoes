@@ -214,13 +214,15 @@ class EmbargoesNodeEmbargoesForm extends FormBase {
     $log_values['embargo'] = $embargo->id();
 
     if ($embargo_id == 'add') {
-      $log_values['action'] = 'created';
+      $log_values['action'] = $embargo::STATUS_CREATED;
+      $action = 'created';
     }
     else {
-      $log_values['action'] = 'updated';
+      $log_values['action'] = $embargo::STATUS_UPDATED;
+      $action = 'updated';
     }
 
-    $this->messenger()->addMessage("Your embargo has been {$log_values['action']}.");
+    $this->messenger()->addMessage("Your embargo has been {$action}.");
     $this->embargoesLog->logEmbargoEvent($log_values);
     $form_state->setRedirect('embargoes.node.embargoes', ['node' => $form_state->getValue('embargoed_node')]);
   }

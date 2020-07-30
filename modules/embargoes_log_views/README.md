@@ -1,36 +1,30 @@
-# Embargoes
+# Embargoes Log Views
 
-Adds the ability to manage embargo policies with access restrictions on content.
+Provides views functionality and a default view for embargo logs.
 
 ## Requirements
 
 This module requires the following modules/libraries:
 
-* [Menu UI](https://www.drupal.org/docs/core-modules-and-themes/core-modules/menu-ui-module)
+* Embargoes
+* The core Drupal views implementation
 
 ## Installation
 
 Install as
 [usual](https://www.drupal.org/docs/8/extending-drupal-8/installing-drupal-8-modules).
 
-## Configuration
-
-Configuration options can be set at `admin/config/content/embargoes/settings`,
-including notification options and IP range settings that can apply to
-embargoes.
-
-To add an IP range for use on embargoes, navigate to
-`admin/config/content/embargoes/settings/ips` and click 'Add IP range'. Ranges
-created via this method can then be used as IP address whitelists when creating
-embargoes.
+If Embargoes has already been installed and in use, run Drupal database updates
+to ensure the database is current.
 
 ## Usage
 
-### Applying an embargo
+The default view can be accessed at `admin/reports/embargoes_logs`. It can be
+edited at `admin/structure/views/view/embargoes_logs`.
 
-An embargo can be applied to an existing node by navigating to
-`node/{node_id}/embargoes`. From here, an embargo can be applied if it doesn't
-already exist, and existing embargoes can be modified or removed.
+You can create more log views by navigating to `admin/structure/views/add` and
+selecting 'Embargoes log entries' from the 'Show:' drop-down menu under 'View
+Settings'.
 
 ## Troubleshooting/Issues
 

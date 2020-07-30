@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class EmbargoesLogController.
+ * Controller for displaying an IP access denied message.
  */
 class EmbargoesIpAccessDeniedController extends ControllerBase {
 

@@ -24,8 +24,8 @@ function embargoes_schema() {
         'not null' => TRUE,
       ],
       'action' => [
-        'type' => 'varchar',
-        'length' => 255,
+        'type' => 'int',
+        'size' => 'tiny',
         'not null' => TRUE,
       ],
       'node' => [
@@ -43,6 +43,11 @@ function embargoes_schema() {
       ],
     ],
     'primary key' => ['id'],
+    'indexes' => [
+      'action' => ['action'],
+      'uid' => ['uid'],
+      'node' => ['node'],
+    ],
   ];
   return $schema;
 }
@@ -55,4 +60,19 @@ function embargoes_update_8001(&$sandbox) {
     'not null' => TRUE,
     'type' => 'int',
   ]);
+}
+
+/**
+ * Update the 'action' column to use integers. Add indices.
+ */
+function embargoes_update_8002(&$sandbox) {
+  $schema = Database::getConnection()->schema();
+  $schema->changeField('embargoes_log', 'action', 'action', [
+    'type' => 'int',
+    'size' => 'tiny',
+    'not null' => TRUE,
+  ]);
+  $schema->addIndex('embargoes_log', 'action', ['action']);
+  $schema->addIndex('embargoes_log', 'uid', ['uid']);
+  $schema->addIndex('embargoes_log', 'node', ['node']);
 }
