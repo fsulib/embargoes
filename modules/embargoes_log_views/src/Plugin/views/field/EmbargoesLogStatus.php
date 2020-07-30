@@ -110,4 +110,5 @@ class EmbargoesLogStatus extends FieldPluginBase {
     }
     return $this->sanitizeValue($value);
   }
+
 }

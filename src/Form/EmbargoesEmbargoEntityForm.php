@@ -52,7 +52,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
    *   An embargoes logging service.
    * @param \Drupal\Component\Uuid\UuidInterface $uuid_generator
    *   A UUID generator.
-   * @param \Drupal\embargoes\EmbargoesEmbargoesServiceInterface
+   * @param \Drupal\embargoes\EmbargoesEmbargoesServiceInterface $embargoes_service
    *   An embargoes service.
    */
   public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator, EmbargoesEmbargoesServiceInterface $embargoes_service) {

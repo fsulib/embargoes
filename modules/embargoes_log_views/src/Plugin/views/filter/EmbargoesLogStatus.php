@@ -73,4 +73,5 @@ class EmbargoesLogStatus extends InOperator {
     }
     return $this->valueOptions;
   }
+
 }

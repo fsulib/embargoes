@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @file
  * Implements views integration for embargo logs.
  */
 

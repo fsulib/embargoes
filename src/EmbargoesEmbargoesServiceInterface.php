@@ -151,10 +151,10 @@ interface EmbargoesEmbargoesServiceInterface {
   /**
    * Gets a list of valid notification statuses with accompanying names.
    *
-   * @param Drupal\embargoes\Entity\EmbargoesEmbargoEntityInterface
+   * @param Drupal\embargoes\Entity\EmbargoesEmbargoEntityInterface $embargo
    *   The embargo to get valid notification statuses for.
    *
-   * @return []
+   * @return array
    *   Array mapping notification status IDs to their human-readable names.
    */
   public function getNotificationStatusesAsFormOptions(EmbargoesEmbargoEntityInterface $embargo);
