@@ -69,13 +69,6 @@ abstract class EmbargoedAccessResult implements EmbargoedAccessInterface {
   protected $urlGenerator;
 
   /**
-   * The current user entity.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $currentUser;
-
-  /**
    * Constructor for access control managers.
    *
    * @param \Drupal\embargoes\EmbargoesEmbargoesServiceInterface $embargoes
@@ -92,10 +85,8 @@ abstract class EmbargoedAccessResult implements EmbargoedAccessInterface {
    *   A string translation manager.
    * @param \Drupal\Core\Routing\UrlGeneratorInterface $url_generator
    *   A URL generator.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
    */
-  public function __construct(EmbargoesEmbargoesServiceInterface $embargoes, RequestStack $request_stack, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config, MessengerInterface $messenger, TranslationInterface $translator, UrlGeneratorInterface $url_generator, AccountInterface $current_user) {
+  public function __construct(EmbargoesEmbargoesServiceInterface $embargoes, RequestStack $request_stack, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config, MessengerInterface $messenger, TranslationInterface $translator, UrlGeneratorInterface $url_generator) {
     $this->embargoes = $embargoes;
     $this->request = $request_stack->getCurrentRequest();
     $this->entityTypeManager = $entity_type_manager;
@@ -103,7 +94,6 @@ abstract class EmbargoedAccessResult implements EmbargoedAccessInterface {
     $this->messenger = $messenger;
     $this->translator = $translator;
     $this->urlGenerator = $url_generator;
-    $this->currentUser = $current_user;
   }
 
   /**
@@ -117,7 +107,7 @@ abstract class EmbargoedAccessResult implements EmbargoedAccessInterface {
   /**
    * {@inheritdoc}
    */
-  public function isActivelyEmbargoed(EntityInterface $entity) {
+  public function isActivelyEmbargoed(EntityInterface $entity, AccountInterface $user) {
     $entity_type = $entity->getEntityType()->id();
     $expected = static::entityType();
     if ($entity_type !== $expected) {
@@ -155,7 +145,7 @@ abstract class EmbargoedAccessResult implements EmbargoedAccessInterface {
           $expiration_date = $expiration ? $embargo->getExpirationDate() : '';
           $args = [
             '%date' => $expiration_date,
-            '%ip_range' => $ip_range,
+            '%ip_range' => $ip_range->label(),
           ];
           // Determine a message to set.
           if (!$type && is_null($ip_range) && !$expiration) {
@@ -206,7 +196,7 @@ abstract class EmbargoedAccessResult implements EmbargoedAccessInterface {
   /**
    * {@inheritdoc}
    */
-  public function getIpEmbargoRedirectUrl(EntityInterface $entity) {
+  public function getIpEmbargoRedirectUrl(EntityInterface $entity, AccountInterface $user) {
     return $this->urlGenerator->generateFromRoute('embargoes.ip_access_denied', [
       'query' => [
         'path' => $this->request->getRequestUri(),

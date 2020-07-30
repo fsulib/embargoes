@@ -37,33 +37,17 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
   }
 
   /**
-   * Helper function to attempt to get the current request.
-   *
-   * @return string|null
-   *   The requested resource, or NULL if there is no current request.
-   */
-  protected function getRequestedResource() {
-    if (!is_null($this->request)) {
-      $path = $this->request->query->get('path');
-      $host = $this->request->getSchemeAndHttpHost();
-      return "{$host}{$path}";
-    }
-  }
-
-  /**
    * Formats a response for an IP access denied page.
    *
    * @return array
    *   Renderable array of markup for IP access denied.
    */
   public function response() {
-    $requested_resource = $this->getRequestedResource();
-    $contact_email = $this->config('embargoes.settings')->get('embargo_contact_email');
     $ranges = [];
-    foreach ($this->request->query->get('ranges', []) as $allowed_range) {
+    foreach ((array) $this->request->query->get('ranges', []) as $allowed_range) {
       $allowed_range_entity = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($allowed_range);
-      $proxy_url = $allowed_range_entity->getProxyUrl() != '' ? $allowed_range_entity->getProxyUrl() : NULL;
-      if ($allowed_range_entity->getProxyUrl() != '') {
+      if ($allowed_range_entity) {
+        $proxy_url = $allowed_range_entity->getProxyUrl() != '' ? $allowed_range_entity->getProxyUrl() : NULL;
         $ranges[] = [
           'proxy_url' => $proxy_url,
           'label' => $allowed_range_entity->label(),
@@ -73,11 +57,9 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
 
     return [
       '#theme' => 'embargoes_ip_access_denied',
-      '#variables' => [
-        'requested_resource' => $requested_resource,
-        'ranges' => $ranges,
-        'contact_email' => $contact_email,
-      ],
+      '#requested_resource' => $this->request->query->get('label', ''),
+      '#ranges' => $ranges,
+      '#contact_email' => $this->config('embargoes.settings')->get('embargo_contact_email'),
     ];
   }
 

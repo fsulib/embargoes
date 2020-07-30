@@ -92,8 +92,8 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
               'data' => [
                 '#type' => 'link',
                 '#title' => $ip_range->label(),
-                '#url' => Url::fromRoute('entity.embargoes_ip_range.edit_form', [
-                  'embargoes_embargo_entity' => $embargo->getExemptIps(),
+                '#url' => Url::fromRoute('entity.embargoes_ip_range_entity.edit_form', [
+                  'embargoes_ip_range_entity' => $embargo->getExemptIps(),
                 ]),
               ],
             ];
