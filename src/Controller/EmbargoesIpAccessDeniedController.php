@@ -46,11 +46,13 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
     $ranges = [];
     foreach ($this->request->query->get('ranges', []) as $allowed_range) {
       $allowed_range_entity = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($allowed_range);
-      $proxy_url = $allowed_range_entity->getProxyUrl() != '' ? $allowed_range_entity->getProxyUrl() : NULL;
-      $ranges[] = [
-        'proxy_url' => $proxy_url,
-        'label' => $allowed_range_entity->label(),
-      ];
+      if ($allowed_range_entity) {
+        $proxy_url = $allowed_range_entity->getProxyUrl() != '' ? $allowed_range_entity->getProxyUrl() : NULL;
+        $ranges[] = [
+          'proxy_url' => $proxy_url,
+          'label' => $allowed_range_entity->label(),
+        ];
+      }
     }
 
     return [
