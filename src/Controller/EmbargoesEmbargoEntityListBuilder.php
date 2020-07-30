@@ -172,7 +172,11 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
     $row['exempt_ips'] = $ip_range_formatted;
     $row['exempt_users'] = $users;
     $row['additional_emails'] = $formatted_emails;
-    $row['notification_status'] = $this->embargoes->getNotificationStatusesAsFormOptions($entity)[$entity->getNotificationStatus()];
+    $notification_status = $entity->getNotificationStatus();
+    if (isset($this->embargoes->getNotificationStatusesAsFormOptions($entity)[$notification_status])) {
+      $notification_status = $this->embargoes->getNotificationStatusesAsFormOptions($entity)[$notification_status];
+    }
+    $row['notification_status'] = $notification_status;
     $row['embargoed_node'] = $formatted_node_row;
     return $row + parent::buildRow($entity);
   }

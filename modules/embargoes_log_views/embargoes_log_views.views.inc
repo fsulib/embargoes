@@ -58,7 +58,7 @@ function embargoes_log_views_views_data() {
     'title' => t('Action Taken'),
     'help' => t('The action that was taken for the log entry.'),
     'field' => [
-      'id' => 'standard',
+      'id' => 'embargoes_log_status',
     ],
     'sort' => [
       'id' => 'standard',

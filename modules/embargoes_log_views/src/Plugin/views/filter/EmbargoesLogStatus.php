@@ -29,9 +29,6 @@ class EmbargoesLogStatus extends InOperator {
   protected $embargoesStorage;
 
   /**
-   * An embargoes storage interface.
-
-  /**
    * Creates a new log statuses filter.
    *
    * @param array $configuration
