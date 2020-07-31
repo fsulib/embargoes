@@ -72,7 +72,7 @@ class EmbargoesEmbargoPoliciesBlock extends BlockBase implements ContainerFactor
    *   An entity type manager.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ResettableStackedRouteMatchInterface $route_match, EmbargoesEmbargoesServiceInterface $embargoes, EntityTypeManagerInterface $entity_manager) {
-    parent::construct($configuration, $plugin_id, $plugin_definition);
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->routeMatch = $route_match;
     $this->embargoes = $embargoes;
     $this->entityManager = $entity_manager;
@@ -103,7 +103,7 @@ class EmbargoesEmbargoPoliciesBlock extends BlockBase implements ContainerFactor
             $embargo_info['expiration'] = $t->translate('Duration: Indefinite');
           }
           else {
-            $embargo_info['expiration'] = $t->translate('Duration: @duration', [
+            $embargo_info['expiration'] = $t->translate('Duration: Until @duration', [
               '@duration' => $embargo->getExpirationDate(),
             ]);
           }
@@ -115,7 +115,7 @@ class EmbargoesEmbargoPoliciesBlock extends BlockBase implements ContainerFactor
             $embargo_info['type'] = $t->translate('Disallow Access To: Resource');
           }
           // Exempt IP string.
-          if (is_null($embargo->getExemptIps())) {
+          if (!($embargo->getExemptIps())) {
             $embargo_info['exempt_ips'] = '';
           }
           else {
@@ -129,24 +129,17 @@ class EmbargoesEmbargoPoliciesBlock extends BlockBase implements ContainerFactor
         }
 
         return [
-          '#theme' => 'embargo_policies',
+          '#theme' => 'embargoes_policies',
           '#count' => $embargoes_count,
-          '#embargo_info' => $embargo_info,
+          '#embargo_info' => $embargoes_info,
           '#cache' => [
             'tags' => $cache_tags,
-          ];
+          ],
         ];
       }
     }
 
     return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheMaxAge() {
-    return 0;
   }
 
 }

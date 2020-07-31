@@ -107,7 +107,9 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
         }
 
         $formatted_emails = [
-          '#markup' => implode('<br>', $embargo->getAdditionalEmails()),
+          'data' => [
+            '#markup' => implode('<br>', $embargo->getAdditionalEmails()),
+          ],
         ];
 
         $row = [
