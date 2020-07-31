@@ -108,22 +108,6 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
   /**
    * {@inheritdoc}
    */
-  public function save() {
-    parent::save();
-    drupal_flush_all_caches();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function delete() {
-    parent::delete();
-    drupal_flush_all_caches();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getEmbargoType() {
     return $this->get('embargo_type');
   }
@@ -285,6 +269,15 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
     }
     $this->set('notification_status', $status);
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTagsToInvalidate() {
+    $tags = parent::getCacheTagsToInvalidate[];
+    $tags[] = "node:{$this->getEmbargoedNode()}";
+    return $tags;
   }
 
 }

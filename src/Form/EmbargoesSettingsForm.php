@@ -65,7 +65,6 @@ class EmbargoesSettingsForm extends ConfigFormBase {
     $config->set('embargo_contact_email', $form_state->getValue('embargo_contact_email'));
     $config->save();
     parent::submitForm($form, $form_state);
-    drupal_flush_all_caches();
   }
 
 }
