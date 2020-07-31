@@ -85,44 +85,61 @@ class EmbargoesEmbargoPoliciesBlock extends BlockBase implements ContainerFactor
     $node = $this->routeMatch->getParameter('node');
     if ($node instanceof NodeInterface) {
       $embargoes = $this->embargoes->getCurrentEmbargoesByNids([$node->id()]);
-      $embargo_count = count($embargoes);
       if (count($embargoes) > 0) {
-        $embargo_plurality = ($embargo_count == 1 ? "embargo" : "embargoes");
-        $body = "<span id='embargoes_embargo_policy_block_preamble' class='embargoes_embargo_policy_block'>This resource has {$embargo_count} {$embargo_plurality}:</span>";
+        $t = $this->getStringTranslation();
+        $embargoes_info = [];
+        $cache_tags = [
+          "node:{$node->id()}",
+        ];
+        $embargoes_count = $t->formatPlural(count($embargoes),
+          'This resource has 1 embargo:',
+          'This resource has @count embargoes:');
+
         foreach ($embargoes as $embargo_id) {
-          $body .= "<hr id='embargoes_embargo_policy_block_separator' class='embargoes_embargo_policy_block'><ul class='embargoes_embargo_policy_block embargoes_embargo_policy_block_list'>";
           $embargo = $this->entityManager->getStorage('embargoes_embargo_entity')->load($embargo_id);
-
-          if ($embargo->getExpirationType() == 0) {
-            $embargo_expiry = 'Indefinite';
+          $embargo_info = [];
+          // Expiration string.
+          if (!$embargo->getExpirationType()) {
+            $embargo_info['expiration'] = $t->translate('Duration: Indefinite');
           }
           else {
-            $embargo_expiry = "Until {$embargo->getExpirationDate()}";
+            $embargo_info['expiration'] = $t->translate('Duration: @duration', [
+              '@duration' => $embargo->getExpirationDate(),
+            ]);
           }
-          $embargo_expiry_string = "<li id='embargoes_embargo_policy_block_expiration_item' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item'><strong id='embargoes_embargo_policy_block_expiration_label' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>Duration:</strong> {$embargo_expiry}</li>";
-          $body .= $embargo_expiry_string;
-
-          $embargo_type = ($embargo->getEmbargoType() == 1 ? 'Resource' : 'Resource Files');
-          $embargo_type_string = "<li id='embargoes_embargo_policy_block_type_item' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item'><strong id='embargoes_embargo_policy_block_type_label' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>Disallow Access To:</strong> {$embargo_type}</li>";
-          $body .= $embargo_type_string;
-
+          // Embargo type string.
+          if (!$embargo->getEmbargoType()) {
+            $embargo_info['type'] = $t->translate('Disallow Access To: Resource Files');
+          }
+          else {
+            $embargo_info['type'] = $t->translate('Disallow Access To: Resource');
+          }
+          // Exempt IP string.
           if (is_null($embargo->getExemptIps())) {
-            $embargo_ips_string = "";
+            $embargo_info['exempt_ips'] = '';
           }
           else {
-            $embargo_ips = $this->entityManager->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps())->label();
-            $embargo_ips_string = "<li id='embargoes_embargo_policy_block_network_item' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item'><strong id='embargoes_embargo_policy_block_network_label' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>Allowed Networks:</strong> {$embargo_ips}</li>";
+            $embargo_info['exempt_ips'] = $t->translate('Allowed Networks: @network', [
+              '@network' => $this->entityManager->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps())->label(),
+            ]);
           }
-          $body .= $embargo_ips_string;
+          $embargoes_info[] = $embargo_info;
 
-          $body .= "</ul>";
+          $cache_tags[] = "embargoes_embargo_entity:{$embargo->id()}";
         }
+
+        return [
+          '#theme' => 'embargo_policies',
+          '#count' => $embargoes_count,
+          '#embargo_info' => $embargo_info,
+          '#cache' => [
+            'tags' => $cache_tags,
+          ];
+        ];
       }
     }
 
-    return [
-      '#markup' => $body,
-    ];
+    return [];
   }
 
   /**
