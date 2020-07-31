@@ -64,15 +64,24 @@ class IpRedirectAttacher implements EventSubscriberInterface {
     $redirect_url = NULL;
     // Redirect for nodes.
     if (substr($route_name, 0, 11) == 'entity.node') {
-      $redirect_url = $this->nodeAccess->getIpEmbargoedRedirectUrl($response->getRequest()->attributes->get('node'), $this->user);
+      $node = $response->getRequest()->attributes->get('node');
+      if ($node) {
+        $redirect_url = $this->nodeAccess->getIpEmbargoedRedirectUrl($node, $this->user);
+      }
     }
     // Redirect for media.
     elseif (substr($route_name, 0, 12) == 'entity.media') {
-      $redirect_url = $this->mediaAccess->getIpEmbargoedRedirectUrl($response->getRequest()->attributes->get('media'), $this->user);
+      $media = $response->getRequest()->attributes->get('media');
+      if ($media) {
+        $redirect_url = $this->mediaAccess->getIpEmbargoedRedirectUrl($media, $this->user);
+      }
     }
     // Redirect for files.
     elseif (substr($route_name, 0, 11) == 'entity.file') {
-      $redirect_url = $this->fileAccess->getIpEmbargoedRedirectUrl($response->getRequest()->attributes->get('file'), $this->user);
+      $file = $response->getRequest()->attributes->get('file');
+      if ($file) {
+        $redirect_url = $this->fileAccess->getIpEmbargoedRedirectUrl($file, $this->user);
+      }
     }
     if ($redirect_url) {
       $response->setResponse(new RedirectResponse($redirect_url));
