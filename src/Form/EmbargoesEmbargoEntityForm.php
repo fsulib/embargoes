@@ -192,14 +192,13 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
 
     if ($status == SAVED_NEW) {
       $log_values['action'] = $embargo::STATUS_CREATED;
-      $action = 'created';
+      $this->messenger->addMessage($this->t('Your embargo has been created.'));
     }
     else {
       $log_values['action'] = $embargo::STATUS_UPDATED;
-      $action = 'updated';
+      $this->messenger->addMessage($this->t('Your embargo has been updated.'));
     }
 
-    $this->messenger()->addMessage("Your embargo has been {$action}.");
     $this->embargoesLog->logEmbargoEvent($log_values);
     $form_state->setRedirectUrl($embargo->toUrl('collection'));
   }
