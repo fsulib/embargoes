@@ -3,8 +3,10 @@
 namespace Drupal\embargoes\EventSubscriber;
 
 use Drupal\embargoes\Access\EmbargoedAccessInterface;
+use Drupal\file\FileInterface;
+use Drupal\node\NodeInterface;
+use Drupal\media\MediaInterface;
 use Drupal\Core\Session\AccountInterface;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -60,27 +62,21 @@ class IpRedirectAttacher implements EventSubscriberInterface {
    *   The initial response.
    */
   public function attachIpRedirect(GetResponseEvent $response) {
-    $route_name = $response->getRequest()->attributes->get(RouteObjectInterface::ROUTE_NAME);
     $redirect_url = NULL;
-    // Redirect for nodes.
-    if (substr($route_name, 0, 11) == 'entity.node') {
-      $node = $response->getRequest()->attributes->get('node');
-      if ($node) {
-        $redirect_url = $this->nodeAccess->getIpEmbargoedRedirectUrl($node, $this->user);
+    // Cycle through all attributes; the first one we get back that's restricted
+    // means redirection is necessary.
+    foreach ($response->getRequest()->attributes->all() as $attribute) {
+      if ($attribute instanceof NodeInterface) {
+        $redirect_url = $this->nodeAccess->getIpEmbargoedRedirectUrl($attribute, $this->user);
+        break;
       }
-    }
-    // Redirect for media.
-    elseif (substr($route_name, 0, 12) == 'entity.media') {
-      $media = $response->getRequest()->attributes->get('media');
-      if ($media) {
-        $redirect_url = $this->mediaAccess->getIpEmbargoedRedirectUrl($media, $this->user);
+      if ($attribute instanceof MediaInterface) {
+        $redirect_url = $this->mediaAccess->getIpEmbargoedRedirectUrl($attribute, $this->user);
+        break;
       }
-    }
-    // Redirect for files.
-    elseif (substr($route_name, 0, 11) == 'entity.file') {
-      $file = $response->getRequest()->attributes->get('file');
-      if ($file) {
-        $redirect_url = $this->fileAccess->getIpEmbargoedRedirectUrl($file, $this->user);
+      if ($attribute instanceof FileInterface) {
+        $redirect_url = $this->fileAccess->getIpEmbargoedRedirectUrl($attribute, $this->user);
+        break;
       }
     }
     if ($redirect_url) {

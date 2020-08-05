@@ -46,6 +46,22 @@ function embargoes_media_view(array &$build, EntityInterface $media, EntityViewD
 }
 
 /**
+ * Implemens hook_file_download().
+ */
+function embargoes_file_download($uri) {
+  $files = \Drupal::entityTypeManager()
+    ->getStorage('file')
+    ->loadByProperties(['uri' => $uri]);
+  $file = reset($files);
+  if ($file instanceof EntityInterface) {
+    $access = \Drupal::service('embargoes.file_access')->isActivelyEmbargoed($file, \Drupal::currentUser());
+    if ($access->isForbidden()) {
+      return -1;
+    }
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function embargoes_theme($existing, $type, $theme, $path) {

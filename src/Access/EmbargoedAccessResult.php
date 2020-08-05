@@ -145,7 +145,7 @@ abstract class EmbargoedAccessResult implements EmbargoedAccessInterface {
           $expiration_date = $expiration ? $embargo->getExpirationDate() : '';
           $args = [
             '%date' => $expiration_date,
-            '%ip_range' => $ip_range->label(),
+            '%ip_range' => $ip_range ? $ip_range->label() : '',
           ];
           // Determine a message to set.
           if (!$type && is_null($ip_range) && !$expiration) {

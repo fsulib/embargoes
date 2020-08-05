@@ -100,7 +100,7 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
       $embargo = $this->entityManager
         ->getStorage('embargoes_embargo_entity')
         ->load($embargo_id);
-      if (!is_null($embargo->getExemptIps())) {
+      if (!empty($embargo->getExemptIps())) {
         $ip_allowed_current_embargoes[$embargo_id] = $embargo_id;
       }
     }
@@ -165,7 +165,7 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
       $embargo = $this->entityManager
         ->getStorage('embargoes_embargo_entity')
         ->load($embargo_id);
-      if (!is_null($embargo->getExemptIps())) {
+      if (!empty($embargo->getExemptIps())) {
         $ip_allowed_embargoes[$embargo_id] = $embargo->getExemptIps();
       }
     }
