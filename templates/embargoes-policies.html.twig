@@ -1,0 +1,22 @@
+{#
+  /**
+   * @file
+   * Formats an IP restricted page.
+   *
+   * Available variables:
+   * - 'count': the count to display
+   * - 'embargoes_info': an indexed array containing any information required to
+   *   display each individual embargo.
+   */
+#}
+
+<span id='embargoes_embargo_policy_block_preamble' class='embargoes_embargo_policy_block'>{{ count }}</span>
+
+{% for info in embargoes_info %}
+<hr id='embargoes_embargo_policy_block_separator' class='embargoes_embargo_policy_block'>
+<ul class='embargoes_embargo_policy_block embargoes_embargo_policy_block_list'>
+  <li id='embargoes_embargo_policy_block_expiration_item' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item'><strong id='embargoes_embargo_policy_block_expiration_label' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>{{ info.expiration }}</strong></li>
+  <li id='embargoes_embargo_policy_block_type_item' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item'><strong id='embargoes_embargo_policy_block_type_label' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>{{ info.type }}</strong></li>
+  <li id='embargoes_embargo_policy_block_network_item' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item'><strong id='embargoes_embargo_policy_block_network_label' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>{{ info.exempt_ips }}</strong></li>
+</ul>
+{% endfor %}

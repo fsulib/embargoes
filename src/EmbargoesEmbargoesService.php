@@ -2,11 +2,13 @@
 
 namespace Drupal\embargoes;
 
+use Drupal\embargoes\Entity\EmbargoesEmbargoEntityInterface;
 use Drupal\file\FileInterface;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslationInterface;
 
 /**
  * Class EmbargoesEmbargoesService.
@@ -35,6 +37,13 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
   protected $ipRanges;
 
   /**
+   * Translation service.
+   *
+   * @var \Drupal\Core\StringTranslation\TranslationInterface
+   */
+  protected $translation;
+
+  /**
    * Constructs a new EmbargoesEmbargoesService object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $manager
@@ -43,11 +52,14 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
    *   An entity field manager.
    * @param \Drupal\embargoes\EmbargoesIpRangesServiceInterface $ip_ranges
    *   An embargoes IP range service.
+   * @param \Drupal\Core\StringTranslation\TranslationInterface $translation
+   *   Translation manager.
    */
-  public function __construct(EntityTypeManagerInterface $manager, EntityFieldManagerInterface $field_manager, EmbargoesIpRangesServiceInterface $ip_ranges) {
+  public function __construct(EntityTypeManagerInterface $manager, EntityFieldManagerInterface $field_manager, EmbargoesIpRangesServiceInterface $ip_ranges, TranslationInterface $translation) {
     $this->entityManager = $manager;
     $this->fieldManager = $field_manager;
     $this->ipRanges = $ip_ranges;
+    $this->translation = $translation;
   }
 
   /**
@@ -299,6 +311,19 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
       }
     }
     return $nids;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNotificationStatusesAsFormOptions(EmbargoesEmbargoEntityInterface $embargo) {
+    return [
+      $embargo::STATUS_CREATED => $this->translation->translate('Created'),
+      $embargo::STATUS_UPDATED => $this->translation->translate('Updated'),
+      $embargo::STATUS_WARNED => $this->translation->translate('Warned'),
+      $embargo::STATUS_EXPIRED => $this->translation->translate('Expired'),
+      $embargo::STATUS_DELETED => $this->translation->translate('Deleted'),
+    ];
   }
 
 }

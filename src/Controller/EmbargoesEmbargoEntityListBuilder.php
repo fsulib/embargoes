@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\LinkGeneratorInterface;
+use Drupal\embargoes\EmbargoesEmbargoesServiceInterface;
 use Drupal\node\NodeStorageInterface;
 use Drupal\user\UserStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -61,13 +62,16 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
    *   IP range entity interface.
    * @param \Drupal\Core\Utility\LinkGeneratorInterface $link_generator
    *   Link generator.
+   * @param \Drupal\embargoes\EmbargoesEmbargoesServiceInterface $embargoes_service
+   *   Embargoes service.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, UserStorageInterface $user, NodeStorageInterface $node, EntityStorageInterface $ip_ranges, LinkGeneratorInterface $link_generator) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, UserStorageInterface $user, NodeStorageInterface $node, EntityStorageInterface $ip_ranges, LinkGeneratorInterface $link_generator, EmbargoesEmbargoesServiceInterface $embargoes_service) {
     parent::__construct($entity_type, $storage);
     $this->user = $user;
     $this->node = $node;
     $this->ipRanges = $ip_ranges;
     $this->linkGenerator = $link_generator;
+    $this->embargoes = $embargoes_service;
   }
 
   /**
@@ -80,7 +84,8 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
       $container->get('entity_type.manager')->getStorage('user'),
       $container->get('entity_type.manager')->getStorage('node'),
       $container->get('entity_type.manager')->getStorage('embargoes_ip_range_entity'),
-      $container->get('link_generator'));
+      $container->get('link_generator'),
+      $container->get('embargoes.embargoes'));
   }
 
   /**
@@ -167,7 +172,11 @@ class EmbargoesEmbargoEntityListBuilder extends ConfigEntityListBuilder implemen
     $row['exempt_ips'] = $ip_range_formatted;
     $row['exempt_users'] = $users;
     $row['additional_emails'] = $formatted_emails;
-    $row['notification_status'] = ucfirst($entity->getNotificationStatus());
+    $notification_status = $entity->getNotificationStatus();
+    if (isset($this->embargoes->getNotificationStatusesAsFormOptions($entity)[$notification_status])) {
+      $notification_status = $this->embargoes->getNotificationStatusesAsFormOptions($entity)[$notification_status];
+    }
+    $row['notification_status'] = $notification_status;
     $row['embargoed_node'] = $formatted_node_row;
     return $row + parent::buildRow($entity);
   }

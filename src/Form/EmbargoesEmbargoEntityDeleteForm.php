@@ -80,7 +80,7 @@ class EmbargoesEmbargoEntityDeleteForm extends EntityConfirmFormBase {
       'node' => $this->entity->getEmbargoedNode(),
       'uid' => $this->currentUser()->id(),
       'embargo' => $this->entity->id(),
-      'action' => 'deleted',
+      'action' => $this->entity::STATUS_DELETED,
     ];
     $this->messenger()->addMessage($this->t("Your embargo has been deleted."));
     $this->logger->logEmbargoEvent($log_values);

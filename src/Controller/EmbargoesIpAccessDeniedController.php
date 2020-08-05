@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class EmbargoesLogController.
+ * Controller for displaying an IP access denied message.
  */
 class EmbargoesIpAccessDeniedController extends ControllerBase {
 
@@ -44,6 +44,7 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
    */
   public function response() {
     $ranges = [];
+    $cache_tags = [];
     foreach ((array) $this->request->query->get('ranges', []) as $allowed_range) {
       $allowed_range_entity = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($allowed_range);
       if ($allowed_range_entity) {
@@ -52,6 +53,7 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
           'proxy_url' => $proxy_url,
           'label' => $allowed_range_entity->label(),
         ];
+        $cache_tags[] = "embargoes_ip_range_entity:{$allowed_range_entity->id()}";
       }
     }
 
@@ -60,6 +62,14 @@ class EmbargoesIpAccessDeniedController extends ControllerBase {
       '#requested_resource' => $this->request->query->get('label', ''),
       '#ranges' => $ranges,
       '#contact_email' => $this->config('embargoes.settings')->get('embargo_contact_email'),
+      '#cache' => [
+        'contexts' => [
+          'user',
+          'url.path',
+          'url.query_args',
+        ],
+        'tags' => $cache_tags,
+      ],
     ];
   }
 

@@ -108,22 +108,6 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
   /**
    * {@inheritdoc}
    */
-  public function save() {
-    parent::save();
-    drupal_flush_all_caches();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function delete() {
-    parent::delete();
-    drupal_flush_all_caches();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getEmbargoType() {
     return $this->get('embargo_type');
   }
@@ -265,9 +249,35 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
   /**
    * {@inheritdoc}
    */
+  public function getValidNotificationStatuses() {
+    return [
+      self::STATUS_CREATED,
+      self::STATUS_UPDATED,
+      self::STATUS_WARNED,
+      self::STATUS_EXPIRED,
+      self::STATUS_DELETED,
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setNotificationStatus($status) {
+    $valid_statuses = $this->getValidNotificationStatuses();
+    if (!in_array($status, $valid_statuses)) {
+      throw new \InvalidArgumentException('The notification status must be one of ' . implode(', ', $valid_statuses));
+    }
     $this->set('notification_status', $status);
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTagsToInvalidate() {
+    $tags = parent::getCacheTagsToInvalidate();
+    $tags[] = "node:{$this->getEmbargoedNode()}";
+    return $tags;
   }
 
 }

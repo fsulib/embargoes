@@ -27,6 +27,8 @@ class EmbargoedFileAccess extends EmbargoedAccessResult {
     $embargoes = $this->embargoes->getActiveNodeEmbargoesByNids($parent_nodes, $this->request->getClientIp(), $user);
     if (!empty($embargoes) && empty($this->embargoes->getIpAllowedEmbargoes($embargoes))) {
       $state = AccessResult::forbidden();
+      $state->addCacheableDependency($file);
+      $state->addCacheableDependency($user);
     }
     return $state;
   }
