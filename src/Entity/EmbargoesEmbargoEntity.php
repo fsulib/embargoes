@@ -275,7 +275,7 @@ class EmbargoesEmbargoEntity extends ConfigEntityBase implements EmbargoesEmbarg
    * {@inheritdoc}
    */
   public function getCacheTagsToInvalidate() {
-    $tags = parent::getCacheTagsToInvalidate[];
+    $tags = parent::getCacheTagsToInvalidate();
     $tags[] = "node:{$this->getEmbargoedNode()}";
     return $tags;
   }
