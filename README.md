@@ -41,6 +41,14 @@ including who created the embargo, or how it was changed.
 
 ## Troubleshooting/Issues
 
+### Public Filesystem
+
+It's worth noting that in Drupal 8, modules don't have a say in access control
+when files are being served using the "Public" download method. This can create
+issues when making 'file'-level embargoes, as the system won't bother to ask
+for modules' input on file restrictions. If you need to use file-level
+embargoes, consider a setup that does not use the public filesystem.
+
 Having problems or solved one? Contact
 [discoverygarden](http://support.discoverygarden.ca).
 
