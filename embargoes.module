@@ -8,6 +8,7 @@
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\embargoes\Access\EmbargoesFileAccessHandler;
 use Drupal\node\NodeInterface;
 
 /**
@@ -43,6 +44,15 @@ function embargoes_node_view(array &$build, EntityInterface $node, EntityViewDis
  */
 function embargoes_media_view(array &$build, EntityInterface $media, EntityViewDisplayInterface $display, $view_mode) {
   \Drupal::service('embargoes.media_access')->setEmbargoMessage($media);
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function embargoes_entity_type_alter(array &$entity_types) {
+  if (isset($entity_types['file'])) {
+    $entity_types['file']->setHandlerClass('access', EmbargoesFileAccessHandler::class);
+  }
 }
 
 /**
