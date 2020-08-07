@@ -44,7 +44,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
    */
   protected $messenger;
 
-  /*
+  /**
    * Embargoes service.
    *
    * @var \Drupal\embargoes\EmbargoesEmbargoesServiceInterface
@@ -107,7 +107,6 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
         '1' => $this->t('Node'),
       ],
     ];
-
 
     $form['expiry_type'] = [
       '#type' => 'radios',
