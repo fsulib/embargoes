@@ -82,8 +82,20 @@ function embargoes_theme($existing, $type, $theme, $path) {
         'requested_resource' => NULL,
         // Indexed array of ranges containing a 'proxy URL' (NULL if none exist)
         // and a display 'label'.
-        'ranges' => [],
+        'ranges' => [
+          [
+            'label' => NULL,
+            'proxy_url' => NULL,
+          ],
+        ],
         'contact_email' => NULL,
+      ],
+    ],
+    'embargoes_policies' => [
+      'template' => 'embargoes-policies',
+      'variables' => [
+        'count' => NULL,
+        'embargo_info' => [],
       ],
     ],
   ];

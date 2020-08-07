@@ -9,7 +9,7 @@ use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class EmbargoesLogController.
+ * Controller for displaying node embargoes.
  */
 class EmbargoesNodeEmbargoesController extends ControllerBase {
 
@@ -107,7 +107,9 @@ class EmbargoesNodeEmbargoesController extends ControllerBase {
         }
 
         $formatted_emails = [
-          '#markup' => implode('<br>', $embargo->getAdditionalEmails()),
+          'data' => [
+            '#markup' => implode('<br>', $embargo->getAdditionalEmails()),
+          ],
         ];
 
         $row = [

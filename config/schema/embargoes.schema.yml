@@ -58,7 +58,7 @@ embargoes.embargoes_embargo_entity.*:
       type: integer
       label: 'Embargoed Node'
     notification_status:
-      type: string
+      type: integer
       label: 'Notification Status'
 
 embargoes.embargoes_ip_range_entity.*:

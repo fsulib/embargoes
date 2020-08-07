@@ -1,12 +1,16 @@
 administer embargoes settings:
   title: 'Administer Embargoes settings'
   description: 'Access and manage configuration for the Embargoes module'
-  restrict access: TRUE
+  restrict access: true
 manage embargoes:
   title: 'Manage Embargoes'
   description: 'Apply, update and lift embargo policies on content'
-  restrict access: TRUE
+  restrict access: true
 bypass embargoes restrictions:
   title: 'Bypass Embargoes restrictions'
   description: 'Bypass access restrictions on content put in place by embargo policies'
-  restrict access: TRUE
+  restrict access: true
+access embargoes logs:
+  title: 'Access embargoes logs'
+  description: 'View logs from the creation, updating, and deleting of embargoes'
+  restrict access: true

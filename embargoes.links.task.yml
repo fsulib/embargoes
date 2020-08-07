@@ -22,12 +22,6 @@ entity.embargoes_embargo_entity.collection:
   base_route: embargoes.settings
   weight: 3
 
-embargoes.settings.log:
-  route_name: embargoes.settings.log
-  title: 'Log'
-  base_route: embargoes.settings
-  weight: 4
-
 embargoes.node.embargoes:
   route_name: embargoes.node.embargoes
   title: 'Embargoes'

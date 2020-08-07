@@ -1,7 +1,5 @@
 # Embargoes
 
-# Introduction
-
 Adds the ability to manage embargo policies with access restrictions on content.
 
 ## Requirements
@@ -33,11 +31,6 @@ embargoes.
 An embargo can be applied to an existing node by navigating to
 `node/{node_id}/embargoes`. From here, an embargo can be applied if it doesn't
 already exist, and existing embargoes can be modified or removed.
-
-### Logging
-
-Embargo logs are kept at `admin/config/content/embargoes/settings/log`,
-including who created the embargo, or how it was changed.
 
 ## Troubleshooting/Issues
 

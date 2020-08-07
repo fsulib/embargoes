@@ -14,14 +14,6 @@ embargoes.settings.notifications:
   requirements:
     _permission: 'administer embargoes settings'
 
-embargoes.settings.log:
-  path: '/admin/config/content/embargoes/settings/log'
-  defaults:
-    _controller: '\Drupal\embargoes\Controller\EmbargoesLogController::showRenderedLog'
-    _title: 'Embargo Activity Log'
-  requirements:
-    _permission: 'administer embargoes settings'
-
 embargoes.node.embargoes:
   path: '/node/{node}/embargoes'
   defaults:

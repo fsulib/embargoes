@@ -24,8 +24,7 @@ function embargoes_schema() {
         'not null' => TRUE,
       ],
       'action' => [
-        'type' => 'varchar',
-        'length' => 255,
+        'type' => 'int',
         'not null' => TRUE,
       ],
       'node' => [
@@ -43,6 +42,11 @@ function embargoes_schema() {
       ],
     ],
     'primary key' => ['id'],
+    'indexes' => [
+      'action' => ['action'],
+      'uid' => ['uid'],
+      'node' => ['node'],
+    ],
   ];
   return $schema;
 }
@@ -55,4 +59,15 @@ function embargoes_update_8001(&$sandbox) {
     'not null' => TRUE,
     'type' => 'int',
   ]);
+}
+
+/**
+ * Add indices.
+ */
+function embargoes_update_8002(&$sandbox) {
+  $schema = Database::getConnection()->schema();
+  $embargoes_schema = embargoes_schema();
+  $schema->addIndex('embargoes_log', 'action', ['action'], $embargoes_schema['embargoes_log']);
+  $schema->addIndex('embargoes_log', 'uid', ['uid'], $embargoes_schema['embargoes_log']);
+  $schema->addIndex('embargoes_log', 'node', ['node'], $embargoes_schema['embargoes_log']);
 }

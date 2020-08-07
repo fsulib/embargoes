@@ -9,6 +9,13 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface EmbargoesEmbargoEntityInterface extends ConfigEntityInterface {
 
+  // Constants for notification statuses.
+  const STATUS_CREATED = 0;
+  const STATUS_UPDATED = 1;
+  const STATUS_WARNED = 2;
+  const STATUS_EXPIRED = 3;
+  const STATUS_DELETED = 4;
+
   /**
    * Returns the type of embargo.
    *
@@ -168,17 +175,23 @@ interface EmbargoesEmbargoEntityInterface extends ConfigEntityInterface {
    * Gets the current notification status of the embargo.
    *
    * @return string
-   *   The current notification status of the embargo - one of either 'created',
-   *   'updated', 'warned', or 'expired'.
+   *   The current notification status of the embargo.
    */
   public function getNotificationStatus();
+
+  /**
+   * Gets the list of valid notification statuses.
+   *
+   * @return array
+   *   A list of valid notification statuses.
+   */
+  public function getValidNotificationStatuses();
 
   /**
    * Sets the current notification status of the embargo.
    *
    * @param string $status
-   *   The current notification status of the embargo - one of either 'created',
-   *   'updated', 'warned', or 'expired'.
+   *   The current notification status of the embargo.
    *
    * @return string
    *   The new notification status.

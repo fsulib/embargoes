@@ -2,6 +2,7 @@
 
 namespace Drupal\embargoes\Form;
 
+use Drupal\embargoes\EmbargoesEmbargoesServiceInterface;
 use Drupal\embargoes\EmbargoesIpRangesServiceInterface;
 use Drupal\embargoes\EmbargoesLogServiceInterface;
 use Drupal\Component\Uuid\UuidInterface;
@@ -43,6 +44,13 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
    */
   protected $messenger;
 
+  /*
+   * Embargoes service.
+   *
+   * @var \Drupal\embargoes\EmbargoesEmbargoesServiceInterface
+   */
+  protected $embargoes;
+
   /**
    * Constructor for the node embargo form.
    *
@@ -54,12 +62,15 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
    *   A UUID generator.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messaging interface.
+   * @param \Drupal\embargoes\EmbargoesEmbargoesServiceInterface $embargoes_service
+   *   An embargoes service.
    */
-  public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator, MessengerInterface $messenger) {
+  public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator, MessengerInterface $messenger, EmbargoesEmbargoesServiceInterface $embargoes_service) {
     $this->ipRanges = $ip_ranges;
     $this->embargoesLog = $embargoes_log;
     $this->uuidGenerator = $uuid_generator;
     $this->messenger = $messenger;
+    $this->embargoes = $embargoes_service;
   }
 
   /**
@@ -70,7 +81,8 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       $container->get('embargoes.ips'),
       $container->get('embargoes.log'),
       $container->get('uuid'),
-      $container->get('messenger'));
+      $container->get('messenger'),
+      $container->get('embargoes.embargoes'));
   }
 
   /**
@@ -164,12 +176,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Notification status'),
       '#default_value' => $embargo->getNotificationStatus(),
-      '#options' => [
-        'created' => $this->t('Created'),
-        'updated' => $this->t('Updated'),
-        'warned' => $this->t('Warned'),
-        'expired' => $this->t('Expired'),
-      ],
+      '#options' => $this->embargoes->getNotificationStatusesAsFormOptions($embargo),
       '#required' => TRUE,
     ];
 
@@ -196,13 +203,14 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $log_values['embargo'] = $embargo->id();
 
     if ($status == SAVED_NEW) {
-      $log_values['action'] = 'created';
+      $log_values['action'] = $embargo::STATUS_CREATED;
+      $this->messenger->addMessage($this->t('Your embargo has been created.'));
     }
     else {
-      $log_values['action'] = 'updated';
+      $log_values['action'] = $embargo::STATUS_UPDATED;
+      $this->messenger->addMessage($this->t('Your embargo has been updated.'));
     }
 
-    $this->messenger->addMessage("Your embargo has been {$log_values['action']}.");
     $this->embargoesLog->logEmbargoEvent($log_values);
     $form_state->setRedirectUrl($embargo->toUrl('collection'));
   }
