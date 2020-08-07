@@ -108,7 +108,8 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       ],
     ];
 
-    $form['expiration_type'] = [
+
+    $form['expiry_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Expiration type'),
       '#default_value' => $embargo->getExpirationTypeAsInt(),
@@ -189,7 +190,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $embargo = $this->entity;
     $embargo->setEmbargoType($form_state->getValue('embargo_type'));
-    $embargo->setExpirationType($form_state->getValue('expiration_type'));
+    $embargo->setExpirationType($form_state->getValue('expiry_type'));
     $embargo->setExpirationDate($form_state->getValue('expiration_date'));
     $embargo->setExemptIps($form_state->getValue('exempt_ips'));
     $embargo->setExemptUsers($form_state->getValue('exempt_users'));
