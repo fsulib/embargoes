@@ -7,6 +7,7 @@ use Drupal\embargoes\EmbargoesLogServiceInterface;
 use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -36,6 +37,13 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   protected $uuidGenerator;
 
   /**
+   * Messaging interface.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * Constructor for the node embargo form.
    *
    * @param \Drupal\embargoes\EmbargoesIpRangesServiceInterface $ip_ranges
@@ -44,11 +52,14 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
    *   An embargoes logging service.
    * @param \Drupal\Component\Uuid\UuidInterface $uuid_generator
    *   A UUID generator.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Messaging interface.
    */
-  public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator) {
+  public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator, MessengerInterface $messenger) {
     $this->ipRanges = $ip_ranges;
     $this->embargoesLog = $embargoes_log;
     $this->uuidGenerator = $uuid_generator;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -58,7 +69,8 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     return new static(
       $container->get('embargoes.ips'),
       $container->get('embargoes.log'),
-      $container->get('uuid'));
+      $container->get('uuid'),
+      $container->get('messenger'));
   }
 
   /**
@@ -190,7 +202,7 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       $log_values['action'] = 'updated';
     }
 
-    $this->messenger()->addMessage("Your embargo has been {$log_values['action']}.");
+    $this->messenger->addMessage("Your embargo has been {$log_values['action']}.");
     $this->embargoesLog->logEmbargoEvent($log_values);
     $form_state->setRedirectUrl($embargo->toUrl('collection'));
   }
