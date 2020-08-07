@@ -34,14 +34,6 @@ already exist, and existing embargoes can be modified or removed.
 
 ## Troubleshooting/Issues
 
-### Public Filesystem
-
-Note that when using the public filesystem for downloads, files that have been
-exposed in this way no longer have a say in their access by Drupal, including
-embargoes. If files need to be secured in this way, consider using a different
-filesystem backend for downloads. These can be configured at
-admin/config/media/file-system.
-
 Having problems or solved one? Contact
 [discoverygarden](http://support.discoverygarden.ca).
 
