@@ -24,8 +24,8 @@ class EmbargoedFileAccess extends EmbargoedAccessResult {
   public function isActivelyEmbargoed(EntityInterface $file, AccountInterface $user) {
     $state = parent::isActivelyEmbargoed($file, $user);
     $parent_nodes = $this->embargoes->getParentNidsOfFileEntity($file);
-    $embargoes = $this->embargoes->getActiveNodeEmbargoesByNids($parent_nodes, $this->request->getClientIp(), $user);
-    if (!empty($embargoes) && empty($this->embargoes->getIpAllowedEmbargoes($embargoes))) {
+    $embargoes = $this->embargoes->getActiveEmbargoesByNids($parent_nodes, $this->request->getClientIp(), $user);
+    if (!empty($embargoes)) {
       $state = AccessResult::forbidden();
       $state->addCacheableDependency($file);
       $state->addCacheableDependency($user);

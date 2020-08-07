@@ -5,7 +5,9 @@ namespace Drupal\embargoes;
 use Drupal\embargoes\Entity\EmbargoesEmbargoEntityInterface;
 use Drupal\file\FileInterface;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
@@ -112,7 +114,7 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
       $embargo = $this->entityManager
         ->getStorage('embargoes_embargo_entity')
         ->load($embargo_id);
-      if (!is_null($embargo->getExemptIps())) {
+      if (!empty($embargo->getExemptIps())) {
         $ip_allowed_current_embargoes[$embargo_id] = $embargo_id;
       }
     }
@@ -177,7 +179,7 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
       $embargo = $this->entityManager
         ->getStorage('embargoes_embargo_entity')
         ->load($embargo_id);
-      if (!is_null($embargo->getExemptIps())) {
+      if (!empty($embargo->getExemptIps())) {
         $ip_allowed_embargoes[$embargo_id] = $embargo->getExemptIps();
       }
     }
@@ -285,7 +287,9 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
    * {@inheritdoc}
    */
   public function getParentNidsOfFileEntity(FileInterface $file) {
-    $relationships = file_get_file_references($file);
+    $relationships = NestedArray::mergeDeep(
+      file_get_file_references($file),
+      file_get_file_references($file, NULL, EntityStorageInterface::FIELD_LOAD_REVISION, 'image'));
     if (!$relationships) {
       $nids = [];
     }
