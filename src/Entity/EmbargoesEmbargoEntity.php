@@ -11,7 +11,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  * @ConfigEntityType(
  *   id = "embargoes_embargo_entity",
  *   label = @Translation("Embargo"),
- *   handlers = { *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *   handlers = {
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\embargoes\Controller\EmbargoesEmbargoEntityListBuilder",
  *     "form" = {
  *       "add" = "Drupal\embargoes\Form\EmbargoesEmbargoEntityForm",

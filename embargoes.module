@@ -72,5 +72,12 @@ function embargoes_theme($existing, $type, $theme, $path) {
         'embargo_info' => [],
       ],
     ],
+    'embargoes_notifications' => [
+      'template' => 'embargoes-notifications',
+      'variables' => [
+        'count' => NULL,
+        'embargo_info' => [],
+      ],
+    ],
   ];
 }
