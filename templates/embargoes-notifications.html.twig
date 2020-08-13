@@ -7,16 +7,20 @@
    * - 'count': the count to display
    * - 'embargoes_info': an indexed array containing any information required to
    *   display each individual embargo.
+   * - 'message': Configured message to request access.
    */
 #}
 
 <span id='embargoes_embargo_policy_block_preamble' class='embargoes_embargo_policy_block'>{{ count }}</span>
 
-{% for info in embargoes_info %}
-<hr id='embargoes_embargo_policy_block_separator' class='embargoes_embargo_policy_block'>
 <ul class='embargoes_embargo_policy_block embargoes_embargo_policy_block_list'>
-  <li id='embargoes_embargo_policy_block_expiration_item' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item'>
-    <strong id='embargoes_embargo_policy_block_expiration_label' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>{{ info.message }}</strong>
+{% for info in embargo_info %}
+  <li id='{{ info.dom_id }}' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item'>
+    <strong id='embargoes_embargo_policy_block_expiration_label' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>{{ info.type_message }}</strong>
+    <strong id='embargoes_embargo_policy_block_expiration_msg' class='embargoes_embargo_policy_block embargoes_embargo_policy_block_item_label'>{{ info.message }}</strong>
+    <hr id='embargoes_embargo_policy_block_separator' class='embargoes_embargo_policy_block'>
   </li>
-</ul>
 {% endfor %}
+</ul>
+
+<p class="embargoes_embargo_policy_block embargoes_embargo_policy_block_access_message">{{ message }}</p>
