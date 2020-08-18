@@ -170,12 +170,12 @@ class EmbargoesEmbargoNotificationBlock extends BlockBase implements ContainerFa
             if ($user['target_id'] == \Drupal::currentUser()->id()) {
               $embargo_info['user_exempt'] = TRUE;
             }
-            else {
-              $contact_message = $t->translate(
-                $this->notificationMessage,
-                ['@contact' => $this->adminMail]
-              );
-            }
+          }
+          if (!$embargo_info['user_exempt']) {
+            $contact_message = $t->translate(
+              $this->notificationMessage,
+              ['@contact' => $this->adminMail]
+            );
           }
 
           $embargo_info['dom_id'] = Html::getUniqueId('embargo_notification');
