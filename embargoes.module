@@ -56,7 +56,7 @@ function embargoes_entity_type_alter(array &$entity_types) {
 }
 
 /**
- * Implemens hook_file_download().
+ * Implements hook_file_download().
  */
 function embargoes_file_download($uri) {
   $files = \Drupal::entityTypeManager()
@@ -96,6 +96,14 @@ function embargoes_theme($existing, $type, $theme, $path) {
       'variables' => [
         'count' => NULL,
         'embargo_info' => [],
+      ],
+    ],
+    'embargoes_notifications' => [
+      'template' => 'embargoes-notifications',
+      'variables' => [
+        'count' => NULL,
+        'embargo_info' => [],
+        'message' => NULL,
       ],
     ],
   ];

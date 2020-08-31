@@ -52,6 +52,13 @@ class EmbargoesSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('show_embargo_message'),
     ];
 
+    $form['embargo_notification_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Embargo notification messsage.'),
+      '#description' => $this->t('Notification text displayed to the user when an object or its files are under embargo. Use the "@contact" string to include the configured contact email, if available.'),
+      '#default_value' => $config->get('embargo_notification_message'),
+    ];
+
     return $form;
   }
 
@@ -63,6 +70,7 @@ class EmbargoesSettingsForm extends ConfigFormBase {
     $config->set('show_embargo_message', $form_state->getValue('show_embargo_message'));
     $config->set('add_contact_to_notifications', $form_state->getValue('add_contact_to_notifications'));
     $config->set('embargo_contact_email', $form_state->getValue('embargo_contact_email'));
+    $config->set('embargo_notification_message', $form_state->getValue('embargo_notification_message'));
     $config->save();
     parent::submitForm($form, $form_state);
   }

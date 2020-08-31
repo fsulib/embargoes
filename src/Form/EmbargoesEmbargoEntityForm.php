@@ -189,8 +189,15 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $embargo = $this->entity;
     $embargo->setEmbargoType($form_state->getValue('embargo_type'));
-    $embargo->setExpirationType($form_state->getValue('expiry_type'));
-    $embargo->setExpirationDate($form_state->getValue('expiration_date'));
+    $expiry_type = $form_state->getValue('expiry_type');
+    $embargo->setExpirationType($expiry_type);
+    // Clear expiry date for indefinite embargoes.
+    if ($expiry_type === '0') {
+      $embargo->setExpirationDate('');
+    }
+    else {
+      $embargo->setExpirationDate($form_state->getValue('expiration_date'));
+    }
     $embargo->setExemptIps($form_state->getValue('exempt_ips'));
     $embargo->setExemptUsers($form_state->getValue('exempt_users'));
     $embargo->setAdditionalEmails($form_state->getValue('additional_emails'));
