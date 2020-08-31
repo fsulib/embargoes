@@ -24,7 +24,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     },
  *   },
  *   config_prefix = "embargoes_embargo_entity",
- *   admin_permission = "administer site configuration",
+ *   admin_permission = "manage embargoes",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
