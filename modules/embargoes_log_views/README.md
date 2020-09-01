@@ -26,24 +26,5 @@ You can create more log views by navigating to `admin/structure/views/add` and
 selecting 'Embargoes log entries' from the 'Show:' drop-down menu under 'View
 Settings'.
 
-## Troubleshooting/Issues
-
-Having problems or solved one? Contact
-[discoverygarden](http://support.discoverygarden.ca).
-
-## Maintainers/Sponsors
-
-Current maintainers:
-
-* [discoverygarden](http://www.discoverygarden.ca)
-
-## Development
-
-If you would like to contribute to this module, please check out the helpful
-[Documentation](https://github.com/Islandora/islandora/wiki#wiki-documentation-for-developers),
-[Developers](http://islandora.ca/developers) section on Islandora.ca and create
-an issue, pull request and or contact
-[discoverygarden](http://support.discoverygarden.ca).
-
 ## License
 [GPLv2](http://www.gnu.org/licenses/gpl-2.0.txt)

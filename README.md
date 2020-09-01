@@ -32,24 +32,10 @@ An embargo can be applied to an existing node by navigating to
 `node/{node_id}/embargoes`. From here, an embargo can be applied if it doesn't
 already exist, and existing embargoes can be modified or removed.
 
-## Troubleshooting/Issues
-
-Having problems or solved one? Contact
-[discoverygarden](http://support.discoverygarden.ca).
-
 ## Maintainers/Sponsors
 
-Current maintainers:
-
-* [discoverygarden](http://www.discoverygarden.ca)
-
-## Development
-
-If you would like to contribute to this module, please check out the helpful
-[Documentation](https://github.com/Islandora/islandora/wiki#wiki-documentation-for-developers),
-[Developers](http://islandora.ca/developers) section on Islandora.ca and create
-an issue, pull request and or contact
-[discoverygarden](http://support.discoverygarden.ca).
+* [FSU Library](https://github.com/fsulib/embargoes)
+* [discoverygarden](http://support.discoverygarden.ca)
 
 ## License
 [GPLv2](http://www.gnu.org/licenses/gpl-2.0.txt)
