@@ -22,6 +22,7 @@ embargoes.node.embargoes:
   requirements:
     _permission: 'manage embargoes'
   options:
+    no_cache: true
     parameters:
       node:
         type: entity:node
