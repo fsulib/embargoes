@@ -14,6 +14,8 @@ interface EmbargoesEmbargoesServiceInterface {
   public function getActiveNodeEmbargoesByNids($nids, $ip, $user);
   public function getIpAllowedEmbargoes($embargoes);
   public function isUserInExemptUsers($user, $embargo_id);
+  public function isGroupModuleEnabled();
+  public function isUserGroupAdministrator($user, $embargo_id);
   public function isIpInExemptRange($ip, $embargo_id);
   public function getNodeMediaReferenceFields();
   public function getMediaParentNids($mid);

@@ -54,9 +54,6 @@ namespace Drupal\embargoes;
     return $ip_allowed_current_embargoes;
   }
 
-
-
-
   public function getActiveEmbargoesByNids($nids, $ip, $user) {
     $current_user_id = $user->id();
     $active_embargoes = [];
@@ -65,7 +62,13 @@ namespace Drupal\embargoes;
       $ip_is_exempt = \Drupal::service('embargoes.embargoes')->isIpInExemptRange($ip, $embargo_id);
       $user_is_exempt = \Drupal::service('embargoes.embargoes')->isUserInExemptUsers($user, $embargo_id);
       $role_is_exempt = $user->hasPermission('bypass embargoes restrictions');
-      if (!$ip_is_exempt && !$user_is_exempt && !$role_is_exempt) {
+      if ($this->isGroupModuleEnabled()) {
+        $user_is_group_admin = \Drupal::service('embargoes.embargoes')->isUserGroupAdministrator($user, $embargo_id);
+      }
+      else {
+        $user_is_group_admin = FALSE;
+      }
+      if (!$ip_is_exempt && !$user_is_exempt && !$role_is_exempt && !$user_is_group_admin) {
         $active_embargoes[$embargo_id] = $embargo_id;
       }
     }
@@ -95,8 +98,6 @@ namespace Drupal\embargoes;
     return $ip_allowed_embargoes;
   }
 
-
-
   public function isUserInExemptUsers($user, $embargo_id) {
     $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
     $exempt_users = $embargo->getExemptUsers();
@@ -116,6 +117,34 @@ namespace Drupal\embargoes;
       }
     }
     return $user_is_exempt;
+  }
+
+  public function isGroupModuleEnabled() {
+    $module_handler = \Drupal::service('module_handler');
+    if ($module_handler->moduleExists('group')) {
+      $group_module_enabled = TRUE;
+    }
+    else {
+      $group_module_enabled = FALSE;
+    }
+    return $group_module_enabled;
+  }
+
+  public function isUserGroupAdministrator($user, $embargo_id) {
+    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+    $embargoed_node = \Drupal::entityTypeManager()->getStorage('node')->load($embargo->getEmbargoedNode());
+    $group = array_pop(\Drupal::entityTypeManager()->getStorage('group_content')->loadByEntity($embargoed_node))->getGroup();
+    $group_member = $group->getMember($user);
+    $user_is_group_admin = FALSE;
+    if ($group_member) {
+      $group_member_roles = $group_member->getRoles();
+      foreach ($group_member_roles as $group_role) {
+        if ($group_role->hasPermission('administer members')) {
+          $user_is_group_admin = TRUE;
+        }
+      }
+    }
+    return $user_is_group_admin;
   }
 
   public function isIpInExemptRange($ip, $embargo_id) {
@@ -150,7 +179,7 @@ namespace Drupal\embargoes;
     if ($media_entity->hasField('field_media_of')) {
       $nid = $media_entity->get('field_media_of')->getString();
       $nids = array($nid);
-    } 
+    }
     else {
       $media_fields = \Drupal::service('embargoes.embargoes')->getNodeMediaReferenceFields();
       $query = \Drupal::entityQuery('node');
