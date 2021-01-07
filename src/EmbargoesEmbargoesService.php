@@ -62,12 +62,7 @@ namespace Drupal\embargoes;
       $ip_is_exempt = \Drupal::service('embargoes.embargoes')->isIpInExemptRange($ip, $embargo_id);
       $user_is_exempt = \Drupal::service('embargoes.embargoes')->isUserInExemptUsers($user, $embargo_id);
       $role_is_exempt = $user->hasPermission('bypass embargoes restrictions');
-      if ($this->isGroupModuleEnabled()) {
-        $user_is_group_admin = \Drupal::service('embargoes.embargoes')->isUserGroupAdministrator($user, $embargo_id);
-      }
-      else {
-        $user_is_group_admin = FALSE;
-      }
+      $user_is_group_admin = \Drupal::service('embargoes.embargoes')->isUserGroupAdministrator($user, $embargo_id);
       if (!$ip_is_exempt && !$user_is_exempt && !$role_is_exempt && !$user_is_group_admin) {
         $active_embargoes[$embargo_id] = $embargo_id;
       }
