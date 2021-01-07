@@ -198,6 +198,9 @@ namespace Drupal\embargoes;
               case 'node':
                 $nids = array(array_keys($value)[0]);
                 break;
+              case 'paragraph':
+                $nids = array(array_keys($value)[0]);
+                break;
               case 'media':
                 $mid = array_keys($value)[0];
                 $nids = \Drupal::service('embargoes.embargoes')->getMediaParentNids($mid);
