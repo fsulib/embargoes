@@ -119,32 +119,26 @@ namespace Drupal\embargoes;
     return $user_is_exempt;
   }
 
-  public function isGroupModuleEnabled() {
-    $module_handler = \Drupal::service('module_handler');
-    if ($module_handler->moduleExists('group')) {
-      $group_module_enabled = TRUE;
-    }
-    else {
-      $group_module_enabled = FALSE;
-    }
-    return $group_module_enabled;
-  }
-
   public function isUserGroupAdministrator($user, $embargo_id) {
-    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-    $embargoed_node = \Drupal::entityTypeManager()->getStorage('node')->load($embargo->getEmbargoedNode());
-    $group = array_pop(\Drupal::entityTypeManager()->getStorage('group_content')->loadByEntity($embargoed_node))->getGroup();
-    $group_member = $group->getMember($user);
-    $user_is_group_admin = FALSE;
-    if ($group_member) {
-      $group_member_roles = $group_member->getRoles();
-      foreach ($group_member_roles as $group_role) {
-        if ($group_role->hasPermission('administer members')) {
-          $user_is_group_admin = TRUE;
+    if (\Drupal::service('module_handler')->moduleExists('group')) {
+      $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+      $embargoed_node = \Drupal::entityTypeManager()->getStorage('node')->load($embargo->getEmbargoedNode());
+      $group = array_pop(\Drupal::entityTypeManager()->getStorage('group_content')->loadByEntity($embargoed_node))->getGroup();
+      $group_member = $group->getMember($user);
+      $user_is_group_admin = FALSE;
+      if ($group_member) {
+        $group_member_roles = $group_member->getRoles();
+        foreach ($group_member_roles as $group_role) {
+          if ($group_role->hasPermission('administer members')) {
+            $user_is_group_admin = TRUE;
+          }
         }
       }
+      return $user_is_group_admin;
     }
-    return $user_is_group_admin;
+    else {
+      return FALSE;
+    }
   }
 
   public function isIpInExemptRange($ip, $embargo_id) {
