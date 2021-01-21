@@ -290,15 +290,10 @@ class EmbargoesEmbargoesService implements EmbargoesEmbargoesServiceInterface {
     $relationships = NestedArray::mergeDeep(
       file_get_file_references($file),
       file_get_file_references($file, NULL, EntityStorageInterface::FIELD_LOAD_REVISION, 'image'));
-    if (!$relationships) {
-      $nids = [];
-    }
-    else {
+    $nids = [];
+    if ($relationships) {
       foreach ($relationships as $relationship) {
-        if (!$relationship) {
-          $nids = [];
-        }
-        else {
+        if ($relationship) {
           foreach ($relationship as $key => $value) {
             switch ($key) {
               case 'node':
