@@ -103,9 +103,9 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
       }
     }
     else {
-      drupal_set_message("Problems detected with the {$range->label()} IP Range.", 'error');
+      $this->messenger()->addError($this->t('Problems detected with the %label IP Range.', ['%label' => $range->label()]));
       foreach ($errors as $error) {
-        drupal_set_message("Error: {$error}.", 'error');
+        $this->messenger()->addError($this->t('Error: %error.', ['%error' => $error]));
       }
     }
     $form_state->setRedirectUrl($range->toUrl('collection'));

@@ -1,7 +1,7 @@
 name: Embargoes Log Views
 description: 'Provides views for embargo logs.'
 type: module
-core: 8.x
+core_version_requirement: ^8 || ^9
 dependencies:
   - embargoes
   - views
