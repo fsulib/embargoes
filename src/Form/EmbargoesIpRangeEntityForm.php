@@ -96,10 +96,10 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
   public function validateIpRanges(array $element, FormStateInterface $form_state) {
     $errors = $this->ipRanges->detectIpRangeStringErrors(array_map('trim', explode('|', trim($form_state->getValue('range')))));
     if (!empty($errors)) {
-      $form_state->setError($element, $this->t('Problems detected with the %label IP Range.', ['%label' => $this->entity->label()]));
-      foreach ($errors as $error) {
-        $this->messenger()->addError($this->t('Error: %error.', ['%error' => $error]));
-      }
+      $form_state->setError($element, $this->t('Problems detected with the %label IP Range. <br/>Errors: %errors', [
+        '%label' => $this->entity->label(),
+        '%errors' => implode(", ", $errors),
+      ]));
     }
   }
 
