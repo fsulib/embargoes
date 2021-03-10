@@ -69,6 +69,9 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
       '#default_value' => implode('|', $range->getRanges()),
       '#description' => $this->t("IP range to be used. Please list in CIDR format, and separate multiple ranges with a '|'."),
       '#required' => TRUE,
+      '#element_validate' => [
+        '::validateIpRanges',
+      ],
     ];
 
     $form['proxy_url'] = [
@@ -83,6 +86,24 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
   }
 
   /**
+   * Validates the IP range entered.
+   *
+   * @param array $element
+   *   An array representing the element.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The Drupal form state.
+   */
+  public function validateIpRanges(array $element, FormStateInterface $form_state) {
+    $errors = $this->ipRanges->detectIpRangeStringErrors(array_map('trim', explode('|', trim($form_state->getValue('range')))));
+    if (!empty($errors)) {
+      $form_state->setError($element, $this->t('Problems detected with the %label IP Range. <br/>Errors: %errors', [
+        '%label' => $this->entity->label(),
+        '%errors' => implode(", ", $errors),
+      ]));
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
@@ -91,22 +112,13 @@ class EmbargoesIpRangeEntityForm extends EntityForm {
     $range->setProxyUrl($form_state->getValue('proxy_url'));
     $status = $range->save();
 
-    $errors = $this->ipRanges->detectIpRangeStringErrors(array_map('trim', explode('|', trim($form_state->getValue('range')))));
-    if (!$errors) {
-      switch ($status) {
-        case SAVED_NEW:
-          $this->messenger()->addMessage($this->t('Created the %label IP Range.', ['%label' => $range->label()]));
-          break;
+    switch ($status) {
+      case SAVED_NEW:
+        $this->messenger()->addMessage($this->t('Created the %label IP Range.', ['%label' => $range->label()]));
+        break;
 
-        default:
-          $this->messenger()->addMessage($this->t('Saved the %label IP Range.', ['%label' => $range->label()]));
-      }
-    }
-    else {
-      drupal_set_message("Problems detected with the {$range->label()} IP Range.", 'error');
-      foreach ($errors as $error) {
-        drupal_set_message("Error: {$error}.", 'error');
-      }
+      default:
+        $this->messenger()->addMessage($this->t('Saved the %label IP Range.', ['%label' => $range->label()]));
     }
     $form_state->setRedirectUrl($range->toUrl('collection'));
   }
