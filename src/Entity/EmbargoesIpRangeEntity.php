@@ -29,6 +29,13 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "label" = "label",
  *     "uuid" = "uuid"
  *   },
+ *   config_export = {
+ *     "id" = "id",
+ *     "label" = "label",
+ *     "uuid" = "uuid",
+ *     "ranges" = "ranges",
+ *     "proxy_url" = "proxy_url",
+ *   },
  *   links = {
  *     "canonical" = "/admin/config/content/embargoes/settings/ips/{embargoes_ip_range_entity}",
  *     "add-form" = "/admin/config/content/embargoes/settings/ips/add",

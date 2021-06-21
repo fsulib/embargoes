@@ -30,6 +30,20 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "label" = "label",
  *     "uuid" = "uuid"
  *   },
+ *   config_export = {
+ *     "id" = "id",
+ *     "label" = "label",
+ *     "uuid" = "uuid",
+ *     "embargo_type" = "embargo_type",
+ *     "expiration_type" = "expiration_type",
+ *     "expiration_date" = "expiration_date",
+ *     "exempt_ips" = "exempt_ips",
+ *     "exempt_users" = "exempt_users",
+ *     "additional_emails" = "additional_emails",
+ *     "notification_status" = "notification_status",
+ *     "embargoed_node" = "embargoed_node",
+ *     "notification_status" = "notification_status",
+ *   },
  *   links = {
  *     "canonical" = "/admin/config/content/embargoes/settings/embargoes/{embargoes_embargo_entity}",
  *     "add-form" = "/admin/config/content/embargoes/settings/embargoes/add",
