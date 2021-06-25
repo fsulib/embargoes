@@ -2,87 +2,174 @@
 
 namespace Drupal\embargoes\Controller;
 
+use Drupal\embargoes\EmbargoesEmbargoesServiceInterface;
+use Drupal\node\NodeInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Render\Markup;
+use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class EmbargoesLogController.
+ * Controller for displaying node embargoes.
  */
 class EmbargoesNodeEmbargoesController extends ControllerBase {
 
-  public function showEmbargoes($node = NULL) {
+  /**
+   * Embargoes service.
+   *
+   * @var \Drupal\embargoes\EmbargoesEmbargoesServiceInterface
+   */
+  protected $embargoes;
 
-    $embargo_ids = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids(array($node));
+  /**
+   * Constructs an embargoes node controller.
+   *
+   * @param \Drupal\embargoes\EmbargoesEmbargoesServiceInterface $embargoes
+   *   Embargoes service.
+   */
+  public function __construct(EmbargoesEmbargoesServiceInterface $embargoes) {
+    $this->embargoes = $embargoes;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('embargoes.embargoes'));
+  }
+
+  /**
+   * Gets markup for displaying embargoes on a node.
+   *
+   * @return array
+   *   Renderable array to show the embargoes on a node.
+   */
+  public function showEmbargoes(NodeInterface $node = NULL) {
+    $embargo_ids = $this->embargoes->getAllEmbargoesByNids([$node->id()]);
     if (empty($embargo_ids)) {
       $markup['embargoes'] = [
-        '#type' => 'markup',
-        '#markup' => Markup::create('<p>There are no embargoes on this node.</p>'),
+        '#markup' => $this->t('There are no embargoes on this node.'),
       ];
     }
     else {
       $rows = [];
       foreach ($embargo_ids as $embargo_id) {
-        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
+        $embargo = $this->entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
 
-        if ($embargo->getExpirationType() == 0 ) {
-          $expiry = 'Indefinite';
-        } else {
+        if ($embargo->getExpirationType() == 0) {
+          $expiry = $this->t('Indefinite');
+        }
+        else {
           $expiry = $embargo->getExpirationDate();
         }
 
         $formatted_users = [];
         $exempt_users = $embargo->getExemptUsers();
         if (empty($exempt_users)) {
-          $formatted_users[] = "None";
+          $formatted_users = [
+            '#markup' => $this->t('None'),
+          ];
         }
         else {
-          foreach ($embargo->getExemptUsers() as $user){
+          foreach ($embargo->getExemptUsers() as $user) {
             $uid = $user['target_id'];
-            $user_entity = \Drupal\user\Entity\User::load($uid);
-            $user_name = $user_entity->getUserName();
-            $formatted_users[] = "<a href='/user/{$uid}'>{$user_name}</a>";
+            $user_entity = $this->entityTypeManager()->getStorage('user')->load($uid);
+            $user_name = $user_entity ? $user_entity->getUserName() : $this->t('Missing User');
+            $formatted_users[] = [
+              '#type' => 'link',
+              '#title' => $user_name,
+              '#url' => Url::fromRoute('entity.user.canonical', [
+                'user' => $uid,
+              ]),
+            ];
           }
         }
-        $formatted_exempt_users_row = Markup::create(implode("<br>", $formatted_users));
+        $formatted_exempt_users_row = ['data' => $formatted_users];
 
-        if ($embargo->getExemptIps() != 'none') {
-          $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
-          $ip_range_label = $ip_range->label();
-          $ip_range_formatted = Markup::create("<a href='/admin/config/content/embargoes/settings/ips/{$embargo->getExemptIps()}/edit'>{$ip_range_label}</a>");
+        if (!is_null($embargo->getExemptIps())) {
+          $ip_range = $this->entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
+          if (!is_null($ip_range)) {
+            $ip_range_formatted = [
+              'data' => [
+                '#type' => 'link',
+                '#title' => $ip_range->label(),
+                '#url' => Url::fromRoute('entity.embargoes_ip_range_entity.edit_form', [
+                  'embargoes_ip_range_entity' => $embargo->getExemptIps(),
+                ]),
+              ],
+            ];
+          }
+          else {
+            $ip_range_formatted = $this->t('None');
+          }
         }
         else {
-          $ip_range_formatted = "None";
+          $ip_range_formatted = $this->t('None');
         }
 
-        $formatted_emails = Markup::create(str_replace(',', '<br>', str_replace(' ', '', $embargo->getAdditionalEmails())));
+        $formatted_emails = [
+          'data' => [
+            '#markup' => implode('<br>', $embargo->getAdditionalEmails()),
+          ],
+        ];
 
         $row = [
-          'type' => ($embargo->getEmbargoType() == 1 ? 'Node' : 'Files'),
+          'type' => ($embargo->getEmbargoType() == 1 ? $this->t('Node') : $this->t('Files')),
           'expiry' => $expiry,
           'exempt_ips' => $ip_range_formatted,
           'exempt_users' => $formatted_exempt_users_row,
           'additional_emails' => $formatted_emails,
-          'edit' => Markup::create("<a href='/node/{$node}/embargoes/{$embargo_id}'>Edit</a><br><a href='/admin/config/content/embargoes/settings/embargoes/{$embargo_id}/delete'>Delete</a>"),
+          'operations' => [
+            'data' => [
+              '#type' => 'operations',
+              '#links' => [
+                'edit' => [
+                  'title' => $this->t('Edit'),
+                  'url' => Url::fromRoute('entity.embargoes_embargo_entity.edit_form', [
+                    'embargoes_embargo_entity' => $embargo_id,
+                  ]),
+                ],
+                'delete' => [
+                  'title' => $this->t('Delete'),
+                  'url' => Url::fromRoute('entity.embargoes_embargo_entity.delete_form', [
+                    'embargoes_embargo_entity' => $embargo_id,
+                  ]),
+                ],
+              ],
+            ],
+          ],
         ];
         array_push($rows, $row);
       }
 
       $markup['embargoes'] = [
         '#type' => 'table',
-        '#header' => ['Type', 'Expiration Date', 'Exempt IP Range', 'Exempt Users', 'Additional Emails', 'Edit'],
+        '#header' => [
+          $this->t('Type'),
+          $this->t('Expiration Date'),
+          $this->t('Exempt IP Range'),
+          $this->t('Exempt Users'),
+          $this->t('Additional Emails'),
+          $this->t('Operations'),
+        ],
         '#rows' => $rows,
       ];
+
     }
 
-    $markup['add'] = [
-      '#type' => 'markup',
-      '#markup' => Markup::create("<p><a href='/node/{$node}/embargoes/add'>Add Embargo</a></p>"),
+    $markup['add_embargo'] = [
+      '#type' => 'operations',
+      '#links' => [
+        'add' => [
+          'title' => $this->t('Add New Embargo'),
+          'url' => Url::fromRoute('embargoes.node.embargo', [
+            'node' => $node->id(),
+            'embargo_id' => 'add',
+          ]),
+        ],
+      ],
     ];
 
-    return [
-      '#type' => 'markup',
-      '#markup' => render($markup),
-    ];
+    return $markup;
   }
 
 }

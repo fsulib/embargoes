@@ -2,20 +2,35 @@
 
 namespace Drupal\embargoes;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+
 /**
  * Class EmbargoesIpRangesService.
  */
 class EmbargoesIpRangesService implements EmbargoesIpRangesServiceInterface {
 
   /**
-   * Constructs a new EmbargoesIpRangesService object.
+   * IP range entity storage instance.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  public function __construct() {
+  protected $rangeStorage;
 
+  /**
+   * Constructs a new EmbargoesIpRangesService object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $manager
+   *   EntityTypeManager interface.
+   */
+  public function __construct(EntityTypeManagerInterface $manager) {
+    $this->rangeStorage = $manager->getStorage('embargoes_ip_range_entity');
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getIpRanges() {
-    $ip_range_entities = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->loadMultiple();
+    $ip_range_entities = $this->rangeStorage->loadMultiple();
     $ips = [];
     foreach ($ip_range_entities as $ip) {
       $ips[$ip->id()] = $ip->label();
@@ -23,19 +38,24 @@ class EmbargoesIpRangesService implements EmbargoesIpRangesServiceInterface {
     return $ips;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getIpRangesAsSelectOptions() {
-    $ip_range_entities = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->loadMultiple();
+    $ip_range_entities = $this->rangeStorage->loadMultiple();
     $ips = [];
-    $ips['none'] = 'None';
+    $ips[NULL] = 'None';
     foreach ($ip_range_entities as $ip) {
       $ips[$ip->id()] = $ip->label();
     }
     return $ips;
   }
 
-  public function detectIpRangeStringErrors($string) {
+  /**
+   * {@inheritdoc}
+   */
+  public function detectIpRangeStringErrors(array $ranges) {
     $errors = [];
-    $ranges = explode('|', trim($string));
     foreach ($ranges as $range) {
       $range_array = explode("/", trim($range));
       if (count($range_array) != 2) {
@@ -44,7 +64,7 @@ class EmbargoesIpRangesService implements EmbargoesIpRangesServiceInterface {
       else {
         $nets = explode('.', $range_array[0]);
         foreach ($nets as $net) {
-          if ((intval($net) == 0 && $net != '0'  ) || intval($net) > 255) {
+          if ((intval($net) == 0 && $net != '0') || intval($net) > 255) {
             $errors[] = "Invalid net '{$net}' in {$range}";
           }
         }
@@ -57,12 +77,14 @@ class EmbargoesIpRangesService implements EmbargoesIpRangesServiceInterface {
     return $errors;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function isIpInRange($ip, $range_name) {
-    if ($range_name != 'none') {
-      $range_string = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($range_name)->getRange();
-      $response = FALSE;
-      if (!\Drupal::service('embargoes.ips')->detectIpRangeStringErrors($range_string)) {
-        $ranges = explode('|', trim($range_string));
+    $response = FALSE;
+    if (!empty($range_name)) {
+      $ranges = $this->rangeStorage->load($range_name)->getRanges();
+      if (!$this->detectIpRangeStringErrors($ranges)) {
         foreach ($ranges as $range) {
           list($net, $mask) = explode("/", trim($range));
           $ip_net = ip2long($net);
@@ -77,4 +99,5 @@ class EmbargoesIpRangesService implements EmbargoesIpRangesServiceInterface {
     }
     return $response;
   }
+
 }

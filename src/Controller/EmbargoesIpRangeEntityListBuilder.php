@@ -1,10 +1,9 @@
 <?php
 
-namespace Drupal\embargoes;
+namespace Drupal\embargoes\Controller;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Render\Markup;
 
 /**
  * Provides a listing of IP Range entities.
@@ -28,7 +27,7 @@ class EmbargoesIpRangeEntityListBuilder extends ConfigEntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
-    $row['range'] = Markup::create(str_replace('|', '<br>', $entity->getRange()));
+    $row['range'] = implode(', ', $entity->getRanges());
     $row['proxy_url'] = $entity->getProxyUrl();
     return $row + parent::buildRow($entity);
   }

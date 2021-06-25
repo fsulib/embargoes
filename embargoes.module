@@ -1,167 +1,57 @@
 <?php
 
-use \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 /**
  * @file
- * Contains embargoes.module.
+ * Hook implementations.
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\embargoes\Access\EmbargoesFileAccessHandler;
+use Drupal\node\NodeInterface;
+
 /**
- * Implements hook_node_access().
+ * Implements hook_ENTITY_TYPE_access().
  */
-function embargoes_node_access(\Drupal\node\NodeInterface $node, $operation, \Drupal\Core\Session\AccountInterface $account) {
-  $nids = array($node->id());
-  $ip = \Drupal::request()->getClientIp();
-  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids($nids, $ip, $account);
-  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($embargoes);
-  if (!empty($embargoes) && empty($ip_allowed_embargoes)) {
-    $access = \Drupal\Core\Access\AccessResult::forbidden();
-  }
-  else {
-    $access = \Drupal\Core\Access\AccessResult::neutral();
-  }
-  return $access;
+function embargoes_node_access(NodeInterface $node, $operation, AccountInterface $account) {
+  return \Drupal::service('embargoes.node_access')->isActivelyEmbargoed($node, $account);
 }
 
 /**
  * Implements hook_ENTITY_TYPE_access().
  */
-function embargoes_media_access(\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account){
-  $nids = \Drupal::service('embargoes.embargoes')->getMediaParentNids($entity->id());
-  $ip = \Drupal::request()->getClientIp();
-  $active_embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $account);
-  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($active_embargoes);
-  if (!empty($active_embargoes) && empty($ip_allowed_embargoes)) {
-    $access = \Drupal\Core\Access\AccessResult::forbidden();
-  }
-  else {
-    $access = \Drupal\Core\Access\AccessResult::neutral();
-  }
-  return $access;
+function embargoes_media_access(EntityInterface $media, $operation, AccountInterface $account) {
+  return \Drupal::service('embargoes.media_access')->isActivelyEmbargoed($media, $account);
 }
 
 /**
  * Implements hook_ENTITY_TYPE_access().
  */
-function embargoes_file_access(\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account){
-  $nids = \Drupal::service('embargoes.embargoes')->getParentNidsOfFileEntity($entity);
-  $ip = \Drupal::request()->getClientIp();
-  $active_embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $account);
-  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($active_embargoes);
-  if (!empty($active_embargoes) && empty($ip_allowed_embargoes)) {
-    $access = \Drupal\Core\Access\AccessResult::forbidden();
-  }
-  else {
-    $access = \Drupal\Core\Access\AccessResult::neutral();
-  }
-  return $access;
-}
-
-/**
- * Implements hook_node_view().
- */
-function embargoes_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
-  $ip = \Drupal::request()->getClientIp();
-  $user = \Drupal::currentUser();
-  $path = \Drupal::request()->getRequestUri();
-  $active_embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids(array($entity->id()), $ip, $user);
-  $active_node_embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids(array($entity->id()), $ip, $user);
-  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($active_node_embargoes);
-  if (!empty($active_node_embargoes)) {
-    $build['#attached']['library'][] = 'embargoes/embargoes-file-embargoes';
-  }
-  if (!empty($active_node_embargoes) && !empty($ip_allowed_embargoes)) {
-    $imploded_ranges = implode('.', array_unique($ip_allowed_embargoes));
-    $response = new RedirectResponse("/embargoes/ip-access-denied?path={$path}&ranges={$imploded_ranges}");
-    $response->send();
-  }
-  else if ((\Drupal::config('embargoes.settings')->get('show_embargo_message') == FALSE || is_null(\Drupal::config('embargoes.settings')->get('show_embargo_message'))) && $view_mode != 'teaser') {;
-    $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids(array($entity->id()));
-    if (!empty($embargoes)) {
-      $build['#cache']['max-age'] = 0;
-      $embargo_count = count($embargoes);
-      $embargo_word = ($embargo_count > 1 ? "embargoes" : "embargo" );
-      drupal_set_message("This resource is under {$embargo_count} {$embargo_word}:", 'warning');
-      foreach ($embargoes as $embargo_id) {
-        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-        $embargo_message = "- Access to ";
-        if ($embargo->getEmbargoTypeAsInt() == 0) {
-          $embargo_message .= " all associated files of this resource";
-        }
-        else {
-          $embargo_message .= " this resource and all associated files";
-        }
-        $embargo_message .= " is restricted";
-        if ($embargo->getExemptIps() != 'none') {
-          $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
-          $embargo_message .= " to the {$ip_range->label()} network";
-        }
-        else {
-        }
-        if ($embargo->getExpirationTypeAsInt() == 0) {
-          $embargo_message .= " indefinitely.";
-        }
-        else {
-          $embargo_message .= " until {$embargo->getExpirationDate()}.";
-        }
-        drupal_set_message($embargo_message, 'warning');
-      }
-    }
-  }
+function embargoes_file_access(EntityInterface $file, $operation, AccountInterface $account) {
+  return \Drupal::service('embargoes.file_access')->isActivelyEmbargoed($file, $account);
 }
 
 /**
  * Implements hook_ENTITY_TYPE_view().
  */
-function embargoes_media_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
-  $ip = \Drupal::request()->getClientIp();
-  $user = \Drupal::currentUser();
-  $path = \Drupal::request()->getRequestUri();
-  $nids = \Drupal::service('embargoes.embargoes')->getMediaParentNids($entity->id());
-  $active_embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $user);
-  $active_node_embargoes = \Drupal::service('embargoes.embargoes')->getActiveNodeEmbargoesByNids(array($entity->id()), $ip, $user);
-  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($active_embargoes);
-  if (!empty($active_embargoes)) {
-    $build['#attached']['library'][] = 'embargoes/embargoes-file-embargoes';
-  }
-  if (!empty($active_node_embargoes) && !empty($ip_allowed_embargoes)) {
-    $imploded_ranges = implode('.', array_unique($ip_allowed_embargoes));
-    $response = new RedirectResponse("/embargoes/ip-access-denied?path={$path}&ranges={$imploded_ranges}");
-    $response->send();
-  }
-  else if ((\Drupal::config('embargoes.settings')->get('show_embargo_message') == FALSE) || is_null(\Drupal::config('embargoes.settings')->get('show_embargo_message')) && $view_mode != 'teaser') {;
-    $embargoes = \Drupal::service('embargoes.embargoes')->getCurrentEmbargoesByNids(array($entity->id()));
-    if (!empty($embargoes)) {
-      $build['#cache']['max-age'] = 0;
-      $embargo_count = count($embargoes);
-      $embargo_word = ($embargo_count > 1 ? "embargoes" : "embargo" );
-      drupal_set_message("This resource is under {$embargo_count} {$embargo_word}:", 'warning');
-      foreach ($embargoes as $embargo_id) {
-        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load($embargo_id);
-        $embargo_message = "- Access to ";
-        if ($embargo->getEmbargoTypeAsInt() == 0) {
-          $embargo_message .= " all associated files of this resource";
-        }
-        else {
-          $embargo_message .= " this resource and all associated files";
-        }
-        $embargo_message .= " is restricted";
-        if ($embargo->getExemptIps() != 'none') {
-          $ip_range = \Drupal::entityTypeManager()->getStorage('embargoes_ip_range_entity')->load($embargo->getExemptIps());
-          $embargo_message .= " to the {$ip_range->label()} network";
-        }
-        else {
-        }
-        if ($embargo->getExpirationTypeAsInt() == 0) {
-          $embargo_message .= " indefinitely.";
-        }
-        else {
-          $embargo_message .= " until {$embargo->getExpirationDate()}.";
-        }
-        drupal_set_message($embargo_message, 'warning');
-      }
-    }
+function embargoes_node_view(array &$build, EntityInterface $node, EntityViewDisplayInterface $display, $view_mode) {
+  \Drupal::service('embargoes.node_access')->setEmbargoMessage($node);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function embargoes_media_view(array &$build, EntityInterface $media, EntityViewDisplayInterface $display, $view_mode) {
+  \Drupal::service('embargoes.media_access')->setEmbargoMessage($media);
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function embargoes_entity_type_alter(array &$entity_types) {
+  if (isset($entity_types['file'])) {
+    $entity_types['file']->setHandlerClass('access', EmbargoesFileAccessHandler::class);
   }
 }
 
@@ -172,17 +62,49 @@ function embargoes_file_download($uri) {
   $files = \Drupal::entityTypeManager()
     ->getStorage('file')
     ->loadByProperties(['uri' => $uri]);
-  $file = array_values($files)[0];
-  $nids = \Drupal::service('embargoes.embargoes')->getParentNidsOfFileEntity($file);
-  $ip = \Drupal::request()->getClientIp();
-  $user = \Drupal::currentUser();
-  $path = \Drupal::request()->getRequestUri();
-  $embargoes = \Drupal::service('embargoes.embargoes')->getActiveEmbargoesByNids($nids, $ip, $user);
-  $ip_allowed_embargoes = \Drupal::service('embargoes.embargoes')->getIpAllowedEmbargoes($embargoes);
-  if (!empty($embargoes) && !empty($ip_allowed_embargoes)) {
-    $imploded_ranges = implode('.', array_unique($ip_allowed_embargoes));
-    $response = new RedirectResponse("/embargoes/ip-access-denied?path={$path}&ranges={$imploded_ranges}");
-    $response->send();
+  $file = reset($files);
+  if ($file instanceof EntityInterface) {
+    $access = \Drupal::service('embargoes.file_access')->isActivelyEmbargoed($file, \Drupal::currentUser());
+    if ($access->isForbidden()) {
+      return -1;
+    }
   }
-  return NULL;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function embargoes_theme($existing, $type, $theme, $path) {
+  return [
+    'embargoes_ip_access_denied' => [
+      'template' => 'embargoes-ip-access-denied',
+      'variables' => [
+        'requested_resource' => NULL,
+        // Indexed array of ranges containing a 'proxy URL' (NULL if none exist)
+        // and a display 'label'.
+        'ranges' => [
+          [
+            'label' => NULL,
+            'proxy_url' => NULL,
+          ],
+        ],
+        'contact_email' => NULL,
+      ],
+    ],
+    'embargoes_policies' => [
+      'template' => 'embargoes-policies',
+      'variables' => [
+        'count' => NULL,
+        'embargo_info' => [],
+      ],
+    ],
+    'embargoes_notifications' => [
+      'template' => 'embargoes-notifications',
+      'variables' => [
+        'count' => NULL,
+        'embargo_info' => [],
+        'message' => NULL,
+      ],
+    ],
+  ];
 }

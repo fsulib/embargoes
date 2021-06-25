@@ -5,6 +5,9 @@
   "keywords": ["Drupal"],
   "homepage": "https://github.com/fsulib/embargoes",
   "license": "GPL-2.0+",
+  "replace": {
+    "drupal/embargoes":"*"
+  },
   "authors": [
     {
       "name": "Bryan J. Brown",

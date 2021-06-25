@@ -7,6 +7,12 @@ namespace Drupal\embargoes;
  */
 interface EmbargoesLogServiceInterface {
 
-  public function logEmbargoEvent($values);
+  /**
+   * Logs an embargo event.
+   *
+   * @param array $values
+   *   Associative array of keys and values that should be applied to the log.
+   */
+  public function logEmbargoEvent(array $values);
 
 }

@@ -4,10 +4,56 @@ services:
     arguments: ['embargoes']
   embargoes.log:
     class: Drupal\embargoes\EmbargoesLogService
-    arguments: []
+    arguments: ['@database']
   embargoes.embargoes:
     class: Drupal\embargoes\EmbargoesEmbargoesService
-    arguments: []
+    arguments:
+      - '@entity_type.manager'
+      - '@entity_field.manager'
+      - '@embargoes.ips'
+      - '@string_translation'
   embargoes.ips:
     class: Drupal\embargoes\EmbargoesIpRangesService
-    arguments: []
+    arguments: ['@entity_type.manager']
+  embargoes.node_access:
+    class: Drupal\embargoes\Access\EmbargoedNodeAccess
+    arguments:
+      - '@embargoes.embargoes'
+      - '@request_stack'
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@messenger'
+      - '@string_translation'
+      - '@url_generator'
+      - '@current_user'
+  embargoes.media_access:
+    class: Drupal\embargoes\Access\EmbargoedMediaAccess
+    arguments:
+      - '@embargoes.embargoes'
+      - '@request_stack'
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@messenger'
+      - '@string_translation'
+      - '@url_generator'
+      - '@current_user'
+  embargoes.file_access:
+    class: Drupal\embargoes\Access\EmbargoedFileAccess
+    arguments:
+      - '@embargoes.embargoes'
+      - '@request_stack'
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@messenger'
+      - '@string_translation'
+      - '@url_generator'
+      - '@current_user'
+  ip_redirect_attacher:
+    class: '\Drupal\embargoes\EventSubscriber\IpRedirectAttacher'
+    arguments:
+      - '@embargoes.node_access'
+      - '@embargoes.media_access'
+      - '@embargoes.file_access'
+      - '@current_user'
+    tags:
+      - { name: 'event_subscriber' }

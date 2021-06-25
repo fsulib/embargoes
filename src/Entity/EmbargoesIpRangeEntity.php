@@ -12,7 +12,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   label = @Translation("IP Range"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\embargoes\EmbargoesIpRangeEntityListBuilder",
+ *     "list_builder" = "Drupal\embargoes\Controller\EmbargoesIpRangeEntityListBuilder",
  *     "form" = {
  *       "add" = "Drupal\embargoes\Form\EmbargoesIpRangeEntityForm",
  *       "edit" = "Drupal\embargoes\Form\EmbargoesIpRangeEntityForm",
@@ -28,6 +28,13 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id" = "id",
  *     "label" = "label",
  *     "uuid" = "uuid"
+ *   },
+ *   config_export = {
+ *     "id" = "id",
+ *     "label" = "label",
+ *     "uuid" = "uuid",
+ *     "ranges" = "ranges",
+ *     "proxy_url" = "proxy_url",
  *   },
  *   links = {
  *     "canonical" = "/admin/config/content/embargoes/settings/ips/{embargoes_ip_range_entity}",
@@ -55,11 +62,11 @@ class EmbargoesIpRangeEntity extends ConfigEntityBase implements EmbargoesIpRang
   protected $label;
 
   /**
-   * The IP Range range.
+   * The IP Range ranges.
    *
-   * @var string
+   * @var string[]
    */
-  protected $range;
+  protected $ranges = [];
 
   /**
    * The IP Range proxy URL.
@@ -68,31 +75,49 @@ class EmbargoesIpRangeEntity extends ConfigEntityBase implements EmbargoesIpRang
    */
   protected $proxy_url;
 
+  /**
+   * {@inheritdoc}
+   */
   public function id() {
     return $this->get('id');
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function label() {
     return $this->get('label');
   }
 
-  public function getRange() {
-    return $this->get('range');
+  /**
+   * {@inheritdoc}
+   */
+  public function getRanges() {
+    return $this->get('ranges');
   }
 
-  public function setRange($range) {
-    $this->set('range', $range);
+  /**
+   * {@inheritdoc}
+   */
+  public function setRanges($ranges) {
+    $ranges = array_map('trim', explode('|', trim($ranges)));
+    $this->set('ranges', $ranges);
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getProxyUrl() {
     return $this->get('proxy_url');
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setProxyUrl($proxy_url) {
     $this->set('proxy_url', $proxy_url);
     return $this;
   }
-
 
 }

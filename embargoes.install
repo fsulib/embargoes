@@ -1,13 +1,15 @@
 <?php
 
 /**
-* @file
-* Install, update and uninstall functions for the embargoes module.
-*/
+ * @file
+ * Install, update and uninstall functions for the embargoes module.
+ */
+
+use Drupal\Core\Database\Database;
 
 /**
-* Implements hook_schema().
-*/
+ * Implements hook_schema().
+ */
 function embargoes_schema() {
   $schema['embargoes_log'] = [
     'description' => 'Embargo log table.',
@@ -22,15 +24,14 @@ function embargoes_schema() {
         'not null' => TRUE,
       ],
       'action' => [
-        'type' => 'varchar',
-        'length' => 255,
+        'type' => 'int',
         'not null' => TRUE,
       ],
       'node' => [
         'type' => 'int',
         'not null' => TRUE,
       ],
-      'user' => [
+      'uid' => [
         'type' => 'int',
         'not null' => TRUE,
       ],
@@ -41,6 +42,32 @@ function embargoes_schema() {
       ],
     ],
     'primary key' => ['id'],
+    'indexes' => [
+      'action' => ['action'],
+      'uid' => ['uid'],
+      'node' => ['node'],
+    ],
   ];
   return $schema;
+}
+
+/**
+ * Update the 'user' column to be called 'uid'.
+ */
+function embargoes_update_8001(&$sandbox) {
+  Database::getConnection()->schema()->changeField('embargoes_log', 'user', 'uid', [
+    'not null' => TRUE,
+    'type' => 'int',
+  ]);
+}
+
+/**
+ * Add indices.
+ */
+function embargoes_update_8002(&$sandbox) {
+  $schema = Database::getConnection()->schema();
+  $embargoes_schema = embargoes_schema();
+  $schema->addIndex('embargoes_log', 'action', ['action'], $embargoes_schema['embargoes_log']);
+  $schema->addIndex('embargoes_log', 'uid', ['uid'], $embargoes_schema['embargoes_log']);
+  $schema->addIndex('embargoes_log', 'node', ['node'], $embargoes_schema['embargoes_log']);
 }

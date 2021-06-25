@@ -2,13 +2,88 @@
 
 namespace Drupal\embargoes\Form;
 
+use Drupal\embargoes\EmbargoesEmbargoesServiceInterface;
+use Drupal\embargoes\EmbargoesIpRangesServiceInterface;
+use Drupal\embargoes\EmbargoesLogServiceInterface;
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class EmbargoesEmbargoEntityForm.
  */
 class EmbargoesEmbargoEntityForm extends EntityForm {
+
+  /**
+   * An embargoes IP ranges manager.
+   *
+   * @var \Drupal\embargoes\EmbargoesIpRangesServiceInterface
+   */
+  protected $ipRanges;
+
+  /**
+   * An embargoes logging service.
+   *
+   * @var \Drupal\embargoes\EmbargoesLogServiceInterface
+   */
+  protected $embargoesLog;
+
+  /**
+   * UUID interface.
+   *
+   * @var \Drupal\Component\Uuid\UuidInterface
+   */
+  protected $uuidGenerator;
+
+  /**
+   * Messaging interface.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * Embargoes service.
+   *
+   * @var \Drupal\embargoes\EmbargoesEmbargoesServiceInterface
+   */
+  protected $embargoes;
+
+  /**
+   * Constructor for the node embargo form.
+   *
+   * @param \Drupal\embargoes\EmbargoesIpRangesServiceInterface $ip_ranges
+   *   An embargoes IP ranges manager.
+   * @param \Drupal\embargoes\EmbargoesLogServiceInterface $embargoes_log
+   *   An embargoes logging service.
+   * @param \Drupal\Component\Uuid\UuidInterface $uuid_generator
+   *   A UUID generator.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Messaging interface.
+   * @param \Drupal\embargoes\EmbargoesEmbargoesServiceInterface $embargoes_service
+   *   An embargoes service.
+   */
+  public function __construct(EmbargoesIpRangesServiceInterface $ip_ranges, EmbargoesLogServiceInterface $embargoes_log, UuidInterface $uuid_generator, MessengerInterface $messenger, EmbargoesEmbargoesServiceInterface $embargoes_service) {
+    $this->ipRanges = $ip_ranges;
+    $this->embargoesLog = $embargoes_log;
+    $this->uuidGenerator = $uuid_generator;
+    $this->messenger = $messenger;
+    $this->embargoes = $embargoes_service;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('embargoes.ips'),
+      $container->get('embargoes.log'),
+      $container->get('uuid'),
+      $container->get('messenger'),
+      $container->get('embargoes.embargoes'));
+  }
 
   /**
    * {@inheritdoc}
@@ -17,30 +92,36 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $form = parent::form($form, $form_state);
     $embargo = $this->entity;
 
-    $form['embargo_type'] = array(
+    $id = $this->entity->id();
+    $form['id'] = [
+      '#type' => 'value',
+      '#value' => isset($id) ? $id : sha1($this->uuidGenerator->generate()),
+    ];
+
+    $form['embargo_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Embargo type'),
       '#default_value' => $embargo->getEmbargoTypeAsInt(),
       '#options' => [
-        '0' => t('Files'),
-        '1' => t('Node'),
+        '0' => $this->t('Files'),
+        '1' => $this->t('Node'),
       ],
-    );
+    ];
 
-    $form['expiration_type'] = array(
+    $form['expiry_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Expiration type'),
       '#default_value' => $embargo->getExpirationTypeAsInt(),
       '#options' => [
-        '0' => t('Indefinite'),
-        '1' => t('Scheduled'),
+        '0' => $this->t('Indefinite'),
+        '1' => $this->t('Scheduled'),
       ],
       '#attributes' => [
         'name' => 'expiry_type',
       ],
-    );
+    ];
 
-    $form['expiration_date'] = array(
+    $form['expiration_date'] = [
       '#type' => 'date',
       '#title' => $this->t('Expiration date'),
       '#default_value' => $embargo->getExpirationDate(),
@@ -52,16 +133,16 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
           ':input[name="expiry_type"]' => ['value' => '1'],
         ],
       ],
-    );
+    ];
 
-    $form['exempt_ips'] = array(
+    $form['exempt_ips'] = [
       '#type' => 'select',
       '#title' => $this->t('Exempt IP ranges'),
-      '#options' => \Drupal::service('embargoes.ips')->getIpRangesAsSelectOptions(),
-      '#default_value' => ( !is_null($embargo->getExemptIps()) ? $embargo->getExemptIps() : 'none' ),
-    );
+      '#options' => $this->ipRanges->getIpRangesAsSelectOptions(),
+      '#default_value' => (!is_null($embargo->getExemptIps()) ? $embargo->getExemptIps() : NULL),
+    ];
 
-    $form['exempt_users'] = array(
+    $form['exempt_users'] = [
       '#type' => 'entity_autocomplete',
       '#target_type' => 'user',
       '#title' => $this->t('Exempt users'),
@@ -70,34 +151,34 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
       '#selection_settings' => [
         'include_anonymous' => FALSE,
       ],
-    );
+    ];
 
-    $form['additional_emails'] = array(
+    $form['additional_emails'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Additional Emails'),
-      '#default_value' => $embargo->getAdditionalEmails(),
-    );
+      '#default_value' => implode(',', $embargo->getAdditionalEmails()),
+    ];
 
-    $form['embargoed_node'] = array(
+    $embargoed_node = $embargo->getEmbargoedNode();
+    if ($embargoed_node) {
+      $embargoed_node = $this->entityTypeManager->getStorage('node')->load($embargoed_node);
+    }
+    $form['embargoed_node'] = [
       '#type' => 'entity_autocomplete',
       '#target_type' => 'node',
       '#title' => $this->t('Embargoed node'),
-      '#default_value' => node_load($embargo->getEmbargoedNode()),
+      '#maxlength' => 255,
+      '#default_value' => $embargoed_node ? $embargoed_node : NULL,
       '#required' => TRUE,
-    );
+    ];
 
-    $form['notification_status'] = array(
+    $form['notification_status'] = [
       '#type' => 'select',
       '#title' => $this->t('Notification status'),
       '#default_value' => $embargo->getNotificationStatus(),
-      '#options' => [
-        'created' => 'Created',
-        'updated' => 'Updated',
-        'warned' => 'Warned',
-        'expired' => 'Expired',
-      ],
+      '#options' => $this->embargoes->getNotificationStatusesAsFormOptions($embargo),
       '#required' => TRUE,
-    );
+    ];
 
     return $form;
   }
@@ -108,8 +189,15 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $embargo = $this->entity;
     $embargo->setEmbargoType($form_state->getValue('embargo_type'));
-    $embargo->setExpirationType($form_state->getValue('expiration_type'));
-    $embargo->setExpirationDate($form_state->getValue('expiration_date'));
+    $expiry_type = $form_state->getValue('expiry_type');
+    $embargo->setExpirationType($expiry_type);
+    // Clear expiry date for indefinite embargoes.
+    if ($expiry_type === '0') {
+      $embargo->setExpirationDate('');
+    }
+    else {
+      $embargo->setExpirationDate($form_state->getValue('expiration_date'));
+    }
     $embargo->setExemptIps($form_state->getValue('exempt_ips'));
     $embargo->setExemptUsers($form_state->getValue('exempt_users'));
     $embargo->setAdditionalEmails($form_state->getValue('additional_emails'));
@@ -118,18 +206,19 @@ class EmbargoesEmbargoEntityForm extends EntityForm {
     $status = $embargo->save();
 
     $log_values['node'] = $embargo->getEmbargoedNode();
-    $log_values['user'] = \Drupal::currentUser()->id();
-    $log_values['embargo_id'] = $embargo->id();
+    $log_values['uid'] = $this->currentUser()->id();
+    $log_values['embargo'] = $embargo->id();
 
     if ($status == SAVED_NEW) {
-        $log_values['action'] = 'created';
+      $log_values['action'] = $embargo::STATUS_CREATED;
+      $this->messenger->addMessage($this->t('Your embargo has been created.'));
     }
     else {
-        $log_values['action'] = 'updated';
+      $log_values['action'] = $embargo::STATUS_UPDATED;
+      $this->messenger->addMessage($this->t('Your embargo has been updated.'));
     }
 
-    \Drupal::messenger()->addMessage("Your embargo has been {$log_values['action']}.");
-    \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
+    $this->embargoesLog->logEmbargoEvent($log_values);
     $form_state->setRedirectUrl($embargo->toUrl('collection'));
   }
 

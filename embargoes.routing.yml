@@ -14,14 +14,6 @@ embargoes.settings.notifications:
   requirements:
     _permission: 'administer embargoes settings'
 
-embargoes.settings.log:
-  path: '/admin/config/content/embargoes/settings/log'
-  defaults:
-    _controller: '\Drupal\embargoes\Controller\EmbargoesLogController::showRenderedLog'
-    _title: 'Embargo Activity Log'
-  requirements:
-    _permission: 'administer embargoes settings'
-
 embargoes.node.embargoes:
   path: '/node/{node}/embargoes'
   defaults:
@@ -29,6 +21,11 @@ embargoes.node.embargoes:
     _title: 'View Embargoes'
   requirements:
     _permission: 'manage embargoes'
+  options:
+    no_cache: true
+    parameters:
+      node:
+        type: entity:node
 
 embargoes.node.embargo:
   path: '/node/{node}/embargoes/{embargo_id}'
@@ -37,6 +34,10 @@ embargoes.node.embargo:
     _title: 'Edit Embargo'
   requirements:
     _permission: 'manage embargoes'
+  options:
+    parameters:
+      node:
+        type: entity:node
 
 embargoes.ip_access_denied:
   path: '/embargoes/ip-access-denied'
